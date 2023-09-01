@@ -1,7 +1,7 @@
-% Parametric Polymorphism and Adhoc Polymorphism 
+# 50.054 - Parametric Polymorphism and Adhoc Polymorphism 
 
 
-# Learning Outcome
+## Learning Outcomes
 
 By this end of this lesson, you should be able to 
 
@@ -11,7 +11,7 @@ By this end of this lesson, you should be able to
 * make use of `Option` and `Either` to handle and manipulate errors and exceptions. 
 
 
-# Currying
+## Currying
 
 In functional programming, we could rewrite a function with multiple arguments into a function that takes the first argument and returns another function that takes the remaining arguments.
 
@@ -39,7 +39,7 @@ sum_curry(1)(2)
 def plus1(x:Int):Int = sum_curry(1)(x)
 ```
 
-# Function Composition
+## Function Composition
 
 Every function and method in Scala is an object with a `.compose()` method. It works like the mathmethical composition.
 
@@ -69,11 +69,11 @@ def g(x:Int):Int = x * x
 assert((g.compose(f))(2) == g(f(2)))
 ```
 
-# Generics
+## Generics
 
 Generics is also known as type variables. It enables a language to support parametric polymoprhism. 
 
-## Polymorphic functions
+### Polymorphic functions
 
 Recall that the `reverse` function introduced in the last lesson
 ```scala
@@ -92,7 +92,7 @@ def reverse[A](l:List[A]):List[A] = l match {
 }
 ```
 
-## Polymorphic Algebraic Datatype
+### Polymorphic Algebraic Datatype
 
 
 Recall that the following Algebraic Datatype from the last lesson. 
@@ -189,7 +189,7 @@ enum MyList[+A] {
 
 
 
-# Type class
+## Type class
 
 Suppose we would like to convert some of the Scala value to JSON string.
 
@@ -347,7 +347,7 @@ Type class enables us to develop modular and resusable codes. It is related to a
 In the next few section, we consider some common patterns in FP that are promoting generic programming.
 
 
-# Functor
+## Functor
 
 Recall that we have a `map` method for list datatype. 
 
@@ -401,7 +401,7 @@ btreeFunctor.map(t)((x:Int) => x + 1)
 
 ```
 
-## Functor Laws
+### Functor Laws
 
 All instances of functor must obey a set of mathematic laws for their computation to be predictable.
 
@@ -410,7 +410,7 @@ Let `i` be a functor instance
 2. Composition Morphism: `i=> map(i)(f.compose(g))` $\equiv$ `(i => map(i)(f)).compose(j => map(j)(g))`. If two sequential mapping operations are performed one after the other using two functions, the result should be the same as a single mapping operation with one function that is equivalent to applying the first function to the result of the second.
 
 
-# Foldable
+## Foldable
 
 Similarly we can define a `Foldable` type class for generic `foldLeft`( and `foldRight`).
 
@@ -440,7 +440,7 @@ btreeFoldable.foldLeft(t)(0)((x:Int,y:Int) => x + y)
 ```
 
 
-# Option and Either
+## Option and Either
 
 Recall in the earlier lesson, we encountered the following example. 
 
@@ -598,7 +598,7 @@ Executing `eval(Div(Const(1), Minus(Const(2), Const(2))))` will yield
 Right(div by zero caused by Div(Const(1),Minus(Const(2),Const(2))))
 ```
 
-# Summary
+## Summary
 
 In this lesson, we have discussed 
 
@@ -608,9 +608,9 @@ In this lesson, we have discussed
 * how to make use of `Option` and `Either` to handle and manipulate errors and exceptions. 
 
 
-# Appendix
+## Appendix
 
-## Generalized Algebraic Data Type
+### Generalized Algebraic Data Type
 
 Generalized Algebraic Data Type is an extension to Algebraic Data Type, in which each case extends a more specific version of the top level algebraic data type. Consider the following example.
 

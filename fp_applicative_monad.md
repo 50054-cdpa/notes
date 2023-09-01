@@ -1,14 +1,14 @@
-% Applicative and Monad
+# 50.054 - Applicative and Monad
 
 
-# Learning Outcomes
+## Learning Outcomes
 
 1. Describe and define derived type class
 2. Describe and define Applicative Functors
 3. Describe and define Monads
 4. Apply Monad to in design and develop highly modular and resusable software.
 
-# Derived Type Class
+## Derived Type Class
 
 
 Recall that in our previous lesson, we talk about the `Ordering` type class. 
@@ -53,7 +53,7 @@ eqInt.eqv(1,1)
 orderInt.eqv(1,1)
 ```
 
-## An alternative approach
+### An alternative approach
 
 ```scala
 trait Order[A] extends Eq[A] { 
@@ -79,12 +79,12 @@ orderInt.eqv(1,1)
 In the above definition, we skip the default implementatoin of `eqv` in `Order` and make use of the type class instance context to synthesis the `eqv` method based on the existing type class instances of `Eq`. (This approach is closer to the one found in Haskell.)
 
 
-## Which one is better? 
+### Which one is better? 
 
 Both have their own pros and cons. In the first approach, we give a default implementation for the `eqv` overridden method in `Order` type class, it frees us from re-defining the `eqv` in every type class instance of `Order`. In this case, the rule/logic is fixed at the top level. In the second approach, `eqv` in `Order` type class is not defined. We are required to define it for every single type class instance of `Order`, that means more work. The advantage is that we have flexibility to redefine/re-mix definition of `eqv` coming from other type class instances.
 
 
-# Functor (Recap)
+## Functor (Recap)
 
 Recall from the last lesson, we make use of the `Functor` type class to define generic programming style of data processing.
 
@@ -119,7 +119,7 @@ btreeFunctor.map(t)((x:Int) => x + 1)
 ```
 Note that we also swap the first and the second arguments of the `map` function.
 
-# Applicative Functor
+## Applicative Functor
 
 The `Applicative` Functor is a derived type class of `Functor`, which is defined as follows 
 
@@ -208,7 +208,7 @@ given optApplicative:Applicative[Option] = new Applicative[Option] {
 ```
 In the above Applicative instance, the `ap` method takes a optional operation and optional value as inputs, tries to apply the operation to the value when both of them are present, otherwise, signal an error by returning `None`. This allows us to focus on the high-level function-value-input-output relation and abstract away the details of handling potential absence of function or value.
 
-## Applicative Laws
+### Applicative Laws
 
 Like Functor laws, every Applicative instance must follow the Applicative laws to remain computationally predictable.
 
@@ -220,10 +220,11 @@ Like Functor laws, every Applicative instance must follow the Applicative laws t
 
 
 
-### Cohort Exercise, show that any applicative functor satisfying the above laws also satisfies the Functor Laws
+#### Cohort Exercise
+show that any applicative functor satisfying the above laws also satisfies the Functor Laws
 
 
-# Monad
+## Monad
 
 Monad is one of the essential coding/design pattern for many functional programming languages. It enables us to develop high-level resusable code and decouple code dependencies and generate codes by (semi-) automatic code-synthesis. FYI, Monad is a derived type class of Applicative thus Functor.
 
@@ -471,11 +472,11 @@ def eval3(e:MathExp)(using m:MonadError[EitherErr, ErrMsg]):EitherErr[Int] = e m
 ```
 
 
-# Commonly used Monads
+## Commonly used Monads
 
 We have seen the option Monad and the either Monad. Let's consider a few commonly used Monads.
 
-## List Monad
+### List Monad
 
 We know that `List` is a Functor and an Applicative. 
 It is not surprising that `List` is also a Monad.
@@ -522,7 +523,7 @@ def query(data:List[Staff]):List[Staff] = for {
     if ageBelow(staff, 40) // where staff.age < 40
 } yield staff              // select *
 ```
-## Reader Monad
+### Reader Monad
 
 Next we consider the `Reader` Monad.  `Reader` Monad denotes a shared input environment used by multiple computations. Once shared, this environment stays immutable.
 
@@ -606,7 +607,7 @@ def runtest1():Unit = test1 match {
 
 
 
-## State Monad
+### State Monad
 
 We consider the `State` Monad. A `State` Monad allows programmers capture and manipulate stateful computation without using assignment and mutable variable. One advantage of doing so is that program has full control of the state without having direct access to the computer memory. In a typeful language like Scala, the type system segregates the pure computation from the stateful computation. This greatly simplify software verification and debugging.
 
@@ -690,7 +691,7 @@ def app(using csm:StateMonad[Counter]):State[Counter, Int] = for {
 
 In the above we define the state environment as an integer counter. Monadic function `incr` increase the counter in the state. 
 
-# Monad Laws
+## Monad Laws
 
 Similar to Functor and Applicative, all instances of Monad must satisfy the following 
 three Monad Laws.
@@ -700,7 +701,7 @@ three Monad Laws.
 3. Associativity: `bind(bind(m)(f))(g)` $\equiv$ `bind(m)(x => bind(f(x))(g))`
 
 
-# Summary
+## Summary
 
 In this lesson we have discussed the following
 
@@ -711,10 +712,10 @@ In this lesson we have discussed the following
 5. The three laws of Monad Functor.
 6. A few commonly used Monad such as, List Monad, Option Monad, Reader Monad and State Monad.
 
-# Extra Materials
+## Extra Materials
 
 
-## Writer Monad
+### Writer Monad
 
 The dual of the `Reader` Monad is the `Writer` Monad, which has the following definition.
 
@@ -804,7 +805,7 @@ def runApp(): Int = app match {
 }
 ```
 
-## Monad Transformer
+### Monad Transformer
 
 Is the following class a Monad?
 

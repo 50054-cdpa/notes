@@ -1,7 +1,7 @@
-% Instroduction to functional programming
+# 50.054 - Instroduction to functional programming
 
 
-# Learning Outcomes
+## Learning Outcomes
 By the end of this lesson, you should be able to 
 
 * Characterize functional programming
@@ -10,14 +10,14 @@ By the end of this lesson, you should be able to
 * Implement simple algorithms using Lambda Calculus
 
 
-# What is Functional programming?
+## What is Functional programming?
 
 Functional programming as suggested by its name, is a programming paradigm in which functions are first class values. 
 In the ideal model of FP, computation are stateless. Variables are bound once and remain unchanged afterwards. Computation is performed
 by rewriting the current expression into the (reduced) expression via evaluation rules.
 
 
-# How FP differs from other programming languages?
+## How FP differs from other programming languages?
 
 The main differences were listed in the earlier section. 
 
@@ -43,23 +43,23 @@ def select_sort(vals):
 
 
 
-# Why FP in Compiler Design?
+## Why FP in Compiler Design?
 
 Implementing a compiler requires rigorous software design and engineering principles. Bugs arising from a compiler have severe implication in softwares developed in the language that it compiles. 
 
 To establish correctness results, testing is not sufficient to eliminate errors in the compilers. When designing a compiler, we often begin with formal reasoning with mathematical foundation as the specification. As we learn later in this module, these specifications are presented in a form in which resembles the data structures and accessor methods found in many functional programming languages. Thus, it is arguably easier to implement the given specification in function programs compared to other programming paradigms. On the other hand, many main stream functional programming languages, such as Ocaml, Haskell and Scala are shipped with powerful type systems which 
 allow us to express some of the properties of the algorithms in terms of type constraints, by doing so, these properties are verified by the compilers of function programming languages. 
 
-# Lambda Calculus
+## Lambda Calculus
 
 *Lambda Calculus* is the minimal core of many functional programming languages.
 It consists of the *Lambda expression* and the *evaluation rule(s)*.
 
 
-## Lambda Expression
+### Lambda Expression
 
 
-The valid syntax of lambda expression is described as the following EBNF
+The valid syntax of lambda expression is described as the following EBNF Grammar
 
 $$
 \begin{array}{rccl}
@@ -68,14 +68,21 @@ $$
 $$
 
 Where 
-
+* Each line denotes a grammar rule
+* The left hand side (LHS) of the `::=` is a non-terminal symbol, in this case $t$ is a non-terminal symbol.
+* The RHS of the `::=` is a set of alternatives, separated by `|`. Each alternative denote a possible outcome of expanding the LHS non-terminal. In this case $t$ has three possibilities, i.e. $x$, $\lambda x.t$ or $t\ t$.
 * $x$ denotes a variable, 
 * $\lambda x.t$ denotes a lambda abstraction. 
   * Within a lambda abstraction,  $x$ is the bound variable (c.f. formal argument of the function) 
 and $t$ is the body.
 * $t\ t$ denotes a function application.
 
-NOTE: maybe elaborate more in a more informal way, e.g. what is EBNF? what are terms exactly meaning?, give more examples.
+For example the following are three instances of $t$.
+
+1. $x$
+1. $\lambda x.x$
+1. $(\lambda x.x)\ y$.
+
 
 Note that given a lambda term, there might be multiple ways of parsing (interpreting) it. For instance, 
 Given $\lambda x.x\ \lambda y.y$, we could interpret it as either
@@ -85,15 +92,15 @@ Given $\lambda x.x\ \lambda y.y$, we could interpret it as either
 
 As a convention, in the absence of parathesis, we take 2 as the default interpretation. We should include paranthesis whenever ambiguity arise as much as we can.
 
-## Evaluation Rules
+### Evaluation Rules
 
 Lambda calculus is very simple and elegant. To execute (or we often say "to evaluate") a given lambda term, we apply the evaluation rules to rewrite the term.
 
 There are only two rules to consider.
 
-NOTE: explain how and why these rules are defined, what do we mean by execute or evaluate.
+Each rule is defined via a reduction relation $t \longrightarrow t'$, which reads as $t$ is reduced to $t'$ by a step.
 
-### Beta Reduction
+#### Beta Reduction
 
 $$
 \begin{array}{rl}
@@ -101,7 +108,7 @@ $$
 \end{array}
 $$
 
-where  $t \longrightarrow t' $ denotes one evaluation step. $[t_2/x]$
+What's new here is the term $[t_2/x]$, which is a meta term, it 
 refers to a substitution. $[t_2/x]t_1$ denotes the application of the
 substitution $[t_2/x]$ to $t_1$, Informally speaking it means we
 replace every occurance of the formal argument $x$ in $t_1$ with $t_2$. 
@@ -196,7 +203,7 @@ abstraction accidentally via substitution.
 Now the free variable ${\tt y}$ is "mixed up" with the lambda bound variable $y$ by mistake.
 
 
-### Substitution and Alpha Renaming
+#### Substitution and Alpha Renaming
 
 In the following we consider all the possible cases for subsititution
 
@@ -233,7 +240,7 @@ to avoid clashing, prior applying the $\beta$ reduction.
 The renaming operation is also known as the $\alpha$ renaming.
 
 
-## Evaluation strategies
+### Evaluation strategies
 
 So far we have three rules (roughly)  $\beta $ reduction, substitution, and  $\alpha $ renaming. 
 
@@ -285,7 +292,7 @@ y.y)/x \rbrack x
 \end{array}
 $$
 
-### Interesting Notes
+#### Interesting Notes
 
 1. Some connection with the real world languages 
    * Call By Value semantics (CBV, found in C, C++, etc.) is like AOR except that we do not evaluate under lambda abstractions. 
@@ -315,11 +322,11 @@ $$
 4. NOR can be used to evaluate terms that deals with infinite data.
 
 
-## Let Binding
+### Let Binding
 
 Let-binding allows us to introduce local (immutable) variables.
 
-### Approach 1 - extending the syntax and evaluation rules
+#### Approach 1 - extending the syntax and evaluation rules
 
 We extend the syntax with let-binding.
 
@@ -341,7 +348,7 @@ Note that the alpha renaming should be applied when name clash arises.
 
 
 
-### Approach 2 - desugaring
+#### Approach 2 - desugaring
 
 In the alternative approach, we could use a pre-processing step to desugar the let-binding into an application. In compiler context, *desugaring* refers to the process of rewriting the source code from some high-level form to the core language.
 
@@ -363,12 +370,12 @@ What happen if $x \in fv(t_1)$? It forms a recursive definition. We will look in
 
 
 
-## Conditional Expression
+### Conditional Expression
 
 A language is pretty much useless without conditional $if\ t_1\ then\ t_2\ else\ t_3$. There are at least
 two different ways of incorporating conditional expression in our lambda term language. 
 
-### Approach 1 - Extending the syntax and the evaluation rules
+#### Approach 1 - Extending the syntax and the evaluation rules
 We could extend the grammar
 
 $$
@@ -434,7 +441,7 @@ if\ false\ then\ 0\  else\  10/2 & \longrightarrow_{\scriptsize {\tt (IfF)}} \\
 \end{array}
 $$
 
-### Approach 2 - Church Encoding
+#### Approach 2 - Church Encoding
 
 Instead of extending the syntax and evaluation rule, we could encode
 the conditional expression in terms of the basic lambda terms.
@@ -463,13 +470,13 @@ w
 \end{array}
 $$
 
-## Recursion
+### Recursion
 
 To make our language turing complete, we need to support loop. The way to perform loops in lambda calculus to via recursion. 
 
 Similar to the conditional expression, there are at least two ways of introducing recursion to our language.
 
-### Approach 1 - Extending the syntax and the evaluation rules
+#### Approach 1 - Extending the syntax and the evaluation rules
 
 We extend the syntax with a mu-abstraction
 
@@ -511,7 +518,7 @@ if\ false\ then\ 1\ else\ 3*((\mu f.\lambda y.if\ y==1\ then\ 1\ else\ f\ (y-1))
 \end{array}
 $$
 
-### Approach 2 - Church Encoding
+#### Approach 2 - Church Encoding
 
 Alternatively, 
 recursion can be encoded using the fix-pointer combinator (AKA  $Y $-combinator). Let $Y $ be
@@ -554,7 +561,7 @@ numbers. $pred$ takes a number and return its predecesor in natural
 number order. Then $Y\ Fac$ will be the implementation of the factorial function
 described above.
 
-### Discussion 1 
+#### Discussion 1 
 How to define the following?
 * $one$
 * $iszero$
@@ -563,13 +570,13 @@ How to define the following?
 
 We will work on this during the cohort class. 
 
-### Discussion 2
+#### Discussion 2
 
 The current evaluation strategy presented resembles the call-by-need semantics, in which the function arguments are not evaluated until they are needed. What modification required if we want to implement a call-by-value semantics (AKA. strict evaluation).
 
 We will work on this during the cohort class. 
 
-# Summary 
+## Summary 
 
 We have covered
 

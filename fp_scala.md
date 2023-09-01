@@ -1,6 +1,6 @@
-% Instroduction to Scala
+# 50.054 - Instroduction to Scala
 
-# Learning Outcomes
+## Learning Outcomes
 
 By the end of this class, you should be able to
 
@@ -8,7 +8,7 @@ By the end of this class, you should be able to
 * Model problems and design solutions using Algebraic Datatype and Pattern Matching
 * Compile and execute simple Scala programs
 
-# What is Scala?
+## What is Scala?
 
 Scala is a hybrid programming language which combines Object Oriented Paradigm and Functional Programming Paradigm. Scala has many backends, including JVM, node.js and native. 
 
@@ -20,7 +20,7 @@ For more details in how Scala is used in the real-world business, you may refer 
 * [Who is using Scala, Akka and Play framework](https://alvinalexander.com/scala/whos-using-scala-akka-play-framework/)
 * [Type-safe Tensor](https://arxiv.org/pdf/1710.06892.pdf)
 
-# Scala Hello World
+## Scala Hello World
 
 Let's say we have a Scala file named `HelloWorld.scala`
 ```scala
@@ -39,7 +39,7 @@ scalac HelloWorld.scala && scala HelloWorld
 
 Although in the cohort problems, we are going to rely on a Scala project manager called `sbt` to build, execute and test our codes.
 
-# Scala OOP vs Java OOP
+## Scala OOP vs Java OOP
 
 If you know Object Oriented Programming, you already know 70% of Scala. 
 
@@ -122,7 +122,7 @@ val l = new java.util.LinkedList[String]()
 Keyword `val` defines an immutable variable, and `var` defines a mutable variable.
 
 
-# Functional Programming in Scala at a glance
+## Functional Programming in Scala at a glance
 
 In this module, we focus and utilise mostly the functional programming feature of Scala.
 
@@ -149,7 +149,7 @@ def fac(x:Int):Int = {
 val result = fac(10)
 ```
 
-## List Data type
+### List Data type
 
 We consider a commonly used builtin data type in Scala, the list data type. In Scala, the following define some list values.
 
@@ -221,7 +221,7 @@ def reverse[A](l:List[A]):List[A] = l match {
 Note that the first `[A]` denotes a type argument, with which we specify that the element type of the list is `A` (any possible type). The type argument is resolved when we apply `reverse` to a actual argument. For instance in `reverse(List(1,2,3))` the Scala compiler will resolve `A=Int` and in `reverse(List("a","b"))` it will resolve `A=String`.
 
 
-### A Note on Recursion
+#### A Note on Recursion
 
 Note that recursive calls to `reverse` will incur additional memory space in the machine in form of function call stack. A call stack frame has to created to "save" the state of function execution such as local variables. As nested recursive calls being built up, the machine might run out of memory. This is also known as Stack Overflow Error. 
 
@@ -248,7 +248,7 @@ When Scala compiler detects a tail recursive function, it will rewrite into a fo
 
 As compiler technology evolves, many modern FP language compilers are able to detect a subset of non-tail recursion and automatically transforms them into the tail recursive version.
 
-## Map, Fold and Filter
+### Map, Fold and Filter
 
 Consider the following function 
 
@@ -369,7 +369,7 @@ $$
 where $\uplus$ unions two bags and maintains the order. 
 
 
-## flatMap and for-comprehension
+### flatMap and for-comprehension
 
 There is a variant of `map` method, consider
 
@@ -433,7 +433,7 @@ println(sum)
 ```
 
 
-## Algebraic Datatype
+### Algebraic Datatype
 
 Like many other languages, Scala supports user defined data type. 
 From an earlier section, we have discussed how to use class and trait in Scala to define data type making using of the OOP concepts that we have learned. 
@@ -597,7 +597,7 @@ yields the same output as above.
 
 
 
-# Summary
+## Summary
 
 In this lesson, we have discussed 
 

@@ -20,7 +20,7 @@ The main resources are lecture slides, tutorial sessions, and online documentati
 
 
 * Kenny Lu (kenny_lu@sutd.edu.sg) 
-Office Hour: Monday 3:00-4:30pm (please send email to arrange)
+Office Hour: Wednesday 3:00-4:30pm (please send email to arrange)
 
 
 ## TAs
@@ -30,16 +30,30 @@ Office Hour: Monday 3:00-4:30pm (please send email to arrange)
 
 If you have course/assignment/project related questions, please post it on the dedicated MS teams channel.
 
-## Grading
+## Assessment
 
-
+* Mid-term 10%
+* Project 35%
+* Homework 20%
+* Final 30%
+* Class Participation 5%
 
 ## Things you need to prepare
+
+* If you are using Windows 10 or Windows 11, please install ubuntu subsystems
+    * [Win10](https://ubuntu.com/tutorials/install-ubuntu-on-wsl2-on-windows-10#1-overview)
+    * [Win11](https://ubuntu.com/tutorials/install-ubuntu-on-wsl2-on-windows-11-with-gui-support#1-overview)
+* If you are using Linux, it should be perfect.
+* If you are using Mac, please install homebrew.
+* Make sure JVM >=11 is installed and ant is installed.
+* Install Scala >= 3
+  * https://www.scala-lang.org/download/
+* IDE: It's your choice, but VSCode works fine.
 
 
 ## Project
 
-
+TBD
 
 
 ## Submission Policy and Plagiarism
@@ -49,20 +63,25 @@ If you have course/assignment/project related questions, please post it on the d
 1. For projects, students can only invite their partners as collaborators to a private repository.
 1. Failing to follow the Code of Honour will result in failing the course and/or being submitted to the University Disciplinary Committee. The consequences apply to both the person who shares their work and the person who copies the work.
 
-
-## Schedule 
-
-
-
-
-|Week|Session 1|Session 2|Session 3|Remarks|
+## Schedule
+| Week | Session 1 | Session 2 | Session 3 | Assessment |
 |---|---|---|---|---|
-|1 | [Intro](./introduction.md) | [Intro to FP](./fp_intro.md) | Cohort Problems |  | 
-|2 | [List, Pattern Matching](./fp_scala.md) | [Algebraic Datatype](./fp_scala.md) | Cohort Problems |  |
-|3 | [Generics, GADT](./fp_scala_poly.md) |[Type classes, Functor](./fp_scala_poly.md) |  | | 
-|4 | [Applicative](./fp_applicative_monad.md) | [Monad](./fp_applicative_monad.md) | | |
-|5 | [Lexing, Parsing](./syntax_analysis.md) | [Topdown parsing](./syntax_analysis.md) | | [Annex](./syntax_analysis_annex.md) |
-|6 | [Bottom-up Parsing](./syntax_analysis.md) | [Pseudo Assembly](./ir_pseudo_assembly.md) | | |
+| 1 | Intro | [FP: Expression, Function, Conditional, Recursion](./fp_intro.md) | [Cohort Problem 1](../cohort_probs/fp_intro), [Homework 1](../homework/fp_intro/) | Homework 1 no submission required | 
+| 2 | [FP: List, Pattern Matching](./fp_scala.md) | [FP: Algebraic Data Type](./fp_scala.md) | [Cohort Problem 2](../cohort_probs/fp_scala), [Homework 2](../homework/fp_scala) |  |
+| 3 | [FP: Generics, GADT](./fp_scala_poly.md) | [FP: Type Classes, Functor](./fp_scala_poly.md) | [Cohort Problem 3](../cohort_probs/fp_scala_poly/), [Homework 3](../homework/fp_scala_poly/) | Homework 2 5% |
+| 4 | [FP: Applicative](./fp_applicative_monad.md) | [FP: Monad](./fp_applicative_monad.md) |  [Cohort Problem 4](../cohort_probs/fp_applicative_monad/), Homework 3 (Cont'd) | Homework 3 5% |
+| 5 | [Syntax Analysis: Lexing, Parsing](./syntax_analysis.md) | [Top-down Parsing](./syntax_analysis.md) | [Cohort Problem 5](../cohort_probs/syntax_analysis/), [Homework 4](../homework/fp_syntax_analysis/) |  |
+| 6 | [Bottom-up Parsing](./syntax_analysis.md) | [IR: Pseudo-Assembly](./ir_pseudo_assembly.md) | [Cohort Problem 6](../cohort_probs/syntax_analysis_2_pseudo_ir/), Homework 4 (Cont'd) | Homework 4 5% | 
+| 7 |  |  |  | 
+| 8 | **Mid-term**, [Semantic Analysis](./semantic_analysis.md)| [Dynamic Semantics](./dynamic_semantics.md) | Cohort Problem 7 | Mid-term 10%, Project Lab 1 10% |
+| 9 | Static Semantics, Type-checking | Type Inference | Cohort Problem 8, Homework 5 |  |
+| 10 | *Public Holiday. No Class Scheduled* | Name Analysis, SSA |  Cohort Problem 9 | Homework 5 5%, Project Lab 2 10% | 
+| 11 | Lattice, Sign Analysis  | Liveness Analysis | Cohort Problem 10 |  |  | 
+| 12 | Information Flow Analysis | Code Generation | Cohort Problem 11  |  |
+| 13 | Guest Lecture | Memory Management | Revision | Project Lab 3 15% |  |
+| 14 | |  |  |Final Exam 30%|
+
+
  
 
 ## Make Up and Alternative Assessment
