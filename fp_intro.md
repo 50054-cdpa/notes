@@ -33,12 +33,18 @@ def select_sort(vals):
       # find the max val starting from position idx
       max_idx = idx
       for i in range(idx+0, vals.length-1):
+         if vals[max_idx] < vals[idx]:
+            max_idx = idx
+      return max_idx
 
    def go(vals, idx):
       max_idx = find_max(vals, idx)
       vals[idx], vals[max_idx] = vals[max_idx], vals[idx]
+
    for i in range(0, vals.length-1):
-      go 
+      go(vals, i)
+   
+   return vals
 ```
 
 
@@ -47,8 +53,10 @@ def select_sort(vals):
 
 Implementing a compiler requires rigorous software design and engineering principles. Bugs arising from a compiler have severe implication in softwares developed in the language that it compiles. 
 
-To establish correctness results, testing is not sufficient to eliminate errors in the compilers. When designing a compiler, we often begin with formal reasoning with mathematical foundation as the specification. As we learn later in this module, these specifications are presented in a form in which resembles the data structures and accessor methods found in many functional programming languages. Thus, it is arguably easier to implement the given specification in function programs compared to other programming paradigms. On the other hand, many main stream functional programming languages, such as Ocaml, Haskell and Scala are shipped with powerful type systems which 
-allow us to express some of the properties of the algorithms in terms of type constraints, by doing so, these properties are verified by the compilers of function programming languages. 
+To establish correctness results, testing is not sufficient to eliminate errors in the compilers. When designing a compiler, we often begin with formal reasoning with mathematical foundation as the specification. As we learn later in this module, these specifications are presented in a form in which resembles the data structures and accessor methods found in many functional programming languages. Thus, it is arguably easier to implement the given specification in function programs compared to other programming paradigms. 
+One key difference is that in FP, there is no for-loop nor while-loop. Iteration has to be implemented via recursive functions. 
+This implies that loop invariances are not becoming constraints among the input and output of these recurisve function. 
+In many main stream functional programming languages, such as Ocaml, Haskell and Scala are shipped with powerful type systems which allow us to express some of the properties of the algorithms in terms of type constraints, by doing so, these (invariant) properties are verifiable by the compilers of function programming languages. 
 
 ## Lambda Calculus
 
