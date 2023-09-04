@@ -25,26 +25,64 @@ However many modern program languages (including those are not FP) adopted many 
 
 NOTE: give an example to compare FP with procedural programming.
 
-Consider the following two different implementation of selection sort algorithm, assuming that the readers having prior knowledge of Python and selection sort algorithm. 
+Consider the following two different implementation of insertion sort algorithm, assuming that the readers having prior knowledge of Python and insertion sort algorithm. 
+
 
 ```python
-def select_sort(vals):
-   def find_max(vals, idx): 
-      # find the max val starting from position idx
-      max_idx = idx
-      for i in range(idx+0, vals.length-1):
-         if vals[max_idx] < vals[idx]:
-            max_idx = idx
-      return max_idx
-
-   def go(vals, idx):
-      max_idx = find_max(vals, idx)
-      vals[idx], vals[max_idx] = vals[max_idx], vals[idx]
-
-   for i in range(0, vals.length-1):
-      go(vals, i)
-   
+def isort(vals):
+   for i in range(1, len(vals)):
+      curr = i   
+      for j in range(i, 0, -1):
+         # scan backward to insert vals[curr] into the right pos
+         if vals[curr] > vals[j-1]:
+            vals[curr], vals[j-1] = vals[j-1], vals[curr]
+            curr = j-1
    return vals
+```
+
+```python
+def isort2(vals):
+   def insert(x, xs):
+      # invarant: xs is already sorted in descending order
+      if len(xs) > 0:
+         if x > xs[0]:
+            return [x] + xs
+         else:
+            return [xs[0]] + insert(x, xs[1:])
+      else:
+         return [x]
+   def isort_sub(sorted, to_be_sorted):
+      # invariant sorted is already sorted in descending order
+      if len(to_be_sorted) > 0:
+         val = to_be_sorted[0]
+         to_be_sorted_next = to_be_sorted[1:]
+         sorted_next = insert(val, sorted)
+         return isort_sub(sorted_next, to_be_sorted_next)
+      else:
+         return sorted
+   return isort_sub([], vals)
+```
+
+`isort` is implemented in the imperative style, the way we are familiar with. 
+`isort2` is implemented in a functional programming style, we've seen it but we are not too familar with it.
+We probably won't code in `isort2` in Python, because 
+1. it is lengthy
+1. it is less efficient, as it involves recursion (function call stack is building up) and there are too many list slicing and concatenation.
+
+But why people are interested in FP? The reason is that the invariant of `isort` is much harder to derive compared to `isort2` 
+in which the sub functions' parameters are the subject of the invariants, and the variables in `isort2` are mostly immutable, i.e. 
+they don't change over execution, we don't need symbolic execution or variable renaming. 
+Further more in some FP languages with advanced type system such as type constraint and dependent type, these invariants in `isort2`
+can be expressed as type constraints, which can be verified by the compiler.
+
+What about the inefficiency? Most of the FP compilers handle recurisions with care and are able to optimize them into efficient code.
+Data structure in FP are inductively defined, and optimization such as shallow clone are used to avoid data structure reconstruction.
+
+In fact many modern FP languagues are quite fast. For example 
+
+```url
+https://benchmarksgame-team.pages.debian.net/benchmarksgame/fastest/ghc-clang.html
+https://thume.ca/2019/04/29/comparing-compilers-in-rust-haskell-c-and-python/
 ```
 
 
@@ -396,7 +434,6 @@ $$
 
 and the evaluation rules
 
-NOTE: explain the deduction rule (AKA the horizontal line.)
 
 $$
 \begin{array}{rc}
@@ -427,6 +464,7 @@ $$
 \end{array}
 $$
 
+In the above we use a horizontal line to seperate complex deduction rules that have some premise. The relations and statement written above the horizontal line are called the premises, and the relation the written below is called the conclusion. The conclusion holds if the premises are valid.
 
 
 
