@@ -1,1 +1,1 @@
-# lecture_notes
+# [course handout](./handout.md)
