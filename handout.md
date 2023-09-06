@@ -19,7 +19,7 @@ By the end of this module, students are able to
 
 ## Measurable Outcomes
 
-1. Develop a parser for an imperative programming language with assignment, if-else and loop (AKA the source language) 1. using Functional Programming
+1. Develop a parser for an imperative programming language with assignment, if-else and loop (AKA the source language) using Functional Programming
 1. Implement a type checker for the source language
 1. Develop a static analyser to eliminate dead codes
 1. Implement the register allocation algorithm in the target code generation module
