@@ -12,6 +12,7 @@ The main resources are lecture slides, tutorial sessions, and online documentati
 
 1. Compilers: Principles, Techniques, and Tools is a computer science textbook by Alfred V. Aho, Monica S. Lam, Ravi Sethi, and Jeffrey D. Ullman
 1. Modern Compiler Implementation in ML by Andrew W. Appel
+1. Types and Programming Languages by Benjamin C. Pierce
 1. Static Program Analysis by Anders Møller and Michael I. Schwartzbach
 
 
@@ -20,10 +21,7 @@ The main resources are lecture slides, tutorial sessions, and online documentati
 
 
 * Kenny Lu (kenny_lu@sutd.edu.sg) 
-Office Hour: Wednesday 3:00-4:30pm (please send email to arrange)
-
-
-## TAs
+  * Office Hour: Wednesday 3:00-4:30pm (please send email to arrange)
 
 
 ## Communication
@@ -66,12 +64,12 @@ TBD
 ## Schedule
 | Week | Session 1 | Session 2 | Session 3 | Assessment |
 |---|---|---|---|---|
-| 1 | Intro | [FP: Expression, Function, Conditional, Recursion](./fp_intro.md) | [Cohort Problem 1](../cohort_probs/fp_intro), [Homework 1](../homework/fp_intro/) | Homework 1 no submission required | 
-| 2 | [FP: List, Pattern Matching](./fp_scala.md) | [FP: Algebraic Data Type](./fp_scala.md) | [Cohort Problem 2](../cohort_probs/fp_scala), [Homework 2](../homework/fp_scala) |  |
-| 3 | [FP: Generics, GADT](./fp_scala_poly.md) | [FP: Type Classes, Functor](./fp_scala_poly.md) | [Cohort Problem 3](../cohort_probs/fp_scala_poly/), [Homework 3](../homework/fp_scala_poly/) | Homework 2 5% |
-| 4 | [FP: Applicative](./fp_applicative_monad.md) | [FP: Monad](./fp_applicative_monad.md) |  [Cohort Problem 4](../cohort_probs/fp_applicative_monad/), Homework 3 (Cont'd) | Homework 3 5% |
-| 5 | [Syntax Analysis: Lexing, Parsing](./syntax_analysis.md) | [Top-down Parsing](./syntax_analysis.md) | [Cohort Problem 5](../cohort_probs/syntax_analysis/), [Homework 4](../homework/fp_syntax_analysis/) |  |
-| 6 | [Bottom-up Parsing](./syntax_analysis.md) | [IR: Pseudo-Assembly](./ir_pseudo_assembly.md) | [Cohort Problem 6](../cohort_probs/syntax_analysis_2_pseudo_ir/), Homework 4 (Cont'd) | Homework 4 5% | 
+| 1 | Intro | [FP: Expression, Function, Conditional, Recursion](./fp_intro.md) | [Cohort Problem 1](https://github.com/50054-2023-fall/cohort_probs/tree/main/fp_intro), [Homework 1](https://github.com/50054-2023-fall/homework/tree/main/fp_intro) | Homework 1 no submission required | 
+| 2 | [FP: List, Pattern Matching](./fp_scala.md) | [FP: Algebraic Data Type](./fp_scala.md) | [Cohort Problem 2](https://github.com/50054-2023-fall/cohort_probs/tree/main/fp_scala), [Homework 2](https://github.com/50054-2023-fall/homework/tree/main/fp_scala) |  |
+| 3 | [FP: Generics, GADT](./fp_scala_poly.md) | [FP: Type Classes, Functor](./fp_scala_poly.md) | [Cohort Problem 3](https://github.com/50054-2023-fall/cohort_probs/tree/main/fp_scala_poly), [Homework 3]() | Homework 2 5% |
+| 4 | [FP: Applicative](./fp_applicative_monad.md) | [FP: Monad](./fp_applicative_monad.md) |  [Cohort Problem 4]https://github.com/50054-2023-fall/cohort_probs/tree/main/fp_applicative_monad), Homework 3 (Cont'd) | Homework 3 5% |
+| 5 | [Syntax Analysis: Lexing, Parsing](./syntax_analysis.md) | [Top-down Parsing](./syntax_analysis.md) | [Cohort Problem 5](https://github.com/50054-2023-fall/cohort_probs/tree/main/syntax_analysis), [Homework 4](https://github.com/50054-2023-fall/homework/tree/main/fp_syntax_analysis) |  |
+| 6 | [Bottom-up Parsing](./syntax_analysis.md) | [IR: Pseudo-Assembly](./ir_pseudo_assembly.md) | [Cohort Problem 6](), Homework 4 (Cont'd) | Homework 4 5% | 
 | 7 |  |  |  | 
 | 8 | **Mid-term**, [Semantic Analysis](./semantic_analysis.md)| [Dynamic Semantics](./dynamic_semantics.md) | Cohort Problem 7 | Mid-term 10%, Project Lab 1 10% |
 | 9 | Static Semantics, Type-checking | Type Inference | Cohort Problem 8, Homework 5 |  |
