@@ -118,7 +118,7 @@ TBD
 | 11 | Lattice, Sign Analysis  | Liveness Analysis | Cohort Problem 10 |  |  | 
 | 12 | Information Flow Analysis | Code Generation | Cohort Problem 11  |  |
 | 13 | Guest Lecture | Memory Management | Revision | Project Lab 3 15% |  |
-| 14 | |  |  |Final Exam 30%|
+| 14 | |  |  |Final Exam (13 Dec Wed 9:00AM-11:00A<>) 30%|
 
 
  
