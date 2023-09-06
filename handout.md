@@ -6,6 +6,47 @@
 
 This course aims to introduce a new programming paradigm to the learners, Functional programming and the suite of advanced language features and design patterns for software design and development. By building on top of these techniques, the course curates the process of designing a modern compiler, through syntax analysis, intermediate presentation construction, semantic analysis and code generation. More specifically the course focuses on the application of program analysis in areas of program optimization and software security analysis. 
 
+
+## Module Learning Outcomes
+
+By the end of this module, students are able to
+1. Implement software solutions using functional programming language and applying design patterns
+1. Define the essential components in a program compilation pipeline
+1. Design a compiler for an imperative programming language
+1. Optimise the generated machine codes by applying program analysis techniques
+1. Detect bugs and security flaws in software by applying program analysis techniques
+
+
+## Measurable Outcomes
+
+1. Develop a parser for an imperative programming language with assignment, if-else and loop (AKA the source language) 1. using Functional Programming
+1. Implement a type checker for the source language
+1. Develop a static analyser to eliminate dead codes
+1. Implement the register allocation algorithm in the target code generation module
+1. Develop a static analyser to identify potential security flaws in the source language
+
+
+## Topics
+1. Functional Programming : Expression, Function, Conditional
+1. Functional Programming : List, Algebraic data type and Pattern Matching
+1. Functional Programming : Type class
+1. Functional Programming : Generic and Functor
+1. Functional Programming : Applicative and Monad
+1. Syntax analysis: Lexing
+1. Syntax analysis: Parsing (LL, LR, SLR)
+1. Syntax analysis: Parser Combinator
+1. Intermediate Representation: Pseudo-Assembly
+1. Intermediate Representation: SSA
+1. Semantic analysis: Dynamic Semantics
+1. Semantic analysis: Type checking
+1. Semantic analysis: Type Inference
+1. Semantic analysis: Sign analysis
+1. Semantic analysis: Liveness analysis 
+1. Code Gen: Instruction selection
+1. Code Gen: Register allocation
+1. Memory Management
+
+
 ## Resource 
 
 The main resources are lecture slides, tutorial sessions, and online documentations. There are no official textbooks. But the following are useful for reference and deeper understanding of some topics.
