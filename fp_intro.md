@@ -324,15 +324,12 @@ $$
 
 $$ 
 \begin{array}{rl}
-\underline{(\lambda x. ((\lambda x. x)\ x))\ (\lambda y.y)}  & 
-\longrightarrow_{\tt(\beta+\alpha)} \\  
-& \because\ \lbrack (\lambda
-y.y)/x \rbrack ((\lambda x. x)\ x) =  \\ 
-& \lbrack (\lambda 
-y.y)/\underline{x} \rbrack (\lambda \underline{x}. x)\ \lbrack (\lambda
-y.y)/x \rbrack x 
-\\ 
-\underline{(\lambda z. z)\ (\lambda y.y)} &
+\underline{(\lambda x. ((\lambda x. x)\ x))}\ (\lambda y.y)  & 
+\longrightarrow_{\tt(\alpha)} \\
+\underline{(\lambda z. [z/x]((\lambda x.x)\ x))}\ (\lambda y.y) & \longrightarrow_{\tt (substitution)} \\   
+\underline{(\lambda z. ((\lambda x. x)\ z))\ (\lambda y.y)}  & 
+\longrightarrow_{\tt(\beta)} \\  
+\underline{(\lambda x. x)\ (\lambda y.y)} &
 \longrightarrow_{\tt (\beta)}  \\ 
 \lambda y.y
 \end{array}
@@ -479,7 +476,7 @@ For instance,
 $$
 \begin{array}{rl}
 (\lambda x.if\ x==0\ then\  0\  else\  10/x)\ 2 & \longrightarrow_{\scriptsize {\tt \beta}} \\ 
-[2/x]if\ x==0\ then\  0\  else\  10/x & \longrightarrow_{\scriptsize {\tt (substitution)}} \\ 
+\lbrack 2/x \rbrack if\ x==0\ then\  0\  else\  10/x & \longrightarrow_{\scriptsize {\tt (substitution)}} \\ 
 if\ 2==0\ then\  0\  else\  10/2 & \longrightarrow_{\scriptsize {\tt (IfI)}} \\
 if\ false\ then\ 0\  else\  10/2 & \longrightarrow_{\scriptsize {\tt (IfF)}} \\ 
 10/2 & \longrightarrow_{\scriptsize {\tt (OpC)}} \\ 
@@ -553,9 +550,9 @@ For instance
 $$
 \begin{array}{rl}
 (\mu f.\lambda x.if\ x==1\ then\ 1\ else\ x*(f\ (x-1)))\ 3 & \longrightarrow_{\scriptsize {\tt(NOR)+(unfold)}} \\
-([(\mu f.\lambda x.if\ x==1\ then\ 1\ else\ x*(f\ (x-1)))/f]\lambda x.if\ x==1\ then\ 1\ else\ x*(f\ (x-1)))\ 3 & \longrightarrow_{\scriptsize {\tt (substitution) + (\alpha)}} \\ 
-(\lambda x.if\ x==1\ then\ 1\ else\ x*((\mu f.\lambda y.if\ y==1\ then\ 1\ else\ f\ (y-1))\ (x-1))))\ 3 & \longrightarrow_{\scriptsize {\tt (\beta)}} \\
-[3/x]if\ x==1\ then\ 1\ else\ x*((\mu f.\lambda y.if\ y==1\ then\ 1\ else\ f\ (y-1))\ (x-1)) & \longrightarrow_{\scriptsize {\tt (substitution)}} \\ 
+(\lbrack (\mu f.\lambda x.if\ x==1\ then\ 1\ else\ x*(f\ (x-1)))/f \rbrack \lambda x.if\ x==1\ then\ 1\ else\ x*(f\ (x-1)))\ 3 & \longrightarrow_{\scriptsize {\tt (substitution) + (\alpha)}} \\ 
+(\lambda x.if\ x==1\ then\ 1\ else\ x*((\mu f.\lambda y.if\ y==1\ then\ 1\ else\ f\ (y-1))\ (x-1)))\ 3 & \longrightarrow_{\scriptsize {\tt (\beta)}} \\
+\lbrack 3/x \rbrack if\ x==1\ then\ 1\ else\ x*((\mu f.\lambda y.if\ y==1\ then\ 1\ else\ f\ (y-1))\ (x-1)) & \longrightarrow_{\scriptsize {\tt (substitution)}} \\ 
 if\ 3==1\ then\ 1\ else\ 3*((\mu f.\lambda y.if\ y==1\ then\ 1\ else\ f\ (y-1))\ (3-1)) & \longrightarrow_{\scriptsize {\tt (ifI)+(OpC)}} \\ 
 if\ false\ then\ 1\ else\ 3*((\mu f.\lambda y.if\ y==1\ then\ 1\ else\ f\ (y-1))\ (3-1)) & \longrightarrow_{\scriptsize {\tt (ifF)}} \\ 
 3*((\mu f.\lambda y.if\ y==1\ then\ 1\ else\ f\ (y-1))\ (3-1)) & \longrightarrow_{\scriptsize {\tt (OpI2)}} \\ 
