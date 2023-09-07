@@ -127,7 +127,7 @@ For example the following are three instances of $t$.
 
 1. $x$
 1. $\lambda x.x$
-1. $(\lambda x.x)\ y$.
+1. $(\lambda x.x)\ y$
 
 
 Note that given a lambda term, there might be multiple ways of parsing (interpreting) it. For instance, 
@@ -240,7 +240,7 @@ $$
 \begin{array}{rl}
 (\lambda x. \lambda y.x\ y)\ ({\tt y}\ w) & \longrightarrow \\ 
 \lbrack({\tt y}\ w)/x\rbrack \lambda y.x\ y & \longrightarrow  \\
-\lambda y. {\tt y}\ w\ y 
+\lambda y. ({\tt y}\ w)\ y 
 \end{array}
 $$
 
@@ -364,7 +364,7 @@ $$
     $$
     
 3. NOR seems computationally more expensive. NOR is more likely to terminate than AOR.  Consider
-    $(\lambda x.\lambda y.x)\ ((\lambda x.x\ x)\ (\lambda x.x\ x))$ terminates in NOR with $x$, but diverges in AOR.
+    $((\lambda x.\lambda y.x)\ x)\  ((\lambda x.x\ x)\ (\lambda x.x\ x))$ terminates in NOR with $x$, but diverges in AOR.
 4. NOR can be used to evaluate terms that deals with infinite data.
 
 
