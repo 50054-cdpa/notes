@@ -6,12 +6,54 @@
 
 This course aims to introduce a new programming paradigm to the learners, Functional programming and the suite of advanced language features and design patterns for software design and development. By building on top of these techniques, the course curates the process of designing a modern compiler, through syntax analysis, intermediate presentation construction, semantic analysis and code generation. More specifically the course focuses on the application of program analysis in areas of program optimization and software security analysis. 
 
+
+## Module Learning Outcomes
+
+By the end of this module, students are able to
+1. Implement software solutions using functional programming language and applying design patterns
+1. Define the essential components in a program compilation pipeline
+1. Design a compiler for an imperative programming language
+1. Optimise the generated machine codes by applying program analysis techniques
+1. Detect bugs and security flaws in software by applying program analysis techniques
+
+
+## Measurable Outcomes
+
+1. Develop a parser for an imperative programming language with assignment, if-else and loop (AKA the source language) using Functional Programming
+1. Implement a type checker for the source language
+1. Develop a static analyser to eliminate dead codes
+1. Implement the register allocation algorithm in the target code generation module
+1. Develop a static analyser to identify potential security flaws in the source language
+
+
+## Topics
+1. Functional Programming : Expression, Function, Conditional
+1. Functional Programming : List, Algebraic data type and Pattern Matching
+1. Functional Programming : Type class
+1. Functional Programming : Generic and Functor
+1. Functional Programming : Applicative and Monad
+1. Syntax analysis: Lexing
+1. Syntax analysis: Parsing (LL, LR, SLR)
+1. Syntax analysis: Parser Combinator
+1. Intermediate Representation: Pseudo-Assembly
+1. Intermediate Representation: SSA
+1. Semantic analysis: Dynamic Semantics
+1. Semantic analysis: Type checking
+1. Semantic analysis: Type Inference
+1. Semantic analysis: Sign analysis
+1. Semantic analysis: Liveness analysis 
+1. Code Gen: Instruction selection
+1. Code Gen: Register allocation
+1. Memory Management
+
+
 ## Resource 
 
 The main resources are lecture slides, tutorial sessions, and online documentations. There are no official textbooks. But the following are useful for reference and deeper understanding of some topics.
 
 1. Compilers: Principles, Techniques, and Tools is a computer science textbook by Alfred V. Aho, Monica S. Lam, Ravi Sethi, and Jeffrey D. Ullman
 1. Modern Compiler Implementation in ML by Andrew W. Appel
+1. Types and Programming Languages by Benjamin C. Pierce
 1. Static Program Analysis by Anders Møller and Michael I. Schwartzbach
 
 
@@ -20,10 +62,7 @@ The main resources are lecture slides, tutorial sessions, and online documentati
 
 
 * Kenny Lu (kenny_lu@sutd.edu.sg) 
-Office Hour: Wednesday 3:00-4:30pm (please send email to arrange)
-
-
-## TAs
+  * Office Hour: Wednesday 3:00-4:30pm (please send email to arrange)
 
 
 ## Communication
@@ -66,12 +105,12 @@ TBD
 ## Schedule
 | Week | Session 1 | Session 2 | Session 3 | Assessment |
 |---|---|---|---|---|
-| 1 | Intro | [FP: Expression, Function, Conditional, Recursion](./fp_intro.md) | [Cohort Problem 1](../cohort_probs/fp_intro), [Homework 1](../homework/fp_intro/) | Homework 1 no submission required | 
-| 2 | [FP: List, Pattern Matching](./fp_scala.md) | [FP: Algebraic Data Type](./fp_scala.md) | [Cohort Problem 2](../cohort_probs/fp_scala), [Homework 2](../homework/fp_scala) |  |
-| 3 | [FP: Generics, GADT](./fp_scala_poly.md) | [FP: Type Classes, Functor](./fp_scala_poly.md) | [Cohort Problem 3](../cohort_probs/fp_scala_poly/), [Homework 3](../homework/fp_scala_poly/) | Homework 2 5% |
-| 4 | [FP: Applicative](./fp_applicative_monad.md) | [FP: Monad](./fp_applicative_monad.md) |  [Cohort Problem 4](../cohort_probs/fp_applicative_monad/), Homework 3 (Cont'd) | Homework 3 5% |
-| 5 | [Syntax Analysis: Lexing, Parsing](./syntax_analysis.md) | [Top-down Parsing](./syntax_analysis.md) | [Cohort Problem 5](../cohort_probs/syntax_analysis/), [Homework 4](../homework/fp_syntax_analysis/) |  |
-| 6 | [Bottom-up Parsing](./syntax_analysis.md) | [IR: Pseudo-Assembly](./ir_pseudo_assembly.md) | [Cohort Problem 6](../cohort_probs/syntax_analysis_2_pseudo_ir/), Homework 4 (Cont'd) | Homework 4 5% | 
+| 1 | Intro | [FP: Expression, Function, Conditional, Recursion](./fp_intro.md) | [Cohort Problem 1](https://github.com/50054-2023-fall/cohort_probs/tree/main/fp_intro), [Homework 1](https://github.com/50054-2023-fall/homework/tree/main/fp_intro) | Homework 1 no submission required | 
+| 2 | [FP: List, Pattern Matching](./fp_scala.md) | [FP: Algebraic Data Type](./fp_scala.md) | [Cohort Problem 2](https://github.com/50054-2023-fall/cohort_probs/tree/main/fp_scala), [Homework 2](https://github.com/50054-2023-fall/homework/tree/main/fp_scala) |  |
+| 3 | [FP: Generics, GADT](./fp_scala_poly.md) | [FP: Type Classes, Functor](./fp_scala_poly.md) | [Cohort Problem 3](https://github.com/50054-2023-fall/cohort_probs/tree/main/fp_scala_poly), Homework 3 | Homework 2 5% |
+| 4 | [FP: Applicative](./fp_applicative_monad.md) | [FP: Monad](./fp_applicative_monad.md) |  [Cohort Problem 4](https://github.com/50054-2023-fall/cohort_probs/tree/main/fp_applicative_monad), Homework 3 (Cont'd) | Homework 3 5% |
+| 5 | [Syntax Analysis: Lexing, Parsing](./syntax_analysis.md) | [Top-down Parsing](./syntax_analysis.md) | [Cohort Problem 5](https://github.com/50054-2023-fall/cohort_probs/tree/main/syntax_analysis), [Homework 4](https://github.com/50054-2023-fall/homework/tree/main/fp_syntax_analysis) |  |
+| 6 | [Bottom-up Parsing](./syntax_analysis.md) | [IR: Pseudo-Assembly](./ir_pseudo_assembly.md) | Cohort Problem 6, Homework 4 (Cont'd) | Homework 4 5% | 
 | 7 |  |  |  | 
 | 8 | **Mid-term**, [Semantic Analysis](./semantic_analysis.md)| [Dynamic Semantics](./dynamic_semantics.md) | Cohort Problem 7 | Mid-term 10%, Project Lab 1 10% |
 | 9 | Static Semantics, Type-checking | Type Inference | Cohort Problem 8, Homework 5 |  |
@@ -79,7 +118,7 @@ TBD
 | 11 | Lattice, Sign Analysis  | Liveness Analysis | Cohort Problem 10 |  |  | 
 | 12 | Information Flow Analysis | Code Generation | Cohort Problem 11  |  |
 | 13 | Guest Lecture | Memory Management | Revision | Project Lab 3 15% |  |
-| 14 | |  |  |Final Exam 30%|
+| 14 | |  |  |Final Exam (13 Dec Wed 9:00AM-11:00A<>) 30%|
 
 
  
