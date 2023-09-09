@@ -567,7 +567,7 @@ Alternatively,
 recursion can be encoded using the fix-pointer combinator (AKA  $Y $-combinator). Let $Y $ be
 
 $$
-\lambda f.(\lambda y. (f\ (y\ y))~(\lambda x.(f\ (x\ x)))
+\lambda f.(\lambda y. (f\ (y\ y))~(\lambda x.(f\ (x\ x))))
 $$
 
 We find that for any function $g$, we have
