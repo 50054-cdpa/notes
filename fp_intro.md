@@ -387,6 +387,21 @@ $$
 \end{array}
 $$
 
+and the substitution rule and the free variable function $fv()$
+
+$$
+\begin{array}{rcl}
+\lbrack t_1 / x \rbrack let\ y = t_2\ in\ t_3 & = & let\ y = \lbrack t_1 / x \rbrack t_2\ in\ \lbrack t_1 / x \rbrack t_3 & {\tt if}\  y\neq x\  {\tt and}\  y \not \in fv(t_1) \\
+\end{array} 
+$$
+
+
+$$
+\begin{array}{rcl}
+fv(let\ x=t_1\ in\ t_2) & = & (fv(t_1) - \{x\}) \cup fv(t_2) \\
+\end{array}
+$$
+
 Note that the alpha renaming should be applied when name clash arises.
 
 
@@ -471,7 +486,23 @@ if the conditional expression is $true $, the entire term is evaluated to the th
 and ${\tt (OpI2)} $ are similar to rule ${\tt (IfI)}$. 
 Rule  ${\tt (OpC)} $ invokes the buildin low level call to apply the binary operation to the two operands  $c_1 $ and  $c_2 $.  
 
-For instance, 
+The substitution rules and free variable function $fv()$ also extended too
+
+$$
+\begin{array}{rcll}
+ \lbrack t_1 / x \rbrack c & = & c \\ 
+  \lbrack t_1 / x \rbrack if\ t_2\ then\ t_3\ else\ t_4 & = & if\ \lbrack t_1 / x \rbrack t_2\ then\ \lbrack t_1 / x \rbrack t_3\ else\ \lbrack t_1 / x \rbrack t_4 \\ 
+\end{array}
+$$
+
+$$
+\begin{array}{rcl}
+fv(if\ t_1\ then\ t_2\ else\ t_3) & = & fv(t_1) \cup fv(t_2) \cup fv(t_3) \\
+fv(c) & = & \{\} \\ 
+\end{array}
+$$
+
+Let's consider an example  
 
 $$
 \begin{array}{rl}
@@ -545,6 +576,23 @@ $$
 $$
 
 Note that we include the  ${\tt (NOR)} $ rule into our evaluation rules to fix the evaluation strategy, otherwise the program does not terminate.
+
+We include the following cases for the free variable function $fv()$ and the substitution
+
+$$
+\begin{array}{rcl}
+fv(\mu f.t) & = & fv(t) - \{f\}
+\end{array}
+$$
+
+and 
+
+$$
+\begin{array}{rcl}
+ \lbrack t_1 / x \rbrack \mu f.t_2 & = & \mu f.\lbrack t_1 / x \rbrack t_2 & {\tt if}\  f\neq x\  {\tt and}\  f \not \in fv(t_1) 
+\end{array}
+$$
+
 For instance
 
 $$
