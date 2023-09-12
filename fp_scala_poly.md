@@ -262,7 +262,7 @@ def toJS[A](vs:List[A]):String = {
 ```
 However a compilation error occurs because the compiler is unable to resolve the `toJS[A](v:A)` used in the `.map()`.
 
-It seems that we need to give some extra information to the compiler so that it it knows that when we use the above generic `toJS` we are referring to either `Person` or `Contact`, or whatever type that has a `toJS` defined.
+It seems that we need to give some extra information to the compiler so that it knows that when we use the above generic `toJS` we are referring to either `Person` or `Contact`, or whatever type that has a `toJS` defined.
 
 One solution to address the two above issues is to use *type class*.
 In Scala 3, a type class is defined by a polymoprhic trait and a set of type class instances. 
