@@ -471,11 +471,13 @@ The substitution rules and free variable function $fv()$ also extended too
 $$
 \begin{array}{rcll}
  \lbrack t_1 / x \rbrack c & = & c \\ 
+   \lbrack t_1 / x \rbrack t_2\ op\ t_3 & = & (\lbrack t_1 / x \rbrack t_2)\ op\ (\lbrack t_1 / x \rbrack t_3) \\ 
   \lbrack t_1 / x \rbrack if\ t_2\ then\ t_3\ else\ t_4 & = & if\ \lbrack t_1 / x \rbrack t_2\ then\ \lbrack t_1 / x \rbrack t_3\ else\ \lbrack t_1 / x \rbrack t_4 \\ 
 \end{array}
 $$
 $$
 \begin{array}{rcl}
+fv(t_1\ op\ t_2) & = & fv(t_1) \cup fv(t_2) \\ 
 fv(if\ t_1\ then\ t_2\ else\ t_3) & = & fv(t_1) \cup fv(t_2) \cup fv(t_3) \\
 fv(c) & = & \{\} \\
 \end{array}
