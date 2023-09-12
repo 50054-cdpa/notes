@@ -499,7 +499,7 @@ Consider the following builtin Scala datatype `Option`
 // no need to run this.
 enum Option[+A] {
     case None
-    case 
+    case Some(v:A)
 }
 
 ```
