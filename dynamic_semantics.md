@@ -203,7 +203,7 @@ return s;
    {(input,1)}, x = 1
    ---> # (sAssign2) 
    {(input, 1), (x,1)}, nop
-
+--->
 {(input,1), (x,1)},
 nop;
 s = 0;
