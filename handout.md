@@ -112,7 +112,7 @@ TBD
 | 5 | [Syntax Analysis: Lexing, Parsing](./syntax_analysis.md) | [Top-down Parsing](./syntax_analysis.md) | [Cohort Problem 5](https://github.com/50054-2023-fall/cohort_probs/tree/main/syntax_analysis), [Homework 4](https://github.com/50054-2023-fall/homework/tree/main/fp_syntax_analysis) |  |
 | 6 | [Bottom-up Parsing](./syntax_analysis.md) | [IR: Pseudo-Assembly](./ir_pseudo_assembly.md) | Cohort Problem 6, Homework 4 (Cont'd) | Homework 4 5% | 
 | 7 |  |  |  | 
-| 8 | **Mid-term**, [Semantic Analysis](./semantic_analysis.md)| [Dynamic Semantics](./dynamic_semantics.md) | Cohort Problem 7 | Mid-term 10%, Project Lab 1 10% |
+| 8 | **Mid-term**, [Semantic Analysis](./semantic_analysis.md)| [Dynamic Semantics](./dynamic_semantics.md) | [Cohort Problem 7](https://github.com/50054-2023-fall/cohort_probs/tree/main/dynamic_semantics) | Mid-term 10%, Project Lab 1 10% |
 | 9 | Static Semantics, Type-checking | Type Inference | Cohort Problem 8, Homework 5 |  |
 | 10 | *Public Holiday. No Class Scheduled* | Name Analysis, SSA |  Cohort Problem 9 | Homework 5 5%, Project Lab 2 10% | 
 | 11 | Lattice, Sign Analysis  | Liveness Analysis | Cohort Problem 10 |  |  | 
