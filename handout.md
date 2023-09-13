@@ -110,7 +110,7 @@ TBD
 | 3 | [FP: Generics, GADT](./fp_scala_poly.md) | [FP: Type Classes, Functor](./fp_scala_poly.md) | [Cohort Problem 3](https://github.com/50054-2023-fall/cohort_probs/tree/main/fp_scala_poly), Homework 3 | Homework 2 5% |
 | 4 | [FP: Applicative](./fp_applicative_monad.md) | [FP: Monad](./fp_applicative_monad.md) |  [Cohort Problem 4](https://github.com/50054-2023-fall/cohort_probs/tree/main/fp_applicative_monad), Homework 3 (Cont'd) | Homework 3 5% |
 | 5 | [Syntax Analysis: Lexing, Parsing](./syntax_analysis.md) | [Top-down Parsing](./syntax_analysis.md) | [Cohort Problem 5](https://github.com/50054-2023-fall/cohort_probs/tree/main/syntax_analysis), [Homework 4](https://github.com/50054-2023-fall/homework/tree/main/fp_syntax_analysis) |  |
-| 6 | [Bottom-up Parsing](./syntax_analysis.md) | [IR: Pseudo-Assembly](./ir_pseudo_assembly.md) | Cohort Problem 6, Homework 4 (Cont'd) | Homework 4 5% | 
+| 6 | [Bottom-up Parsing](./syntax_analysis.md) | [IR: Pseudo-Assembly](./ir_pseudo_assembly.md) | [Cohort Problem 6](https://github.com/50054-2023-fall/cohort_probs/tree/main/syntax_analysis_2_pseudo_ir), Homework 4 (Cont'd) | Homework 4 5% | 
 | 7 |  |  |  | 
 | 8 | **Mid-term**, [Semantic Analysis](./semantic_analysis.md)| [Dynamic Semantics](./dynamic_semantics.md) | [Cohort Problem 7](https://github.com/50054-2023-fall/cohort_probs/tree/main/dynamic_semantics) | Mid-term 10%, Project Lab 1 10% |
 | 9 | Static Semantics, Type-checking | Type Inference | Cohort Problem 8, Homework 5 |  |
@@ -118,7 +118,7 @@ TBD
 | 11 | Lattice, Sign Analysis  | Liveness Analysis | Cohort Problem 10 |  |  | 
 | 12 | Information Flow Analysis | Code Generation | Cohort Problem 11  |  |
 | 13 | Guest Lecture | Memory Management | Revision | Project Lab 3 15% |  |
-| 14 | |  |  |Final Exam (13 Dec Wed 9:00AM-11:00A<>) 30%|
+| 14 | |  |  |Final Exam (13 Dec Wed 9:00AM-11:00AM) 30%|
 
 
  
