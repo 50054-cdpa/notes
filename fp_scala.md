@@ -106,7 +106,7 @@ class BlueJay extends Bird("BlueJay", new FlyBehavior() {
 })
 ```
 
-In Scala, we prefer inline constructor. Trait is the Java's interface equivalence. Similar to Python, methods start with `def`. Method'sreturn type comes after the method name declaration. Type annotations are following their modifying arguments instead of preceeding them. Method bodies are defined after an equality sign. The `return` keyword is optional, the last last expression will be returned as the result. The Java's style of method body definition is also supported, i.e. the `getSpecies()` method can be defined as follow,
+In Scala, we prefer inline constructor. Trait is the Java's interface equivalence. Similar to Python, methods start with `def`. Method's return type comes after the method name declaration. Type annotations are following their modified arguments instead of preceeding them. Method bodies are defined after an equality sign. The `return` keyword is optional, the last expression will be returned as the result. The Java's style of method body definition is also supported, i.e. the `getSpecies()` method can be defined as follow,
 
 ```scala
 def getSpecies():String { return this.species }
@@ -134,6 +134,7 @@ In this module, we focus and utilise mostly the functional programming feature o
 | Function application | $t_1\ t_2$  |  `e1(e2)`  |
 | Conditional          | $if\ t_1\ then\ t_2\ else\ t_3$ | `if (e1) { e2 } else { e3 }` |
 | Let Binding          | $let\ x = t_1\ in\ t_2$ | `val x = e1 ; e2` |
+| Recursion            | $let\ f = (\mu g.\lambda x.g\ x)\ in\ f\ 1$| `def f(x:Int):Int = f(x); f(1);` |
 
 where `T` denotes a type and `:T` denotes a type annotation. `e`, `e1`, `e2` and `e3` denote expressions.
 
