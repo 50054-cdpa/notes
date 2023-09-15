@@ -129,7 +129,7 @@ In this module, we focus and utilise mostly the functional programming feature o
 |   | Lambda Calculus | Scala |
 |---|---|---|
 | Variable | $x$ | `x` |
-| Constant | $c$ | `c` |
+| Constant | $c$ | `1`, `2`, `true`, `false` |
 | Lambda abstraction| $\lambda x.t$  |  `(x:T) => e`  |
 | Function application | $t_1\ t_2$  |  `e1(e2)`  |
 | Conditional          | $if\ t_1\ then\ t_2\ else\ t_3$ | `if (e1) { e2 } else { e3 }` |
@@ -148,6 +148,24 @@ def fac(x:Int):Int = {
 
 val result = fac(10)
 ```
+
+### Scala Strict and Lazy Evaluation
+
+Let `f` be a non-terminating function
+```scala
+def f(x:Int):Int = f(x)
+```
+The following shows that the function application in Scala is using strict evaluation.
+```scala
+def g(x:Int):Int = 1
+g(f(1)) // it does not terminate
+```
+On the other hand, the following code is terminating. 
+```scala
+def h(x: => Int):Int = 1
+h(f(1)) // it terminates!
+```
+The type annotation `: => Int` after `x` states that the argument `x` is passed in by name (lazy evaluation), not by value (strict evaluation).
 
 ### List Data type
 
