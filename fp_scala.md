@@ -408,7 +408,7 @@ def qsort(l:List[Int]):List[Int] = l match {
 }
 ```
 
-which ressembles the math specification
+which resembles the math specification
 
 $$
 \begin{array}{cc}
@@ -472,8 +472,16 @@ def listProd2[A,B](la:List[A], lb:List[B]):List[(A,B)] =
     } yield (a,b)
 ```
 
-Scala compiler desugar `for { x1 <- e1, ..., xn <- en } yield e` into 
-`e1.flatMap( x1 => { .... en.map( xn => e)  })`
+Scala compiler desugars
+
+```scala
+for { x1 <- e1;  x2 <- e2; ...; xn <- en } yield e
+````
+into 
+
+```scala
+e1.flatMap( x1 => e2.flatMap(x2 =>  .... en.map( xn => e) ...))
+```
 
 The above syntactic sugar not only works for list data type but any data type with `flatMap` and `map` defined as we will see in the upcoming lessons. 
 In its general form, we refer it as *for-comprehension*.
