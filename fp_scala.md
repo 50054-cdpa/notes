@@ -137,6 +137,7 @@ In this module, we focus and utilise mostly the functional programming feature o
 | Function application | $t_1\ t_2$  |  `e1(e2)`  |
 | Conditional          | $if\ t_1\ then\ t_2\ else\ t_3$ | `if (e1) { e2 } else { e3 }` |
 | Let Binding          | $let\ x = t_1\ in\ t_2$ | `val x = e1 ; e2` |
+| Recursion            | $let\ f = (\mu g.\lambda x.g\ x)\ in\ f\ 1$| `def f(x:Int):Int = f(x); f(1);` |
 
 where `T` denotes a type and `:T` denotes a type annotation. `e`, `e1`, `e2` and `e3` denote expressions.
 
