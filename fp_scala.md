@@ -132,7 +132,7 @@ In this module, we focus and utilise mostly the functional programming feature o
 |   | Lambda Calculus | Scala |
 |---|---|---|
 | Variable | $x$ | `x` |
-| Constant | $c$ | `c` |
+| Constant | $c$ | `1`, `2`, `true`, `false` |
 | Lambda abstraction| $\lambda x.t$  |  `(x:T) => e`  |
 | Function application | $t_1\ t_2$  |  `e1(e2)`  |
 | Conditional          | $if\ t_1\ then\ t_2\ else\ t_3$ | `if (e1) { e2 } else { e3 }` |
@@ -150,6 +150,24 @@ def fac(x:Int):Int = {
 
 val result = fac(10)
 ```
+
+### Scala Strict and Lazy Evaluation
+
+Let `f` be a non-terminating function
+```scala
+def f(x:Int):Int = f(x)
+```
+The following shows that the function application in Scala is using strict evaluation.
+```scala
+def g(x:Int):Int = 1
+g(f(1)) // it does not terminate
+```
+On the other hand, the following code is terminating. 
+```scala
+def h(x: => Int):Int = 1
+h(f(1)) // it terminates!
+```
+The type annotation `: => Int` after `x` states that the argument `x` is passed in by name (lazy evaluation), not by value (strict evaluation).
 
 ### List Data type
 
@@ -247,7 +265,7 @@ A call stack frame has to created to "save" the state of function execution such
 
 While simple recursions that make a few tens of or hundreds of nested calls won't harm a lot, we need to rethink when we note that a recursion is going to be executed for a large number of iterations. One way to address this issue is to rewrite non-tail recursion into tail-recursion.
 
-A tail-recursion is a a recursive function in which the recursive call occurs at the last instruction.
+A tail-recursion is a recursive function in which the recursive call occurs at the last instruction. 
 
 For instance, the `reverse()` function presented earlier is not. The following variant is a tail recursion
 
@@ -264,9 +282,45 @@ def reverse[A](l:List[A]):List[A] = {
 In the above definition, we rely on a inner function `go` which is a recursive function. In `go`, the recursion take places at the last instruction in the `(x::xs)` case. The trick is to
 pass around an accumulated output `o` in each recursive call.
 
-When Scala compiler detects a tail recursive function, it will rewrite it into a form which no stack is required.
+Some compilers such as GHC can detect a tail recursive function, but it will not rewrite into a form which no stack is required. 
 
-As compiler technology evolves, many modern FP language compilers are able to detect a subset of non-tail recursions and automatically transform them into the tail recursive version.
+As compiler technology evolves, many modern FP language compilers are able to detect a subset of non-tail recursions and automatically transform them into the tail recursive version. 
+
+However Scala does not automatically re-write a non-tail recursion into a tail recursion. Instead it offers a check:
+
+```scala
+import scala.annotation.tailrec
+
+def reverse[A](l:List[A]):List[A] = {
+    @tailrec
+    def go(i:List[A], o:List[A]) : List[A] = i match {
+        case Nil => o
+        case (x::xs) => go(xs, x::o)
+    }
+    go(l,Nil)
+}
+```
+
+The annotation `tailrec` is to hint to the Scala compiler that `go` should be compiled in a way that no stack frame should be created. If the compiler fails to do that, it will complain. In the absence of the `tailrec` annotation, the compiler will still try to optimize the tail recursion. 
+
+If we apply the `tailrec` annotation to a non-tail recursive function, Scala will complain.
+
+```scala
+@tailrec
+def reverse[A](l:List[A]):List[A] = l match {
+    case Nil => Nil
+    case (hd::tl) => reverse(tl) ++ List(hd)
+}
+```
+
+The following error is reported:
+```scala
+-- Error: ----------------------------------------------------------------------
+4 |    case (hd::tl) => reverse(tl) ++ List(hd)
+  |                     ^^^^^^^^^^^
+  |                 Cannot rewrite recursive call: it is not in tail position
+1 error found
+```
 
 ### Map, Fold and Filter
 
@@ -308,7 +362,7 @@ We can observe that the input list and the output list of the `map` method must 
 Recall in the `sum` function introduced in the earlier section. It takes a list of integers and "collapses" them into one number by summation. We can rewrite it using a fold function.
 
 ```scala
-def sum(l:List[Int]):Int = l.foldLeft(0)((acc,x)=> x+acc)
+def sum(l:List[Int]):Int = l.foldLeft(0)((acc,x)=> acc+x)
 ```
 
 The `foldLeft` method takes a base accumulator, and a binary function as inputs, and aggregates the elements from the list using the binary function.  In particular, the binary aggreation function assumes the first argument is the accumulator.
@@ -335,7 +389,7 @@ Intuitively, `l.foldLeft("")((acc,x) => (acc+" "+x))` aggregates the list of wor
 ((((""+" "+"a")+" "+"better")+" "+"world")+" "+"by")+" "+"design"
 ```
 
-where `l.foldLeft("")((acc,x) => (acc+" "+x))` aggregates the list of words by nesting the recursive calls to the right.
+where `l.foldRight("")((x,acc) => (x+" "+acc))` aggregates the list of words by nesting the recursive calls to the right.
 
 ```scala
 "a"+" "+("better"+" "+("world"+" "+("by"+" "+("design"+" "+""))))
@@ -372,7 +426,7 @@ def qsort(l:List[Int]):List[Int] = l match {
 }
 ```
 
-which ressembles the math specification
+which resembles the math specification
 
 $$
 \begin{array}{cc}
@@ -438,8 +492,16 @@ def listProd2[A,B](la:List[A], lb:List[B]):List[(A,B)] =
     } yield (a,b)
 ```
 
-The Scala compiler desugars `for { x1 <- e1, ..., xn <- en } yield e` into
-`e1.flatMap( x1 => { .... en.map( xn => e)  })`
+The Scala compiler desugars:
+
+```scala
+for { x1 <- e1;  x2 <- e2; ...; xn <- en } yield e
+````
+into:
+
+```scala
+e1.flatMap( x1 => e2.flatMap(x2 =>  .... en.map( xn => e) ...))
+```
 
 The above syntactic sugar not only works for the list data type but any data type with `flatMap` and `map` defined (as we will see in the upcoming lessons).
 
@@ -448,8 +510,8 @@ One extra note to take is that the for-comprehension should not be confused with
 
 ```scala
 var sum = 0
-for { i <- 1 to 10}
-do {sum = sum + i}
+for (i <- 1 to 10)
+{sum = sum + i}
 println(sum)
 ```
 
