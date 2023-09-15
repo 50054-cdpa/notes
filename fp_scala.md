@@ -343,7 +343,7 @@ We can observe that the input list and the output list of the `map` method must 
 Recall in the `sum` function introduced in the earlier section. It takes a list of integers and "collapses" them into one number by summation. We can rewrite it using a fold function.
 
 ```scala
-def sum(l:List[Int]):Int = l.foldLeft(0)((acc,x)=> x+acc)
+def sum(l:List[Int]):Int = l.foldLeft(0)((acc,x)=> acc+x)
 ```
 
 The `foldLeft` method takes a base accumulator, and a binary function as inputs, and aggregates the elements from the list using the binary function.  In particular, the binary aggreation function assumes the first argument is the accumulator.
@@ -370,7 +370,7 @@ Intuitively, `l.foldLeft("")((acc,x) => (acc+" "+x))` aggregates the list of wor
 ((((""+" "+"a")+" "+"better")+" "+"world")+" "+"by")+" "+"design"
 ```
 
-where `l.foldLeft("")((acc,x) => (acc+" "+x))` aggregates the list of words by nesting the recursive calls to the right.
+where `l.foldRight("")((x,acc) => (x+" "+acc))` aggregates the list of words by nesting the recursive calls to the right.
 
 ```scala
 "a"+" "+("better"+" "+("world"+" "+("by"+" "+("design"+" "+""))))
