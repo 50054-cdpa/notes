@@ -489,8 +489,8 @@ One extra note to take is that the for-comprehension should not be confused with
 
 ```scala
 var sum = 0
-for { i <- 1 to 10}
-do {sum = sum + i}
+for (i <- 1 to 10)
+{sum = sum + i}
 println(sum)
 ```
 
