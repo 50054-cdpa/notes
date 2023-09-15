@@ -106,7 +106,7 @@ class BlueJay extends Bird("BlueJay", new FlyBehavior() {
 })
 ```
 
-In Scala, we prefer inline constructor. Trait is the Java's interface equivalence. Similar to Python, methods start with `def`. Method's return type comes after the method name declaration. Type annotations are following their modified arguments instead of preceeding them. Method bodies are defined after an equality sign. The `return` keyword is optional, the last expression will be returned as the result. The Java's style of method body definition is also supported, i.e. the `getSpecies()` method can be defined as follow,
+In Scala, we prefer inline constructor. Trait is the Java's interface equivalence. Similar to Python, methods start with `def`. Method'sreturn type comes after the method name declaration. Type annotations are following their modifying arguments instead of preceeding them. Method bodies are defined after an equality sign. The `return` keyword is optional, the last last expression will be returned as the result. The Java's style of method body definition is also supported, i.e. the `getSpecies()` method can be defined as follow,
 
 ```scala
 def getSpecies():String { return this.species }
@@ -134,7 +134,6 @@ In this module, we focus and utilise mostly the functional programming feature o
 | Function application | $t_1\ t_2$  |  `e1(e2)`  |
 | Conditional          | $if\ t_1\ then\ t_2\ else\ t_3$ | `if (e1) { e2 } else { e3 }` |
 | Let Binding          | $let\ x = t_1\ in\ t_2$ | `val x = e1 ; e2` |
-| Recursion            | $let\ f = (\mu g.\lambda x.g\ x)\ in\ f\ 1$| `def f(x:Int):Int = f(x); f(1);` |
 
 where `T` denotes a type and `:T` denotes a type annotation. `e`, `e1`, `e2` and `e3` denote expressions.
 
@@ -246,7 +245,7 @@ Note that recursive calls to `reverse` will incur additional memory space in the
 
 While simple recursions that make a few tens of or hundreds of nested calls won't harm a lot, we need to rethink when we note that a recursion is going to be executed for huge amount iteration. One way to address this issue is to rewrite non-tail recursion into tail-recursion. 
 
-A tail-recursion is a a recursive function in which the recursive call occurs at the last instruction. 
+A tail-recursion is a recursive function in which the recursive call occurs at the last instruction. 
 
 For instance, the `reverse()` function presented earlier is not. The following variant is a tail recursion
 
@@ -263,9 +262,25 @@ def reverse[A](l:List[A]):List[A] = {
 In the above definition, we rely on a inner function `go` which is a recursive function. In `go` the recursion take places at the last instruction in the `(x::xs)` case. The trick is to 
 pass around an accumulated output `o` in each recursive call.
 
-When Scala compiler detects a tail recursive function, it will rewrite into a form which no stack is required. 
+Some compilers such as GHC can detects a tail recursive function, it will not rewrite into a form which no stack is required. 
 
-As compiler technology evolves, many modern FP language compilers are able to detect a subset of non-tail recursion and automatically transforms them into the tail recursive version.
+As compiler technology evolves, many modern FP language compilers are able to detect a subset of non-tail recursion and automatically transforms them into the tail recursive version. 
+
+However Scala does not automatically re-write a non-tail recursion into a tail recursion. Instead it offers a check.
+
+```scala
+def reverse[A](l:List[A]):List[A] = {
+    @tailrec
+    def go(i:List[A], o:List[A]) : List[A] = i match {
+        case Nil => o
+        case (x::xs) => go(xs, x::o)
+    }
+    go(l,Nil)
+}
+```
+
+The annotation `tailrec` is to hint the Scala compiler that `go` should be compiled in a way that no stack frame should be created. If the compiler fails to do that, it will complain.
+
 
 ### Map, Fold and Filter
 
@@ -446,7 +461,8 @@ One extra note to take is that the for-comprehension should not be confused with
 
 ```scala
 var sum = 0
-for (i <- 1 to 10) {sum = sum + i}
+for { i <- 1 to 10}
+do {sum = sum + i}
 println(sum)
 ```
 
