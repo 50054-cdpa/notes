@@ -269,6 +269,8 @@ As compiler technology evolves, many modern FP language compilers are able to de
 However Scala does not automatically re-write a non-tail recursion into a tail recursion. Instead it offers a check.
 
 ```scala
+import scala.annotation.tailrec
+
 def reverse[A](l:List[A]):List[A] = {
     @tailrec
     def go(i:List[A], o:List[A]) : List[A] = i match {
@@ -279,8 +281,26 @@ def reverse[A](l:List[A]):List[A] = {
 }
 ```
 
-The annotation `tailrec` is to hint the Scala compiler that `go` should be compiled in a way that no stack frame should be created. If the compiler fails to do that, it will complain.
+The annotation `tailrec` is to hint the Scala compiler that `go` should be compiled in a way that no stack frame should be created. If the compiler fails to do that, it will complain. In the absence of the `tailrec` annotation, the compiler will still try to optimize the tail recursion. 
 
+If we apply the `tailrec` annotation to a non-tail recursive function, Scala will complain.
+
+```scala
+@tailrec
+def reverse[A](l:List[A]):List[A] = l match {
+    case Nil => Nil
+    case (hd::tl) => reverse(tl) ++ List(hd)
+}
+```
+
+The following error is reported.
+```scala
+-- Error: ----------------------------------------------------------------------
+4 |    case (hd::tl) => reverse(tl) ++ List(hd)
+  |                     ^^^^^^^^^^^
+  |                 Cannot rewrite recursive call: it is not in tail position
+1 error found
+```
 
 ### Map, Fold and Filter
 
