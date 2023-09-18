@@ -552,7 +552,7 @@ $$
 \end{array}
 $$
 
-Note that we include the  ${\tt (NOR)} $ rule into our evaluation rules to fix the evaluation strategy, otherwise the program does not terminate.
+Note that we include the  ${\tt (NOR)} $ rule into our evaluation rules to fix the evaluation strategy, and we only reduce the redexes that are *not* inside a lambda abstraction, otherwise the program does not terminate.
 
 We include the following cases for the free variable function $fv()$ and the substitution
 $$
@@ -582,6 +582,8 @@ if\ false\ then\ 1\ else\ 3*((\mu f.\lambda y.if\ y==1\ then\ 1\ else\ f\ (y-1))
 3*(2*1)
 \end{array}
 $$
+
+Another important point to note is that the set of rewriting rules we have gathered so far ${\tt (\beta-reduction)}$, ${\tt (NOR)}$, ${\tt (unfold)}$, ${\tt (IfT)}$, ${\tt (IfF)}$, ${\tt (IfI)}$, ${\tt (OpC)}$, ${\tt (OpI2)}$ and ${\tt (OpI1)}$ are syntax-directed, i.e. the LHS of the $\longrightarrow$ in the conclusion, which is AKA the head of the rule is unique if we try to rules in this specific order. A clear advantage of this is that we can view this deduction rule system as an algorithm, i.e. an implementation that resembles this specification exists. We will see this in the later part of this course. 
 
 #### Approach 2 - Church Encoding
 
