@@ -81,11 +81,12 @@ For each grammar, we expect the LHS of the first production rule is the starting
 ## Lexing
 
 **Input:** Source file in string
+
 **Output:** A sequence of valid tokens according to the language specification (grammar)
 
-The purpose of a lexer is to scan through the input source file to ensure the text are constructed in a sequence of valid tokens specified by the syntax rule of the source langugage. The focus is on token-level. The inter-token constraint validation is performed in the next step, *Parsing*.
+The purpose of a lexer is to scan through the input source file to ensure the text is constructed as a sequence of valid tokens specified by the syntax rules of the source langugage. The focus is on token-level. The inter-token constraint validation is performed in the next step, *Parsing*.
 
-Sometimes, a lexer is omitted, the token validation task can be handled in the parser.
+Sometimes, a lexer is omitted, as the token validation task can be handled in the parser.
 
 ### Lexical Tokens
 
@@ -97,7 +98,7 @@ The set of tokens of a grammar is basically all the terminals. In this JSON gram
 
 and white spaces are the Lexical Tokens of the language.
 
-If we are to represent it using Scala data type, we could use the following algebraic data type
+If we are to represent it using Scala data types, we could use the following algebraic data type:
 
 ```scala
 enum LToken { // lexical Tokens
@@ -128,7 +129,7 @@ the  lexer function `lex(s:String):List[LToken]` should return
 List(LBRace,SQuote,StrTok("k1"),SQuote,Colon,IntTok(1),Comma,SQuote, StrTok("k2"), Colon,LBracket, RBracket, RBrace)
 ```
 
-One could argue that we cheat by assuming integer and string are available as builtin terminals. In case we don't have integer and string as bultin termainls, we could expand the grammar as follows
+One could argue that we cheat by assuming the integer and string data types are available as builtin terminals. In case we don't have integer and string as bultin terminals, we could expand the grammar as follows:
 
 ```
 <<Grammar 2>>
@@ -142,7 +143,7 @@ One could argue that we cheat by assuming integer and string are available as bu
 
 where `d` denotes a single digit and `a` denotes a single ascii character.
 
-For the rest of this lesson, we will stick with the first formulation in which we have integer and string terminals builtin, which is common for mordern languages.
+For the rest of this lesson, we will stick with the first formulation in which we have integer and string terminals builtin, which is common for modern languages.
 
 ### Implementing a Lexer using Regular Expression
 

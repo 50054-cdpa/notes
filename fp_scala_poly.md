@@ -136,7 +136,7 @@ The caveat here is that the Scala compiler would complain about the `Nil` case a
 1 error found
 ```
 
-To understand that error, we need to understand how Scala desugar the enum datatype.  The above `MyList` datatype is desugared as
+To understand that error, we need to understand how Scala desugars the enum datatype.  The above `MyList` datatype is desugared as
 
 ```scala
 enum MyList[A] {
@@ -145,20 +145,20 @@ enum MyList[A] {
 }
 ```
 
-In which all sub cases within the enum type must be sub-class of the enum type.
+In which all sub-cases within the enum type must be sub-classes of the enum type.
 However it is not trivial for `Nil`. It can't be declared as a subtype of `MyList[A]` since type variable `A` is not mentioned in its definition, unlike `Cons(x:A, xs:MyList[A])`. The best we can get is `MyList[Nothing]` where `Nothing` is the subtype of all other types in Scala. (As the dual, `Any` is the supertype of all other types in Scala). We are getting very close. Now we know that `Nil extends MyList[Nothing]`. If we can argue that `MyList[Nothing] extends MyList[A]` then we are all good. For `MyList[Nothing] extends MyList[A]` to hold,
-`A` must be covariant type parameter.
+`A` must be a covariant type parameter.
 
-In type system with subtyping,
+In a type system with subtyping,
 
-* a type is *covariant* if it preserves the subtyping order when it is applied a type constructor. In the above situation, `MyList[_]` is a type constructor. The type parameter `A` is covarient because we note `Nothing <: A` for all `A`, thus `MyList[Nothing] <: MyList[A]`.
+* a type is *covariant* if it preserves the subtyping order when it is applied a type constructor. In the above situation, `MyList[_]` is a type constructor. The type parameter `A` is covariant because we note `Nothing <: A` for all `A`, thus `MyList[Nothing] <: MyList[A]`.
 
 * a type is *contravariant* if it reverses the subtyping order when it is applied to a type constructor. For instance, given function type `A => Boolean`, the type parameter `A` is contravariant, because for `A <: B`, we have `B => Boolean <: A => Boolean`. (We can use functions of type
 `B => Boolean` in the context where a function `A => Boolean` is expected, but not the other way round.)
 
 * a type is *invariant* if it does not preserve nor reverse the subtyping order when it is applied to a type constructor.
 
-Hence to fix the above type error with the `MyList[A]` datatype, we declared that `A` is covariant, `+A`.
+Hence to fix the above type error with the `MyList[A]` datatype, we declare that `A` is covariant, `+A`.
 
 ```scala
 enum MyList[+A] {
@@ -172,7 +172,7 @@ def mapML[A,B](l:MyList[A])(f:A => B):MyList[B] = l match {
 }
 ```
 
-For easy of reasoning, we also rewrite `mapML` into currying style.
+For ease of reasoning, we also rewrite `mapML` into currying style.
 
 Recall that we could make `mapML` function as a method of `MyList`
 
@@ -191,7 +191,7 @@ enum MyList[+A] {
 
 ## Type class
 
-Suppose we would like to convert some of the Scala value to JSON string.
+Suppose we would like to convert some of the Scala values into a JSON string.
 
 We could rely on overloading.
 
@@ -204,7 +204,7 @@ def toJS(v:Boolean):String = v.toString
 Given `v` is a Scala string value, `s"some_prefix ${v} some_suffix"` denotes a Scala string interpolation, which inserts `v`'s content into the "place holder" in the string `"some_prefix ${v} some_suffix"` where the
 `${v}` is the place holder.
 
-However this becomes hard to manage as we consider complex datatype.
+However this becomes hard to manage once we start to consider more complex datatype.
 
 ```scala
 enum Contact {
@@ -214,16 +214,16 @@ enum Contact {
 
 import Contact.*
 def toJS(c:Contact):String = c match {
-    case Email(e) => s"'email': ${toJS(e)}" // copmilation error
-    case Phone(ph) => s"'phone': ${toJS(ph)}" // compilation erro
+    case Email(e) => s"'email': ${toJS(e)}" // compilation error
+    case Phone(ph) => s"'phone': ${toJS(ph)}" // compilation error
 }
 ```
 
-When we try to define the `toJS` function for `Contact` datatype, we can't make use of the `toJS` function for string value because the compiler is confused that we are trying to make recursive calls. This is the first issue we faced.
+When we try to define the `toJS` function for the `Contact` datatype, we can't make use of the `toJS` function for string values because the compiler is confused by attempting to make recursive calls. This is the first issue we face.
 
 Let's pretend that the first issue has been addressed. There's still another issue.
 
-Consider
+Consider:
 
 ```scala
 case class Person(name:String, contacts:List[Contact])
@@ -252,7 +252,7 @@ def toJS(ps:List[Person]):String = {
 }
 ```
 
-The second issue is that the `toJS(cs:List[Contact])` and `toJS(ps:List[Person])` are the identical modulo the variable names. Can we combine two into one?
+The second issue is that the `toJS(cs:List[Contact])` and `toJS(ps:List[Person])` functions are identical, barring the variable names. Can we combine the two into one?
 
 ```scala
 def toJS[A](vs:List[A]):String = {
@@ -263,10 +263,10 @@ def toJS[A](vs:List[A]):String = {
 
 However a compilation error occurs because the compiler is unable to resolve the `toJS[A](v:A)` used in the `.map()`.
 
-It seems that we need to give some extra information to the compiler so that it knows that when we use the above generic `toJS` we are referring to either `Person` or `Contact`, or whatever type that has a `toJS` defined.
+It seems that we need to give some extra information to the compiler so that it it knows that when we use the above generic `toJS`, we are referring to either `Person` or `Contact`, or whatever type that has a `toJS` defined.
 
-One solution to address the two above issues is to use *type class*.
-In Scala 3, a type class is defined by a polymoprhic trait and a set of type class instances.
+One solution to address the two above issues is to use a *type class*.
+In Scala 3, a type class is defined by a polymorphic trait and a set of type class instances.
 
 ```scala
 trait JS[A] {
@@ -288,8 +288,8 @@ given toJSBoolean:JS[Boolean] = new JS[Boolean] {
 given toJSContact(using jsstr:JS[String]):JS[Contact] = new JS[Contact] {
     import Contact.*
     def toJS(c:Contact):String = c match {
-        case Email(e) => s"'email': ${jsstr.toJS(e)}" // copmilation error is fixed
-        case Phone(ph) => s"'phone': ${jsstr.toJS(ph)}" // compilation erro is fixed
+        case Email(e) => s"'email': ${jsstr.toJS(e)}" // compilation error is fixed
+        case Phone(ph) => s"'phone': ${jsstr.toJS(ph)}" // compilation error is fixed
     }
 }
 
@@ -313,7 +313,7 @@ given toJSList[A](using jsa:JS[A]):JS[List[A]] = new JS[List[A]] {
 }
 ```
 
-`given` defines a type class instance. An instance consists of a name and the context parameters (those with `using`) and instance type. In the body of the type class instance, we instantiate an anonymous object that extends type class with the specific type and provide the defintion. We can refer to the particular type class instance by the instance's name. For instance
+`given` defines a type class instance. An instance consists of a name and the context parameters (those with `using`) and instance type. In the body of the type class instance, we instantiate an anonymous object that extends type class with the specific type and provide the defintion. We can refer to the particular type class instance by the instance's name. For instance:
 
 ```scala
 import Contact.*
@@ -329,7 +329,7 @@ val myTeam = Team( List(
 'team':{ 'members':['person':{ 'name':'kenny',  'contacts':['email': 'kenny_lu@sutd.edu.sg'] },'person':{ 'name':'simon',  'contacts':['email': 'simon_perrault@sutd.edu.sg'] }] }
 ```
 
-We can also refer to the type class instance by the instace's type. For example, recall the last two instances. In the context of the `toJSTeam`, we refer to another instance of type `JS[List[Person]]`. Note that none of the defined instances has the required type. Scala is smart enought to synthesize it from the instances of `toJSList` and `toJSPerson`.  Given the required type class instance is `JS[List[Person]]`, the type class resolver finds the instance `toJSList` having type `JS[List[A]]`, and it unifies both and find that `A=Person`. In the context of the instance `toJSList`, `JS[A]` is demanded. We can refine the required instance's type as `JS[Person]`, which is `toJSPerson`.
+We can also refer to the type class instance by the instance's type. For example, recall the last two instances. In the context of `toJSTeam`, we refer to another instance of type `JS[List[Person]]`. Note that none of the defined instances have the required type. Scala is smart enought to synthesize it from the instances of `toJSList` and `toJSPerson`.  Given the required type class instance is `JS[List[Person]]`, the type class resolver finds the instance `toJSList` having type `JS[List[A]]`, and it unifies both and finds that `A==Person`. In the context of the instance `toJSList`, `JS[A]` is demanded. We can refine the required instance's type as `JS[Person]`, which is `toJSPerson`.
 
 Note that when we call a function that requires a type class context, we do not need to provide the argument for the type class instance.
 
@@ -341,9 +341,9 @@ def printAsJSON[A](v:A)(using jsa:JS[A]):Unit = {
 printAsJSON(myTeam)
 ```
 
-Type class enables us to develop modular and resusable codes. It is related to a topic of *Generic Programming*. In computer programming, generic programming refers to the coding approach which an instance of code is written once and used for many different types/instances of values/objects.
+Type classes enable us to develop modular and resusable code. It is related to a topic of *Generic Programming*. In computer programming, generic programming refers to the coding approach which an instance of code is written once and used for many different types/instances of values/objects.
 
-In the next few section, we consider some common patterns in FP that are promoting generic programming.
+In the next few section, we consider some common patterns in FP that promote generic programming.
 
 ## Functor
 
@@ -354,7 +354,7 @@ val l = List(1,2,3)
 l.map(x => x + 1)
 ```
 
-Can we make `map` to work for other data type? For example
+Can we modify `map` to work with other data types? For example
 
 ```scala
 enum BTree[+A] {
@@ -371,7 +371,7 @@ trait Functor[T[_]] {
 }
 ```
 
-In the above type class definition, `T[_]` denotes a polymorphic type that of kind `* => *`. A *kind* is a type of types. In the above, it means `Functor` takes any type constructors `T`. When `T` is instantiated, it could be `List[_]` or `BTree[_]` and etc. (C.f. In the type class `JS[A]`, the type argument has kind `*`.)
+In the above type class definition, `T[_]` denotes a polymorphic type of kind `* => *`. A *kind* is a type of types. In the above, it means `Functor` takes any type constructors `T`. When `T` is instantiated, it could be `List[_]` or `BTree[_]` and etc. (C.f. In the type class `JS[A]`, the type argument has kind `*`.)
 
 ```scala
 given listFunctor:Functor[List] = new Functor[List] {
@@ -495,7 +495,7 @@ Consider the following builtin Scala datatype `Option`
 // no need to run this.
 enum Option[+A] {
     case None
-    case Some(v:A)
+    case 
 }
 
 ```
