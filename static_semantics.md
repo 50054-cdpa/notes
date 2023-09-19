@@ -1,11 +1,12 @@
-# 50.054 Static Semantics
+# 50.054 Static Semantics For SIMP
 
 
 ## Learning Outcomes
 
 1. Explain what static semantics is.
-1. Apply type checking rules to verify the type correctness property of a program.
+1. Apply type checking rules to verify the type correctness property of a SIMP program.
 1. Explain the relation between type system and operational semantics.
+1. Apply type inference algorithm to generate a type environment given a SIMP program.
 
 
 ## What is static semantics?
@@ -45,229 +46,7 @@ return x;
 
 Static checking is to rule out the statically incorrect programs.
 
-## Type Checking for Lambda Calculus
 
-To illustrate the proocess of type checking, we consider adding types to the lambda calculus language. 
-
-Recall the lambda calculus syntax, with the following adaptation
-$$
-\begin{array}{rccl}
- {\tt (Lambda\ Terms)} & t & ::= & x \mid \lambda x:T.t \mid t\ t \mid let\ x:T =\ t\ in\ t \mid  if\ t\ then\ t\ else\ t \mid t\ op\ t \mid c \mid fix\ t \\
- {\tt (Builtin\ Operators)} & op & ::= & + \mid - \mid * \mid / \mid\ == \\
- {\tt (Builtin\ Constants)} & c & ::= & 0 \mid 1 \mid ... \mid true \mid false \\
- {\tt (Types)} & T & ::= & int \mid bool \mid T \rightarrow T \\ 
- {\tt (Type\ Environments)} & \Gamma & \subseteq & (x \times T)
-\end{array}
-$$
-
-The difference is that the lambda abstraction $\lambda x:T.t$ now carries a *type annotation* of the lambda-bound variable. (Similar observation applies to let-binding) $T$ is a type symbol which can be $int$ or $bool$ or a function type $T \rightarrow T$. The $\rightarrow$ type operator is right associative, i.e. $T_1 \rightarrow T_2 \rightarrow T_3$ is parsed as $T_1 \rightarrow (T_2 \rightarrow T_3)$. Let's call this extended version of lambda calculus as *Simply Typed Lambda Calculus*.
-
-Note that all the existing definitions for dynamic semantics of lambda calculus can be brought-forward (and extended) to support Simply Typed Lambda Calculus. We omit the details.
-
-We formalize the type-checking process in a **relation** $\Gamma \vdash t : T$, where $\Gamma$ is a mapping from variables to types.
-We write $dom(\Gamma)$ to denote the domain of $\Gamma$, i.e. $\{ X \mid (x,T) \in \Gamma \}$. We assume for all $x \in dom(\Gamma)$, there exists only one entry of $(x,T) \in \Gamma$.
-
-Since $\Gamma \vdash t : T$ is relation, what type-checking attempts to verify is the following. *Given a type environment $\Gamma$ and lambda term $t$ and a type $T$, $t$ can be given a type $T$ under $\Gamma$*.
-
-$$
-\begin{array}{cc}
-{\tt (lctInt)} & \begin{array}{c} \\
-                      c\ {\tt is\ an\ integer}
-                      \\ \hline
-                      \Gamma \vdash c : int
-                      \end{array} \\ 
-{\tt (lctBool)} & \begin{array}{c} \\
-                      c\in \{ true, false\}
-                      \\ \hline
-                      \Gamma \vdash c : bool
-                      \end{array}
-\end{array}
-$$
-The rule ${\tt (lctInt)}$ checks whether the given constant value is an integer.
-The rule ${\tt (lctBool)}$ checks whether the given constant value is a boolean.
-
-$$
-\begin{array}{cc}
-{\tt (lctVar)} & \begin{array}{c} 
-               (x, T) \in \Gamma  \\
-               \hline
-               \Gamma \vdash x : T 
-               \end{array} 
-\end{array}
-$$
-In rule ${\tt (lctVar)}$, we type check a variable $x$ against a type $T$, which is only valid where $(x,T)$ can be found in the type environment $\Gamma$.
-
-$$
-\begin{array}{cc}
-{\tt (lctLam)} & \begin{array}{c}
-               \Gamma \oplus (x, T) \vdash t : T'  \\
-               \hline
-               \Gamma \vdash \lambda x : T.t :T' 
-               \end{array} 
-\end{array}
-$$
-In rule ${\tt (lctLam)}$, we type check a lambda abstraction against a type $T'$. This is only valid if the body of the lambda expression $t$ has type $T'$ under the extended type environment $\Gamma \oplus (x, T)$.
-$$
-\begin{array}{cc}
-{\tt (lctApp)} & \begin{array}{c}
-               \Gamma \vdash t_1 : T_1 \rightarrow T_2 \ \ \ \
-               \Gamma \vdash t_2 : T_1 \\
-               \hline
-               \Gamma \vdash  t_1\ t_2 :T_2 
-               \end{array} 
-\end{array}
-$$
-In rule ${\tt (lctApp)}$, we type check a function application, applying $t_1$ to $t_2$, against a type $T_2$. This is only valid if $t_1$ is having type $T_1 \rightarrow T_2$ and $t_2$ is having type $T_1$.
-
-$$
-\begin{array}{cc}
-{\tt (lctLet)} & \begin{array}{c}
-               \Gamma \vdash t_1 : T_1 \ \ \ \
-               \Gamma \oplus (x, T_1) \vdash t_2 : T_2 \\
-               \hline
-               \Gamma \vdash  let\ x:T_1 = t_1\ in\ t_2 :T_2 
-               \end{array} 
-\end{array}
-$$
-In rule ${\tt (lctLet)}$, we type check a let binding, $let\ x:T_1 = t_1\ in\ t_2$ against type $T_2$. This is only valid if $t_1$ has type $T_1$ and $t_2$ has type $T_2$ under the extended environment  $\Gamma \oplus (x, T_1)$.
-
-$$
-\begin{array}{cc}
-{\tt (lctIf)} & \begin{array}{c}
-               \Gamma \vdash t_1 : bool \ \ \ \Gamma \vdash t_2 : T \ \ \ \ \Gamma \vdash t_3 : T \\
-               \hline
-               \Gamma \vdash  if\ t_1\ then\ t_2\ else\ t_3 : T 
-               \end{array}
-\end{array}
-$$
-In rule ${\tt (lctIf)}$, we type check a if-then-else expression against type $T$. This is only valid if 
-$t_1$ has type $bool$ and both $t_1$ and $t_2$ have type $T$.
-
-$$
-\begin{array}{cc}
-{\tt (lctOp1)} & \begin{array}{c}
-               \Gamma \vdash t_1 : int \ \ \ \Gamma \vdash t_2 : int \ \ \ op\in\{+,-,*,/\} \\
-               \hline
-               \Gamma \vdash  t_1\ op\ t_2 : int 
-               \end{array} \\ \\ 
-{\tt (lctOp2)} & \begin{array}{c}
-               \Gamma \vdash t_1 : int \ \ \ \Gamma \vdash t_2 : int \\
-               \hline
-               \Gamma \vdash  t_1\ ==\ t_2 : bool 
-               \end{array} \\ \\ 
-{\tt (lctOp3)} & \begin{array}{c}
-               \Gamma \vdash t_1 : bool \ \ \ \Gamma \vdash t_2 : bool \\
-               \hline
-               \Gamma \vdash  t_1\ ==\ t_2 : bool 
-               \end{array} \\ \\ 
-\end{array}
-$$
-
-The above three rules type check the binary operations. ${\tt (lctOp1)}$ handles the case where the $op$ is an arithmatic operation, which requires both operands having type $int$. ${\tt (lctOp2)}$ and ${\tt (lctOp3)}$ handle the case where $op$ is the equality test. In this case, the types of the operands must agree.
-
-
-$$
-\begin{array}{cc}
-{\tt (lctFix)} & \begin{array}{c}
-                \Gamma \vdash t : (T_1 \rightarrow T_2) \rightarrow T_1 \rightarrow T_2
-                \\  \hline
-                \Gamma \vdash fix\ t:T_1 \rightarrow T_2
-               \end{array} 
-\end{array}
-$$
-
-The last rule ${\tt (lctFix)}$ type checks the fix operator application against the type $T_1 \rightarrow T_2$. We enforce that the argument $t$ must be a fixed point function of type $(T_1 \rightarrow T_2) \rightarrow T_1 \rightarrow T_2$.
-
-
-For example, we would like to type check the following simply typed lambda term.
-
-$$
-fix\ (\lambda f:int\rightarrow int.(\lambda x:int. (if\ x == 0\ then\ 1\ else\ (f\ (x-1))* x)))
-$$
-against the type $int \rightarrow int$
-
-We added the optional parantheses for readability. 
-
-
-We find the the following type checking derivation (proof tree).
-
-Let `Γ` be the initial type environment.
-
-```haskell
-Γ⊕(f:int->int)⊕(x:int)|- x:int (lctVar)
-Γ⊕(f:int->int)⊕(x:int)|- 0:int (lctInt)
----------------------------------------(lctOp2)  [sub tree 1]   [sub tree 2]
-Γ⊕(f:int->int)⊕(x:int)|- x == 0: bool
-------------------------------------------------------------------------------- (lctIf)
-Γ⊕(f:int->int)⊕(x:int)|-if x == 0 then 1 else (f (x-1))*x:int
---------------------------------------------------------------------(lctLam)
-Γ⊕(f:int->int)|-λx:int.(if x == 0 then 1 else (f (x-1))*x):int->int
---------------------------------------------------------------------------------(lctLam)
-Γ |- λf:int->int.(λx:int.(if x == 0 then 1 else (f (x-1))*x)):(int->int)->int->int
----------------------------------------------------------------------------------(lctFix)
-Γ |- fix (λf:int->int.(λx:int.(if x == 0 then 1 else (f (x-1))*x))):int->int
-```
-
-Let `Γ1=Γ⊕(f:int->int)⊕(x:int)`
-Where [sub tree 1] is 
-
-```haskell 
-Γ1|- 1:int (lctInt)
-```
-
-and [sub tree 2] is 
-```haskell
-                           Γ1|-x:int (lctVar) 
-                           Γ1|-1:int (lctInt)
-                           -----------------(lctOp1)
-Γ1|- f:int->int (lctVar)   Γ1|- x-1:int 
--------------------------------------------------(lctApp)  
-Γ1|- f (x-1):int                                           Γ1 |- x:int (lctVar)
--------------------------------------------------------------------------(lctOp1)
-Γ1|- (f (x-1))*x:int
-```
-
-
-Another (counter) example which shows that we can't type check the following program 
-
-$$
-let\ x:int = 1\ in\ (if\ x\ then\ x\ else\ 0)
-$$
-
-against the type $int$.
-
-```haskell 
-                   fail, no proof exists
-                   ---------------------- 
-                   Γ⊕(x:int)|- x:bool
-                   ----------------------------------(lctIf)
-Γ|-1:int (lctInt)  Γ⊕(x:int)|-if x then x else 0:int
---------------------------------------------------------(lctLet)
-Γ|- let x:int = 1 in (if x then x else 0):int
-```
-
-
-### Property 1 - Uniqueness
-The following property states that if a lambda term is typable, its type must be unique.
-
-Let $t$ be a simply typed lambda calculus term. Let $\Gamma$ be a type environment such that for all $x \in fv(t)$, $x \in dom(\Gamma)$.
-Let $T$ and $T'$ be types such that $\Gamma \vdash t : T$ and $\Gamma \vdash t:T'$.
-Then $T$ and $T'$ must be the same.
-
-Where $dom(\Gamma)$ refers to the domain of $\Gamma$, i.e. all the variables being mapped.
-
-### Property 2 - Progress
-The second property states that if a closed lambda term is typeable under the empty type environment, it must be runnable and not getting stuck.
-
-Let $t$ be a simply typed lambda calculus term such that $fv(t) = \{\}$. 
-Let $T$ be a type such that $\{\} \vdash t : T$.
-Then $t$ is either a value or there exists some $t'$ such that $t \longrightarrow t'$.
-
-### Property 3 - Preservation
-The third property states that the type of a lambda term does not change over evaluation.
-
-Let $t$ and $t'$ be simply typed lambda calculus terms such that $t \longrightarrow t'$. Let $T$ be a type and $\Gamma$ be a type environment such that $\Gamma \vdash t:T$.
-Then $\Gamma \vdash t':T$.
 
 
 ## Type Checking for SIMP 
@@ -289,7 +68,9 @@ $$
 \end{array}
 $$
 
-We reuse the same symbol $\Gamma$ to denote a type environments mapping SIMP variables to constant values. $T$ to denote a type. 
+We use the symbol $\Gamma$ to denote a type environments mapping SIMP variables to types. $T$ to denote a type.
+We write $dom(\Gamma)$ to denote the domain of $\Gamma$, i.e. $\{ X \mid (x,T) \in \Gamma \}$. We assume for all $x \in dom(\Gamma)$, there exists only one entry of $(x,T) \in \Gamma$.
+
 We define two different relations, 
 
 1. $\Gamma \vdash E : T$, which type-checks a SIMP expresion $E$ against a type $T$ under $\Gamma$.
@@ -486,13 +267,13 @@ We will discuss this issue in details in the upcoming units.
 
 Let's connect the type-checking rules for SIMP with it dynamic semantics.
 
-### Definition 4 - Type and Value Environments Consistency
+### Definition 1 - Type and Value Environments Consistency
 
 We say $\Gamma \vdash \Delta$ iff for all $(X,c) \in \Delta$ we have $(X,T) \in \Gamma$ and $\Gamma \vdash c : T$. 
 
 It means the type environments and value environments are consistent.
 
-### Property 5 - Progress
+### Property 2 - Progress
 The following property says that a well typed SIMP program must not be stuck until it reachs the return statement.
 
 Let $\overline{S}$ be a SIMP statement sequence. Let $\Gamma$ be a type environment such that $\Gamma \vdash \overline{S}$.
@@ -501,7 +282,7 @@ Then $\overline{S}$ is either
 1. a sequence of statements, and there exist $\Delta$, $\Delta'$ and $\overline{S'}$ such that $\Gamma \vdash \Delta$ and $(\Delta, \overline{S}) \longrightarrow (\Delta', \overline{S'})$.
 
 
-### Property 6 - Preservation
+### Property 3 - Preservation
 The following property says that the evaluation of a SIMP program does not change its typeability.
 
 Let $\Delta$, $\Delta'$ be value environments.
@@ -509,4 +290,495 @@ Let $\overline{S}$ and $\overline{S'}$ be SIMP statement sequences such that $(\
 Let $\Gamma$ be a type environment such that $\Gamma \vdash \Delta$ and $\Gamma \vdash \overline{S}$.
 Then $\Gamma \vdash \Delta'$ and $\Gamma \vdash \overline{S'}$.
 
+
+## What is Type Inference
+
+Type inference is also known as type reconstruction is a static semantics analysis process that aims to reconstruct the missing (or omitted) typing info from the source programs. 
+
+For example, given the Scala program
+
+```scala
+def f(x:Int) = x + 1
+```
+
+the Scala compiler is able to deduce that the return type of `f` is `Int`. 
+
+Likewise for the following SIMP program
+
+```java
+y = y + 1
+```
+we can also deduce that `y` is a of type `int`.
+
+What we aim to achieve is a sound and systematic process to deduce the omitted type information.
+
+## Type inference for SIMP program
+
+Given a SIMP program $\overline{S}$, the goal of type inference is to find the "best" type environment $\Gamma$ such that $\Gamma \vdash \overline{S}$.
+
+Given that $\Gamma$ is a set of variable to type mappings, the "best" can be defined as the smallest possible set that make $\overline{S}$ typeable. This is also called the most general solution.
+
+### Definition - Most general type (envrionment)
+
+Let $\Gamma$ be type environment and $\overline{S}$ be a sequence of SIMP statements, such that $\Gamma \vdash \overline{S}$. $\Gamma$ is the *most general* type environment iff for all $\Gamma'$ such that $\Gamma' \vdash \overline{S}$ we have $\Gamma \subseteq \Gamma'$.
+
+
+### Type Inference Rules
+
+We would like to design type inference process using a deduction system. First of all, let's introduce some extra meta syntax terms that serve as intermediate data structures.
+
+
+$$
+\begin{array}{rccl}
+{\tt (Extended\ Types)} & \hat{T} & ::=  &\alpha \mid T \\ 
+{\tt (Constraints)} & \kappa & \subseteq & (\hat{T} \times \hat{T}) \\ 
+{\tt (Type\ Substitution)} & \Psi & ::= & [\hat{T}/\alpha] \mid [] \mid \Psi \circ \Psi 
+\end{array}
+$$
+
+Where $\alpha$ denotes a type variable. $\kappa$ define a set of pairs of ext types that are supposed to be equal, e.g. $\{ (\alpha, \beta), (\beta, int) \}$ means $\alpha = \beta \wedge \beta = int$.
+
+Type substititution replace type variable to some other type. 
+
+$$
+\begin{array}{rcll}
+[]\hat{T} & = & \hat{T} \\ 
+[\hat{T}/\alpha]\alpha & = & \hat{T} \\  
+[\hat{T}/\alpha]\beta & = & \beta & if\ \alpha \neq \beta \\
+[\hat{T}/\alpha]T & = & T
+\end{array}
+$$
+
+Type substiution can be *compositional*.
+
+$$
+\begin{array}{rcll}
+ (\Psi_1 \circ \Psi_2) \hat{T} & = & \Psi_1(\Psi_2(\hat{T}))
+\end{array}
+$$
+
+The SIMP type inference rules are defined in terms of a deduction system consists of two type of rule forms. 
+
+### Type Inference Rules for SIMP statements 
+
+The type inference rules for SIMP statements are described in a form of $\overline{S} \vDash \kappa$, which reads give a sequence of statements $\overline{S}$, we generate a set of type constraints $\kappa$. 
+$$
+\begin{array}{rc}
+{\tt (tiNOP)} & nop\vDash \{\} \\ \\ 
+{\tt (tiReturn)} & return\ X \vDash \{\}  
+\end{array}
+$$
+The ${\tt (tiNOP)}$ rule handles the $nop$ statement, an empty constraint set is returned.  Similar observation applies to the return statement. 
+$$
+\begin{array}{rc}
+{\tt (tiSeq)} & \begin{array}{c} 
+                S \vDash \kappa_1 \ \ \ \ \overline{S} \vDash \kappa_2
+                \\ \hline
+                S \overline{S} \vDash \kappa_1 \cup \kappa_2 
+                \end{array} 
+\end{array}
+$$
+The ${\tt (tiSeq)}$ rule generates the type constraints of a sequence statement $S\overline{S}$. We can do so by first generate the constraints $\kappa_1$ from $S$ and $\kappa_2$ from $\overline{S}$ and union $\kappa_1$ and $\kappa_2$.  
+$$
+\begin{array}{rc}
+{\tt (tiAssign)} &  \begin{array}{c}
+                    E \vDash \hat{T}, \kappa 
+                    \\ \hline
+                    X = E \vDash \{ (\alpha_X, \hat{T}) \} \cup \kappa 
+                    \end{array} \\ \\
+\end{array}
+$$
+
+The inference rule for assignment statement requires the premise $E \vDash \hat{T}, \kappa$, the inference for the expression $E$ returning the type of $E$ and a constraint set $\kappa$, which will be discussed shortly. The ${\tt (tiAssign)}$ rule "calls" the expression inference rule to generate the type $\hat{T}$ and the constraints $\kappa$, it prepends an entry $(\alpha_X,\hat{T})$ to $\kappa$ to ensure that $X$'s type and the type of the assignment's RHS must agree. 
+
+$$
+\begin{array}{rc}
+{\tt (tiIf)} & \begin{array}{c}
+                E \vDash \hat{T_1},\kappa_1 \ \ \ \overline{S_2} \vDash \kappa_2 \ \ \ \ \overline{S_3} \vDash \kappa_3
+                \\ \hline
+                if\ E\ \{\overline{S_2}\}\ else \{\overline{S_3}\} \vDash \{(\hat{T_1}, bool)\} \cup \kappa_1 \cup \kappa_2 \cup \kappa_3
+                \end{array} \\ \\ 
+\end{array}
+$$
+The inference rule for if-else statatement first infers the type of the conditional expression $E$'s type has $\hat{T_1}$ and the constraints $\kappa_1$. $\kappa_2$ and $\kappa_3$ are the constraints inferred from the then- and else-branches. The final result is forming a union of $\kappa_1$, $\kappa_2$ and $\kappa_3$, in addition, requiring $E$'s type must be $bool$. 
+
+$$
+\begin{array}{rc}
+{\tt (tiWhile)} & \begin{array}{c}
+                    E \vDash \hat{T_1}, \kappa_1 \ \ \ \ \overline{S_2} \vDash \kappa_2
+                    \\ \hline
+                    while\ E\ \{\overline{S_2}\} \vDash \{(\hat{T_1}, bool)\} \cup \kappa_1 \cup \kappa_2
+                  \end{array} 
+\end{array}
+$$
+
+The inference for while statement is very similar to if-else statement. We skip the explanation. 
+
+
+### Type Inference Rules for SIMP expressions 
+
+The type inference rules for the SIMP expressions are defined in a form of $E \vDash \hat{T}, \kappa$. 
+
+
+$$
+\begin{array}{rc} 
+{\tt (tiInt)} & \begin{array}{c}
+                c\ {\tt is\ an\ integer}
+                \\ \hline
+                c \vDash int, \{\}
+                \end{array} \\ \\ 
+{\tt (tiBool)} & \begin{array}{c}
+                c\ \in \{true, false\}
+                \\ \hline
+                c \vDash bool, \{\}
+                \end{array} 
+\end{array}
+$$
+
+When the expression is an integer constant, we return $int$ as the inferred type and an empty constraint set. Likewise for boolean constant, we return $bool$ and $\{\}$. 
+
+
+$$
+\begin{array}{rc}
+{\tt (tiVar)} & X \vDash \alpha_X, \{\} 
+\end{array}
+$$
+
+The ${\tt (tiVar)}$ rule just generates a "skolem" type variable $\alpha_X$ which is specifically "reserved" for variable $X$. A skolem type variable is a type variable that is free in the current context but it has a specific "purpose".
+
+> For detailed explanation of skolem variable, refer to <https://stackoverflow.com/questions/12719435/what-are-skolems> and <https://en.wikipedia.org/wiki/Skolem_normal_form>.
+
+
+
+$$
+\begin{array}{rc}
+{\tt (tiOp1)} & \begin{array}{c}
+                OP \in \{+, -, *, /\} \ \ \ E_1 \vDash \hat{T_1}, \kappa_1\ \ \ \ E_2 \vDash \hat{T_2}, \kappa_2
+                \\ \hline
+                E_1\ OP\ E_2 \vDash int, \{(\hat{T_1}, \hat{T_2})\} \cup \kappa_1 \cup \kappa_2
+                \end{array} \\ \\ 
+{\tt (tiOp2)} & \begin{array}{c}
+                OP \in \{<, ==\} \ \ \ E_1 \vDash \hat{T_1}, \kappa_1\ \ \ \ E_2 \vDash \hat{T_2}, \kappa_2
+                \\ \hline
+                E_1\ OP\ E_2 \vDash bool, \{(\hat{T_1}, \hat{T_2})\} \cup \kappa_1 \cup \kappa_2
+                \end{array}
+\end{array}
+$$
+
+The rules ${\tt (tiOp1)}$ and ${\tt (tiOp2)}$ infer the type of binary operation expressions. Note that they can be broken into 6 different rules to be syntax-directed. ${\tt (tiOp)}$ is applied when the operator is an arithmethic operation, the returned type is $int$ and the inferred constraints is the union of the constraints inferred from the operands plus the entry of $( \hat{T_1}, \hat(T_2))$, which enforces the types of both operands should be the same. ${\tt (tiOp2)}$ supports the case where the operator is a boolean comparison. 
+
+
+### Unification 
+
+To solve the set of generated type constraints from the above inference rules, we need to use a unification algorithm. 
+
+
+$$
+\begin{array}{rcl}
+mgu(int, int) & = & [] \\ 
+mgu(bool, bool) & = & [] \\ 
+mgu(\alpha, \hat{T}) & = & [\hat{T}/\alpha] \\ 
+mgu(\hat{T}, \alpha) & = & [\hat{T}/\alpha] \\
+\end{array}
+$$
+
+The $mgu(\cdot, \cdot)$ function generates a type substitution that unifies the two arguments. $mgu$ is a short hand for *most general unifier*. Note that $mgu$ function is a partial function, cases that are not mentioned in the above will result in a unification failure. 
+
+At the moment $mgu$ only unifies two extended types. We overload $mgu()$ to apply to a set of constraints as follows
+
+$$
+\begin{array}{rcl}
+mgu(\{\}) & = & [] \\ 
+mgu(\{(\hat{T_1}, \hat{T_2})\} \cup \kappa ) & = & let\ \Psi_1 = mgu(\hat{T_1}, \hat{T_2}) \\ 
+& & \ \ \ \ \ \ \kappa'  = \Psi_1(\kappa) \\ 
+& & \ \ \ \ \ \ \Psi_2   = mgu(\kappa') \\ 
+& & in\  \Psi_2 \circ \Psi_1  
+\end{array}
+$$
+
+There are two cases.
+
+1. the constraint set is empty, we return the empty (identity) substitution.
+1. the constriant set is non-empty, we apply the first version of $mgu$ to unify one entry $(\hat{T_1}, \hat{T_2})$, which yields a subsitution $\Psi_1$. We apply $\Psi_1$ to the rest of the constraints $\kappa$ to obtain $\kappa'$. Next we apply $mgu$ to $\kappa'$ recursively to generate another type substitution $\Psi_2$. The final result is a composition of $\Psi_2$ with $\Psi_1$. 
+
+Note that the choice of the particular entry $(\hat{T_1}, \hat{T_2})$ does not matter, the algorithm will always produce the same result when we apply the final subsitution to all the skolem type variable $\alpha_X$. We see that in an example shortly. 
+
+### An Example
+
+Consider the following SIMP program
+
+```java
+x = input;          // (α_x, α_input)      
+y = 0;              // (α_y, int)
+while (y < x) {     // (α_y, α_x)
+    y = y + 1;      // (α_y, int)
+}
+```
+
+For the ease of access we put the inferred constraint entry as comments next to the statements. The detail derivation of the inference algorithm is as follows
+
+
+```java
+input|=α_input,{} (tiVar)
+-------------------------(tiAssign)    [subtree 1]
+x=input|={(α_x,α_input)}   
+-----------------------------------------------------------------------------(tiSeq)
+x=input; y=0; while (y<x) { y=y+1; } return y; |= {(α_x,α_input),(a_y,int),(α_y,α_x)} 
+```
+
+Where [subtree 1] is as follows
+
+
+```java
+y|=α_y,{} (tiVar)
+0|=int,{} (tiInt)
+------------------(tiAssign)   [subtree 2]
+y=0|={(α_y,int)}
+--------------------------------------------------------(tiSeq)
+y=0; while (y<x) { y=y+1; } return y; |= {(a_y,int),(α_y,α_x)} 
+```
+
+
+Where [subtree 2] is as follows
+
+```java
+                        y|=α_y,{} (tiVar)
+                        1|=int,{} (tiInt)
+y|=α_y,{} (tiVar)       --------------(tiOp1)
+x|=α_x,{} (tiVar)       y+1|=int,{(a_y,int)}
+--------------(tiOp2)  ----------------------(tiAssign)
+y<x|=bool,{(α_y,α_x)}  y=y+1|= {(a_y,int)} 
+---------------------------------------------(tiWhile) --------------(tiReturn)
+while (y<x) { y=y+1; } |= {(α_y,α_x),(a_y,int)}        return y|= {}
+---------------------------------------------------------------------(tiSeq)
+while (y<x) { y=y+1; } return y; |= {(α_y,α_x),(a_y,int)} 
+```
+
+### From Type Substitution to Type Environment
+
+To derive the inferred type environment, we apply the type substitution to all the type variabales we created. 
+
+Let $V(\overline{S})$ denote all the variables used in a SIMP program $\overline{S}$.
+
+Given a type substitution $\Psi$ obtained from the unification step, the type environment $\Gamma$ can be computed as follows,
+
+$$
+\Gamma = \{ (X, \Psi(\alpha_X)) | X \in V(\overline{S}) \}
+$$
+
+
+Recall that the set of constraints generated from the running example is 
+
+$$
+\{(\alpha_x,\alpha_{input}),(\alpha_{y},int),(\alpha_{y},\alpha_{x})\} 
+$$
+
+#### Unification from left to right
+
+Suppose the unification progress pick the entries from left to right
+
+$$
+\begin{array}{ll}
+mgu(\{(\underline{\alpha_x,\alpha_{input}}),(\alpha_{y},int),(\alpha_{y},\alpha_{x})\}) & \longrightarrow \\ 
+let\ \Psi_1 = mgu(\alpha_x,\alpha_{input}) \\ 
+\ \ \ \ \ \ \kappa_1 = \Psi_1\{(\alpha_{y},int),(\alpha_{y},\alpha_{x})\} \\ 
+\ \ \ \ \ \ \Psi_2 = mgu(\kappa_1) \\
+in\ \Psi_2 \circ \Psi_1  & \longrightarrow \\ 
+let\ \Psi_1 = [\alpha_{input}/ \alpha_x] \\ 
+\ \ \ \ \ \ \kappa_1 = \Psi_1\{(\alpha_{y},int),(\alpha_{y},\alpha_{x})\} \\ 
+\ \ \ \ \ \ \Psi_2 = mgu(\kappa_1) \\
+in\ \Psi_2 \circ \Psi_1  & \longrightarrow \\ 
+let\ \Psi_1 = [\alpha_{input}/ \alpha_x] \\ 
+\ \ \ \ \ \ \kappa_1 = \{(\alpha_{y},int),(\alpha_{y},\alpha_{input})\} \\ 
+\ \ \ \ \ \ \Psi_2 = mgu(\kappa_1) \\
+in\ \Psi_2 \circ \Psi_1 & \longrightarrow 
+\end{array}
+$$
+
+Where derivation of $mgu(\kappa_1)$ 
+
+$$
+\begin{array}{ll}
+mgu(\{(\underline{\alpha_{y},int}),(\alpha_{y},\alpha_{input})\}) & \longrightarrow \\ 
+let\ \Psi_{21} = mgu(\alpha_{y},int) \\
+\ \ \ \ \ \ \kappa_2 = \Psi_{21}\{(\alpha_{y},\alpha_{input})\} \\ 
+\ \ \ \ \ \ \Psi_{22} = mgu(\kappa_2) \\ 
+in\ \Psi_{22} \circ \Psi_{21} & \longrightarrow \\
+let\ \Psi_{21} = [int/\alpha_{y}] \\
+\ \ \ \ \ \ \kappa_2 = \Psi_{21}\{(\alpha_{y},\alpha_{input})\} \\ 
+\ \ \ \ \ \ \Psi_{22} = mgu(\kappa_2) \\ 
+in\ \Psi_{22} \circ \Psi_{21} & \longrightarrow \\
+let\ \Psi_{21} = [int/\alpha_{y}] \\
+\ \ \ \ \ \ \kappa_2 = \{(int,\alpha_{input})\} \\ 
+\ \ \ \ \ \ \Psi_{22} = mgu(\kappa_2) \\ 
+in\ \Psi_{22} \circ \Psi_{21} & \longrightarrow \\
+let\ \Psi_{21} = [int/\alpha_{y}] \\
+\ \ \ \ \ \ \kappa_2 = \{(int,\alpha_{input})\} \\ 
+\ \ \ \ \ \ \Psi_{22} = [int/\alpha_{input}] \\ 
+in\ \Psi_{22} \circ \Psi_{21} & \longrightarrow \\
+[int/\alpha_{input}] \circ [int/\alpha_{y}]
+\end{array}
+$$
+Hence the final result is 
+
+$$ 
+[int/\alpha_{input}] \circ [int/\alpha_{y}] \circ [\alpha_{input}/ \alpha_x]
+$$
+
+We apply this type substitution to all the variables in the program.
+
+$$
+\begin{array}{rl}
+([int/\alpha_{input}] \circ [int/\alpha_{y}] \circ [\alpha_{input}/ \alpha_x])\alpha_{input} & = \\  
+([int/\alpha_{input}] \circ [int/\alpha_{y}])\alpha_{input} & = \\  
+[int/\alpha_{input}]  \alpha_{input} & = \\  
+int \\ \\ 
+([int/\alpha_{input}] \circ [int/\alpha_{y}] \circ [\alpha_{input}/ \alpha_x])\alpha_{x} & = \\  
+([int/\alpha_{input}] \circ [int/\alpha_{y}])\alpha_{input} & = \\  
+[int/\alpha_{input}]  \alpha_{input} & = \\  
+int \\ \\ 
+([int/\alpha_{input}] \circ [int/\alpha_{y}] \circ [\alpha_{input}/ \alpha_x])\alpha_{y} & = \\  
+([int/\alpha_{input}] \circ [int/\alpha_{y}]) \alpha_{y} & = \\  
+[int/\alpha_{input}] int & = \\  
+int \\ \\ 
+\end{array}
+$$
+
+So we have computed the inferred type environment
+
+$$
+\Gamma = \{(input, int), (x, int), (y,int) \}
+$$
+
+#### Unification from right to left
+
+Now let's consider a different of order of applying the $mgu$ function to the constraint set. Instead of going from left to right, we solve the constraints from right to left. 
+
+$$
+\begin{array}{ll}
+mgu(\{(\alpha_x,\alpha_{input}),(\alpha_{y},int),(\underline{\alpha_{y},\alpha_{x}})\}) & \longrightarrow \\ 
+let\ \Psi_1 = mgu(\alpha_{y},\alpha_{x}) \\ 
+\ \ \ \ \ \ \kappa_1 = \Psi_1\{(\alpha_x,\alpha_{input}),(\alpha_{y},int)\} \\ 
+\ \ \ \ \ \ \Psi_2 = mgu(\kappa_1) \\
+in\ \Psi_2 \circ \Psi_1  & \longrightarrow \\ 
+let\ \Psi_1 = [\alpha_{x}/ \alpha_y] \\ 
+\ \ \ \ \ \ \kappa_1 = \Psi_1\{(\alpha_x,\alpha_{input}),(\alpha_{y},int)\} \\ 
+\ \ \ \ \ \ \Psi_2 = mgu(\kappa_1) \\
+in\ \Psi_2 \circ \Psi_1  & \longrightarrow \\ 
+let\ \Psi_1 = [\alpha_{x}/ \alpha_y] \\ 
+\ \ \ \ \ \ \kappa_1 = \{(\alpha_x,\alpha_{input}),(\alpha_{x},int)\} \\ 
+\ \ \ \ \ \ \Psi_2 = mgu(\kappa_1) \\
+in\ \Psi_2 \circ \Psi_1 & \longrightarrow 
+\end{array}
+$$
+
+Where derivation of $mgu(\kappa_1)$ 
+
+$$
+\begin{array}{ll}
+mgu(\{(\alpha_x,\alpha_{input}),(\underline{\alpha_{x},int})\}) & \longrightarrow \\ 
+let\ \Psi_{21} = mgu(\alpha_{x},int) \\
+\ \ \ \ \ \ \kappa_2 = \Psi_{21}\{(\alpha_{x},\alpha_{input})\} \\ 
+\ \ \ \ \ \ \Psi_{22} = mgu(\kappa_2) \\ 
+in\ \Psi_{22} \circ \Psi_{21} & \longrightarrow \\
+let\ \Psi_{21} = [int/\alpha_{x}] \\
+\ \ \ \ \ \ \kappa_2 = \Psi_{21}\{(\alpha_{x},\alpha_{input})\} \\ 
+\ \ \ \ \ \ \Psi_{22} = mgu(\kappa_2) \\ 
+in\ \Psi_{22} \circ \Psi_{21} & \longrightarrow \\
+let\ \Psi_{21} = [int/\alpha_{x}] \\
+\ \ \ \ \ \ \kappa_2 = \{(int,\alpha_{input})\} \\ 
+\ \ \ \ \ \ \Psi_{22} = mgu(\kappa_2) \\ 
+in\ \Psi_{22} \circ \Psi_{21} & \longrightarrow \\
+let\ \Psi_{21} = [int/\alpha_{x}] \\
+\ \ \ \ \ \ \kappa_2 = \{(int,\alpha_{input})\} \\ 
+\ \ \ \ \ \ \Psi_{22} = [int/\alpha_{input}] \\ 
+in\ \Psi_{22} \circ \Psi_{21} & \longrightarrow \\
+[int/\alpha_{input}] \circ [int/\alpha_{x}]
+\end{array}
+$$
+
+Hence the final result is 
+
+$$ 
+[int/\alpha_{input}] \circ [int/\alpha_{x}] \circ [\alpha_{x}/ \alpha_y]
+$$
+
+We apply this type substitution to all the variables in the program.
+
+$$
+\begin{array}{rl}
+([int/\alpha_{input}] \circ [int/\alpha_{x}] \circ [\alpha_{x}/ \alpha_y])\alpha_{input} & = \\  
+([int/\alpha_{input}] \circ [int/\alpha_{x}])\alpha_{input} & = \\  
+[int/\alpha_{input}]  \alpha_{input} & = \\  
+int \\ \\ 
+([int/\alpha_{input}] \circ [int/\alpha_{x}] \circ [\alpha_{x}/ \alpha_y])\alpha_{x} & = \\  
+([int/\alpha_{input}] \circ [int/\alpha_{x}])\alpha_{x} & = \\  
+[int/\alpha_{input}]  int & = \\  
+int \\ \\ 
+([int/\alpha_{input}] \circ [int/\alpha_{x}] \circ [\alpha_{x}/ \alpha_y])\alpha_{y} & = \\  
+([int/\alpha_{input}] \circ [int/\alpha_{x}]) \alpha_{x} & = \\  
+[int/\alpha_{input}] int & = \\  
+int \\ \\ 
+\end{array}
+$$
+
+So we have computed the inferred the same type environment
+
+$$
+\Gamma = \{(input, int), (x, int), (y,int) \}
+$$
+
+
+In face regardless the order of picking entries from the constraint sets, we compute the same $\Gamma$.  
+
+> If you have time, you can try another order.
+
+### Input's type
+
+In our running example, our inference algorithm is able to infer the program's input type i.e. $\alpha_{input}$.
+
+This is not always possible. Let's consider the following program.
+
+```java
+x = input;          // (α_x, α_input)      
+y = 0;              // (α_y, int)
+while (y < 3) {     // (α_y, int)
+    y = y + 1;      // (α_y, int)
+}
+```
+
+In the genereated constraints, our algorithm can construct the subtitution 
+
+$$[\alpha_{input}/\alpha_x] \circ [int/\alpha_y]$$
+
+Which fails to "ground" type variables $\alpha_{input}$ and $\alpha_x$. 
+
+We may argue that this is an ill-defined program as `input` and `x` are not used in the rest of the program, which should be rejected if we employ some name analysis, (which we will learn in the upcoming lesson). Hence we simply reject this kind of programs. 
+
+Alternatively, we can preset the type of the program, which is a common practice for many program languages. When generating the set of constraint $\kappa$, we manually add an entry $(\alpha_{input}, int)$ assuming the input's type is expected to be $int$. 
+
+
+### Uninitialized Variable
+
+There is another situatoin in which the inference algorithm fails to ground all the type variables.
+
+```java
+x = z;              // (α_x, α_z)      
+y = 0;              // (α_y, int)
+while (y < 3) {     // (α_y, int)
+    y = y + 1;      // (α_y, int)
+}
+```
+in this case, we can't ground $\alpha_x$ and $\alpha_z$ as `z` is not initialized before use. In this case we argue that such a program should be rejected either by the type inference or the name analysis.
+
+
+### Property 4: Type Inference Soundness
+The following property states that the type environment generated from a SIMP program by the type inference algorithm is able to type check the SIMP program.
+
+Let $\overline{S}$ be a SIMP program and $\Gamma$ is a type environment inferred using the described inference algorithm. Then $\Gamma \vdash \overline{S}$. 
+
+### Property 5: Principality 
+The following property states that the type environment generated from a SIMP program by the type inference algorithm is a principal type environment.
+
+Let $\overline{S}$ be a SIMP program and $\Gamma$ is a type environment inferred using the described inference algorithm. Then $\Gamma$ is the most general type environment that can type-check $\overline{S}$. 
 
