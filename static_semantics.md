@@ -102,11 +102,11 @@ $$
 {\tt (lctLam)} & \begin{array}{c}
                \Gamma \oplus (x, T) \vdash t : T'  \\
                \hline
-               \Gamma \vdash \lambda x : T.t :T' 
+               \Gamma \vdash \lambda x : T.t :T \rightarrow T' 
                \end{array} 
 \end{array}
 $$
-In rule ${\tt (lctLam)}$, we type check a lambda abstraction against a type $T'$. This is only valid if the body of the lambda expression $t$ has type $T'$ under the extended type environment $\Gamma \oplus (x, T)$.
+In rule ${\tt (lctLam)}$, we type check a lambda abstraction against a type $T\rightarrow T'$. This is only valid if the body of the lambda expression $t$ has type $T'$ under the extended type environment $\Gamma \oplus (x, T)$.
 $$
 \begin{array}{cc}
 {\tt (lctApp)} & \begin{array}{c}
