@@ -113,7 +113,7 @@ TBD
 | 6 | [Bottom-up Parsing](./syntax_analysis.md) | [IR: Pseudo-Assembly](./ir_pseudo_assembly.md) | [Cohort Problem 6](https://github.com/50054-2023-fall/cohort_probs/tree/main/syntax_analysis_2_pseudo_ir), Homework 4 (Cont'd) | Homework 4 5% | 
 | 7 |  |  |  | 
 | 8 | **Mid-term**, [Semantic Analysis](./semantic_analysis.md)| [Dynamic Semantics](./dynamic_semantics.md) | [Cohort Problem 7](https://github.com/50054-2023-fall/cohort_probs/tree/main/dynamic_semantics) | Mid-term 10%, Project Lab 1 10% |
-| 9 | [Static Semantics, Type-checking](./static_semantics.md) | Type Inference | Cohort Problem 8, Homework 5 |  |
+| 9 | [Static Semantics for SIMP](./static_semantics.md) | [Static Semantics for Lambda Calculus](./static_semantics_2.md) | Cohort Problem 8, Homework 5 |  |
 | 10 | *Public Holiday. No Class Scheduled* | Name Analysis, SSA |  Cohort Problem 9 | Homework 5 5%, Project Lab 2 10% | 
 | 11 | Lattice, Sign Analysis  | Liveness Analysis | Cohort Problem 10 |  |  | 
 | 12 | Information Flow Analysis | Code Generation | Cohort Problem 11  |  |
