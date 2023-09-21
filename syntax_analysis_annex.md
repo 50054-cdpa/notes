@@ -1,6 +1,6 @@
 <table>
 <tr>
-<th> Rule </th> <th> Parse tree </th> <th> Symbols </th> <th> Input </th> 
+<th> Rule </th> <th> Parse tree </th> <th> Symbols </th> <th> Input </th>
 </tr>
 <tr> <td> (5) </td>
 
@@ -8,10 +8,10 @@
 <div class="mermaid">
 graph
   J-->LB["{"]
-  J-->NS 
+  J-->NS
   J-->RB["}"]
 </div>
-</td>          
+</td>
 
 <td>
  <u>{ </u> NS }
@@ -20,7 +20,6 @@ graph
 <td>
  <u>{ </u> ' k  1 ' : 1 , ' k 2 ' : [ ] }
 </td>
-
 
 </tr>
 
@@ -32,7 +31,7 @@ graph
 <div class="mermaid">
 graph
   J-->LB["{"]
-  J-->NS 
+  J-->NS
   J-->RB["}"]
 </div>
 </td>
@@ -56,7 +55,7 @@ graph
 <div class="mermaid">
 graph
   J-->LB["{"]
-  J-->NS 
+  J-->NS
   J-->RB["}"]
   NS-->N
   NS-->,
@@ -73,7 +72,6 @@ N,NS }
 </td>
 </tr>
 
-
 <tr>
 <td>
 (10)
@@ -83,7 +81,7 @@ N,NS }
 <div class="mermaid">
 graph
   J-->LB["{"]
-  J-->NS 
+  J-->NS
   J-->RB["}"]
   NS-->N
   NS-->,
@@ -105,8 +103,6 @@ graph
 </td>
 </tr>
 
-
-
 <tr>
 <td>
 
@@ -116,7 +112,7 @@ graph
 <div class="mermaid">
 graph
   J-->LB["{"]
-  J-->NS 
+  J-->NS
   J-->RB["}"]
   NS-->N
   NS-->,
@@ -138,7 +134,6 @@ graph
 </td>
 </tr>
 
-
 <tr>
 <td>
 
@@ -148,7 +143,7 @@ graph
 <div class="mermaid">
 graph
   J-->LB["{"]
-  J-->NS 
+  J-->NS
   J-->RB["}"]
   NS-->N
   NS-->,
@@ -170,7 +165,6 @@ graph
 </td>
 </tr>
 
-
 <tr>
 <td>
 
@@ -180,7 +174,7 @@ graph
 <div class="mermaid">
 graph
   J-->LB["{"]
-  J-->NS 
+  J-->NS
   J-->RB["}"]
   NS-->N
   NS-->,
@@ -202,7 +196,6 @@ graph
 </td>
 </tr>
 
-
 <tr>
 <td>
 
@@ -212,7 +205,7 @@ graph
 <div class="mermaid">
 graph
   J-->LB["{"]
-  J-->NS 
+  J-->NS
   J-->RB["}"]
   NS-->N
   NS-->,
@@ -234,8 +227,6 @@ J, NS }
 </td>
 </tr>
 
-
-
 <tr>
 <td>
 (1)
@@ -245,7 +236,7 @@ J, NS }
 <div class="mermaid">
 graph
   J-->LB["{"]
-  J-->NS 
+  J-->NS
   J-->RB["}"]
   NS-->N
   NS-->,
@@ -268,8 +259,6 @@ graph
 </td>
 </tr>
 
-
-
 <tr>
 <td>
 
@@ -279,7 +268,7 @@ graph
 <div class="mermaid">
 graph
   J-->LB["{"]
-  J-->NS 
+  J-->NS
   J-->RB["}"]
   NS-->N
   NS-->,
@@ -302,7 +291,6 @@ graph
 </td>
 </tr>
 
-
 <tr>
 <td>
 
@@ -312,7 +300,7 @@ graph
 <div class="mermaid">
 graph
   J-->LB["{"]
-  J-->NS 
+  J-->NS
   J-->RB["}"]
   NS-->N
   NS-->,
@@ -335,7 +323,6 @@ NS }
 </td>
 </tr>
 
-
 <tr>
 <td>
 (9)
@@ -345,7 +332,7 @@ NS }
 <div class="mermaid">
 graph
   J-->LB["{"]
-  J-->NS 
+  J-->NS
   J-->RB["}"]
   NS-->N
   NS-->,
@@ -369,7 +356,6 @@ N }
 </td>
 </tr>
 
-
 <tr>
 <td>
 (10)
@@ -379,7 +365,7 @@ N }
 <div class="mermaid">
 graph
   J-->LB["{"]
-  J-->NS 
+  J-->NS
   J-->RB["}"]
   NS-->N
   NS-->,
@@ -408,8 +394,6 @@ graph
 </td>
 </tr>
 
-
-
 <tr>
 <td>
 
@@ -419,7 +403,7 @@ graph
 <div class="mermaid">
 graph
   J-->LB["{"]
-  J-->NS 
+  J-->NS
   J-->RB["}"]
   NS-->N
   NS-->,
@@ -448,8 +432,6 @@ graph
 </td>
 </tr>
 
-
-
 <tr>
 <td>
 
@@ -459,7 +441,7 @@ graph
 <div class="mermaid">
 graph
   J-->LB["{"]
-  J-->NS 
+  J-->NS
   J-->RB["}"]
   NS-->N
   NS-->,
@@ -488,8 +470,6 @@ graph
 </td>
 </tr>
 
-
-
 <tr>
 <td>
 
@@ -499,7 +479,7 @@ graph
 <div class="mermaid">
 graph
   J-->LB["{"]
-  J-->NS 
+  J-->NS
   J-->RB["}"]
   NS-->N
   NS-->,
@@ -528,7 +508,6 @@ graph
 </td>
 </tr>
 
-
 <tr>
 <td>
 
@@ -538,7 +517,7 @@ graph
 <div class="mermaid">
 graph
   J-->LB["{"]
-  J-->NS 
+  J-->NS
   J-->RB["}"]
   NS-->N
   NS-->,
@@ -567,7 +546,6 @@ J }
 </td>
 </tr>
 
-
 <tr>
 <td>
 (3)
@@ -577,7 +555,7 @@ J }
 <div class="mermaid">
 graph
   J-->LB["{"]
-  J-->NS 
+  J-->NS
   J-->RB["}"]
   NS-->N
   NS-->,
@@ -607,8 +585,6 @@ graph
 <u>[ ] }</u>
 </td>
 </tr>
-
-
 
 <tr>
 <td>
@@ -619,7 +595,7 @@ graph
 <div class="mermaid">
 graph
   J-->LB["{"]
-  J-->NS 
+  J-->NS
   J-->RB["}"]
   NS-->N
   NS-->,
@@ -649,6 +625,5 @@ graph
 
 </td>
 </tr>
-
 
 </table>
