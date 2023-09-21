@@ -129,7 +129,7 @@ the  lexer function `lex(s:String):List[LToken]` should return
 List(LBRace,SQuote,StrTok("k1"),SQuote,Colon,IntTok(1),Comma,SQuote, StrTok("k2"), Colon,LBracket, RBracket, RBrace)
 ```
 
-One could argue that we cheat by assuming the integer and string data types are available as builtin terminals. In case we don't have integer and string as bultin terminals, we could expand the grammar as follows:
+One could argue that we cheat by assuming the integer and string data types are available as builtin terminals. In case we don't have integer and string as builtin terminals, we could expand the grammar as follows:
 
 ```
 <<Grammar 2>>
