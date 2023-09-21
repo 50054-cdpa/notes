@@ -193,17 +193,17 @@ Next we define the following function which tries to extract a token from the be
 ```scala
 import LToken.*
 type Error = String
-def lex_one(src:String):Either[(LToken, String), Error] = src match {
-    case integer(s, rest) => Left((IntTok(s.toInt), rest))
-    case squote(_, rest) => Left((SQuote, rest))
-    case lbracket(_, rest) => Left((LBracket, rest))
-    case rbracket(_, rest) => Left((RBracket, rest)) 
-    case lbrace(_, rest) => Left((LBracket, rest))
-    case rbrace(_, rest) => Left((RBracket, rest)) 
-    case colon(_, rest) => Left((Colon, rest))
-    case comma(_, rest) => Left((Comma, rest))
-    case string(s, rest) => Left((StrTok(s), rest))
-    case _ => Right(s"lexer error: unexpected token at ${src}")
+def lex_one(src:String):Either[String, (LToken, String)] = src match {
+    case integer(s, rest) => Right((IntTok(s.toInt), rest))
+    case squote(_, rest) => Right((SQuote, rest))
+    case lbracket(_, rest) => Right((LBracket, rest))
+    case rbracket(_, rest) => Right((RBracket, rest)) 
+    case lbrace(_, rest) => Right((LBracket, rest))
+    case rbrace(_, rest) => Right((RBracket, rest)) 
+    case colon(_, rest) => Right((Colon, rest))
+    case comma(_, rest) => Right((Comma, rest))
+    case string(s, rest) => Right((StrTok(s), rest))
+    case _ => Left(s"lexer error: unexpected token at ${src}")
 }
 ```
 
@@ -212,17 +212,17 @@ Note that the order of the Scala patterns is important, since there is some over
 Lastly we define the top level `lex` function by calling `lex_one` in a recursive function.
 
 ```scala
-def lex(src:String):Either[List[LToken], Error] = {
-    def go(src:String, acc:List[LToken]):Either[List[LToken], Error] = {
+def lex(src:String):Either[Error, List[LToken]] = {
+    def go(src:String, acc:List[LToken]):Either[Error, List[LToken]] = {
         if (src.length == 0)  
         {
-            Left(acc)
+            Right(acc)
         } 
         else 
         {
             lex_one(src) match {
-                case Right(error) => Right(error)
-                case Left((ltoken, rest)) => go(rest, acc++List(ltoken))
+                case Left(error) => Left(error)
+                case Right((ltoken, rest)) => go(rest, acc++List(ltoken))
             }
         }
     }
@@ -232,19 +232,20 @@ def lex(src:String):Either[List[LToken], Error] = {
 
 ### Implementing a Lexer using a Parser
 
-In general, parsers are capable of hanlding context free grammar, which is a super-set of the regular grammars. (A grammar can be expressed as a regular expression is a regular grammar.)
+In general, parsers are capable of handling context free grammar, which is a super-set of the regular grammars. (A grammar that can be expressed as a regular expression is a regular grammar.)
 
-Hence it is possible to implement a lexer using a parser, which we are going to discuss during the cohort problem.
+Hence it is possible to implement a lexer using a parser, which we are going to discuss in the cohort problems.
 
 ## Parsing
 
 **Input:** Output from the Lexer
+
 **Output:** A parse tree representing parsed result according to the parse derivation
 
 Why tree representation?
 
-1. Firstly, a tree representation allows efficient access to sub part of the source code and intuitive transformation.
-2. Secondly, a tree reperesentation captures the relationship between the LHS non-terminals and their RHS in the production rules.
+1. Firstly, a tree representation allows efficient access to the sub parts of the source code and intuitive transformation.
+2. Secondly, a tree representation captures the relationship between the LHS non-terminals and their RHS in the production rules.
 
 ### Parsing Derivation
 
@@ -436,12 +437,12 @@ From the above example, it shows that we could implement a parsing routine by re
 
 This algorithm is easy to understand but it has some flaws.
 
-1. It does not terminate in when the grammar contains left recursion.
+1. It does not terminate when the grammar contains left recursion.
 2. It involves some trial-and-error (back-tracking), hence it is not efficient
 
 ### Ambiguous Grammar
 
-A grammar is said to be *ambiguous* if parsing it with an input produces two different parse trees.
+A grammar is said to be *ambiguous* if parsing it with an input can produce two different parse trees.
 
 Consider the following
 
@@ -577,12 +578,12 @@ There are few points to take note
 
 ```
 <<Grammar 7>>
-G :: = H + G
-H :: = G + i
-H :: = i
+G ::= H + G
+H ::= G + i
+H ::= i
 ```
 
-We need to substitute `H` to the first production rule.
+We need to substitute `H` into the first production rule.
 
 ```
 <<Grammar 8>>
@@ -590,7 +591,7 @@ G ::= G + i + G
 G ::= i + G
 ```
 
-2. Since we have change the grammar production rules, we use the transformed grammar for parsing, the parse trees generated will be in the shape of the transformed grammar. We need to perform an extra step of (backward) transformation to turn the parse trees back to the original grammar. For example, parsing the input `1 + 1` with Grammar 6 yields the following parse tree
+2. Since we have changed the grammar production rules, we need to use the transformed grammar for parsing, resulting in the parse trees being generated in the shape of the transformed grammar. We need to perform an extra step of (backwards) transformation to turn the parse trees back to the original grammar. For example, parsing the input `1 + 1` with Grammar 6 yields the following parse tree
 
 <div class="mermaid">
 graph
@@ -641,7 +642,7 @@ null(\sigma_1...\sigma_n,G) & = & null(\sigma_1,G) \wedge ... \wedge null(\sigma
 \end{array}
 $$
 
-$first(\overline{\sigma},G)$ computes the set of leading terminals from the language denotes by $\overline{\sigma}$.
+$first(\overline{\sigma},G)$ computes the set of leading terminals from the language denoted by $\overline{\sigma}$.
 
 $$
 \begin{array}{rcl}
@@ -665,14 +666,14 @@ $$
 follow(\sigma,G) & = & \bigcup_{N::=\overline{\sigma}\sigma{\overline{\gamma}} \in G}
   \left [
     \begin{array}{ll}
-      first(\overline{\gamma}, G) \cup follow(N,G) & {\tt if} null(\overline{\gamma}, G) \\
+      first(\overline{\gamma}, G) \cup follow(N,G) & {\tt if}\ null(\overline{\gamma}, G) \\
       first(\overline{\gamma}, G) & {\tt otherwise}
     \end{array}
   \right .
 \end{array}
 $$
 
-Sometimes, for convenient we omit the second parameter $G$.
+Sometimes, for convenience we omit the second parameter $G$.
 
 For example, let $G$ be Grammar 6, then
 
