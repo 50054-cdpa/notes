@@ -287,8 +287,8 @@ given toJSBoolean:JS[Boolean] = new JS[Boolean] {
 given toJSContact(using jsstr:JS[String]):JS[Contact] = new JS[Contact] {
     import Contact.*
     def toJS(c:Contact):String = c match {
-        case Email(e) => s"'email': ${jsstr.toJS(e)}" // copmilation error is fixed
-        case Phone(ph) => s"'phone': ${jsstr.toJS(ph)}" // compilation erro is fixed
+        case Email(e) => s"'email': ${jsstr.toJS(e)}" // compilation error is fixed
+        case Phone(ph) => s"'phone': ${jsstr.toJS(ph)}" // compilation error is fixed
     }
 }
 
