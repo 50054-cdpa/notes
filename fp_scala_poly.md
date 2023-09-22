@@ -412,7 +412,7 @@ Let `i` be a functor instance
 
 ## Foldable
 
-Similarly we can define a `Foldable` type class for generic `foldLeft`( and `foldRight`).
+Similarly we can define a `Foldable` type class for generic and overloaded `foldLeft`( and `foldRight`).
 
 ```scala
 trait Foldable[T[_]]{
