@@ -501,7 +501,6 @@ enum Option[+A] {
     case None
     case Some(v:A)
 }
-
 ```
 
 ```scala
@@ -557,45 +556,53 @@ enum Either[+A, +B] {
 ```scala
 type ErrMsg = String
 
-def eval(e:MathExp):Either[Int, ErrMsg] = e match {
-    case MathExp.Plus(e1, e2)  => eval(e1) match {
-        case Right(m) => Right(m)
-        case Left(v1) => eval(e2) match {
-            case Right(m) => Right(m)
-            case Left(v2) => Left(v1 + v2)            
+def eval(e: MathExp): Either[ErrMsg,Int] = e match {
+    case MathExp.Plus(e1, e2) =>
+        eval(e1) match {
+            case Left(m) => Left(m)
+            case Right(v1) =>
+                eval(e2) match {
+                    case Left(m) => Left(m)
+                    case Right(v2) => Right(v1 + v2)
+                }
         }
-    }
-    case MathExp.Minus(e1, e2) => eval(e1) match {
-        case Right(m) => Right(m)
-        case Left(v1) => eval(e2) match {
-            case Right(m) => Right(m)
-            case Left(v2) => Left(v1 - v2)            
+    case MathExp.Minus(e1, e2) =>
+        eval(e1) match {
+            case Left(m) => Left(m)
+            case Right(v1) =>
+                eval(e2) match {
+                    case Left(m) => Left(m)
+                    case Right(v2) => Right(v1 - v2)
+                }
         }
-    }
-    case MathExp.Mult(e1, e2)  => eval(e1) match {
-        case Right(m) => Right(m)
-        case Left(v1) => eval(e2) match {
-            case Right(m) => Right(m)
-            case Left(v2) => Left(v1 * v2)            
+    case MathExp.Mult(e1, e2) =>
+        eval(e1) match {
+            case Left(m) => Left(m)
+            case Right(v1) =>
+                eval(e2) match {
+                    case Left(m) => Left(m)
+                    case Right(v2) => Right(v1 * v2)
+                }
         }
-    }
-    case MathExp.Div(e1, e2)   => eval(e1) match {
-        case Right(m) => Right(m)
-        case Left(v1) => eval(e2) match {
-            case Right(m) => Right(m)
-            case Left(0)  => Right(s"div by zero caused by ${e.toString}")
-            case Left(v2) => Left(v1 / v2)            
+    case MathExp.Div(e1, e2) =>
+        eval(e1) match {
+            case Left(m) => Left(m)
+            case Right(v1) =>
+                eval(e2) match {
+                    case Left(m) => Left(m)
+                    case Right(0) =>
+                        Left(s"div by zero caused by ${e.toString}")
+                    case Right(v2) => Right(v1 / v2)
+                }
         }
-    }
-    case MathExp.Const(i)      => Left(i)
+    case MathExp.Const(i) => Right(i)
 }
-
 ```
 
 Executing `eval(Div(Const(1), Minus(Const(2), Const(2))))` will yield 
 
 ```
-Right(div by zero caused by Div(Const(1),Minus(Const(2),Const(2))))
+Left(div by zero caused by Div(Const(1),Minus(Const(2),Const(2))))
 ```
 
 ## Summary
