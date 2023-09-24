@@ -2,8 +2,9 @@
 
 ## Learning Outcomes
 
-1.
-1.
+1. Articulate the meaning of program semantics
+1. List different types of program semantics.
+1. Explain the limitation of static analysis. 
 
 ## What is Program Semantic
 
@@ -102,4 +103,20 @@ Static Semantic Analysis focuses on achieving the same goal as dynamic semantic 
 
 The advantage is that we gain some generality of the results without worry about the limitation of code coverage. The disadvantage is that we
 
-### Limitation of Semantic Analysis
+### Limitation of Static Semantic Analysis
+
+It follow Rice's theorem that all non-trivial semantic properties of programs are undecidable. i.e. there exists no algorithm that can decide all semantic properties for all given programs.
+
+For example, assume we can find an algorithm that determine whether the variable `x` in the following function is positive or negative without executing it. 
+
+```python
+def f(path):
+  p = open(path, "r")
+  x = 1
+  if eval(p):
+    x = -1
+  return x
+```
+
+In the above program the analysis of `x`'s sign (positive or negative) is subject to whether `eval(p)` is `true` or `false`. If such an algorithm exists, as a side effect we can also statically detect whether the given program in `path` is terminating, which is of course undecidable. 
+
