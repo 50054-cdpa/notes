@@ -84,6 +84,21 @@ The above three rules handle the binary operation expression.
 1. ${\tt (sOp2)}$ matches with the case where the first operand becomes constant, it evaluates the second operand by one step.
 1. ${\tt (sOp3)}$ matches with the case where both operands are constant. It returns the result by applying the binary operation to the two constant values.
 
+$$
+\begin{array}{rc}
+{\tt (sParen1)} & \begin{array}{c}
+                 \Delta \vdash E \longrightarrow E'
+                 \\ \hline 
+                 \Delta \vdash (E) \longrightarrow (E')
+                 \end{array} \\ \\
+{\tt (sParen2)} & \begin{array}{c}
+                 \Delta \vdash (c) \longrightarrow c
+                 \end{array}
+\end{array}
+$$
+
+The rules ${\tt  (sParen1)}$ and ${\tt (sParent2)}$ evaluate an expression enclosed by parantheses. 
+
 #### Small Step Operational Semantics of SIMP statement
 
 The small step operational semantics of statements are defined by the relation
@@ -399,6 +414,18 @@ $$
 $$
 
 in case that the expression is a binary operation, we evaluate the two operands to values and apply the binary operation to the constant values.
+
+$$
+\begin{array}{rc}
+{\tt (bParen)} & \begin{array}{c}
+                \Delta \vdash E \Downarrow c
+                \\ \hline
+                \Delta \vdash (E) \Downarrow c
+               \end{array}
+\end{array}
+$$
+
+the last rule ${\tt (bParen)}$ evaluetes an expression enclosed by parantheses.  
 
 #### Big Step Operational Semantics for SIMP statements
 
