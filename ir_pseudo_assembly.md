@@ -35,7 +35,7 @@ We consider the syntax of SIMP as follows
 $$
 \begin{array}{rccl}
 (\tt Statement) & S & ::= & X = E ; \mid return\ X ; \mid nop; \mid if\ E\ \{ \overline{S} \}\ else\ \{ \overline{S} \} \mid while\ E\ \{ \overline{S} \} \\
-(\tt Expression) & E & ::= & E\ OP\ E \mid X \mid C  \\
+(\tt Expression) & E & ::= & E\ OP\ E \mid X \mid C  \mid (E) \\
 (\tt Statements) & \overline{S} & ::= & S \mid S\ \overline{S} \\
 (\tt Operator) & OP & ::= & + \mid - \mid * \mid / \mid < \mid > \mid == \\ 
 (\tt Constant) & C & ::= & 0 \mid 1 \mid 2 \mid ... \mid true \mid false \\ 
@@ -268,6 +268,18 @@ $$
 
 In the above rule, we generate labeled instruction for the case of assigning a SIMP variable $Y$ to another variable $X$. The treat is similar to the case of ${\tt (Const)}$.
 
+$$ 
+\begin{array}{rc}
+{\tt (mParen)} & \begin{array}{c}
+               G_a(X)(E) \vdash lis
+               \\ \hline
+               G_a(X)((E)) \vdash lis
+               \end{array}
+\end{array}
+$$
+
+In the rule ${\tt (mParen)}$, we generate the IR labeled instructions by calling the generation algorithm recursively with the inner expression.
+
 $$
 \begin{array}{rc}
 {\tt (mOp)} & \begin{array}{c} 
@@ -418,6 +430,18 @@ $$
 $$
 
 The rules ${\tt (m2Const)}$ and ${\tt (m2Var)}$ are simple. We just return the constant (variable) as the $\^{e}$ with an empty set of label instructions.
+
+$$
+\begin{array}{rc}
+{\tt (m2Paren)} & \begin{array}{c} 
+          G_e(E) \vdash (\^{e}, \v{e})
+          \\ \hline
+          G_e((E)) \vdash (\^{e}, \v{e})
+     \end{array} 
+\end{array}  
+$$
+
+In the rule ${\tt (m2Paren)}$, we generate the results by recursivelly applying the algorithm to the inner expression.
 
 $$
 \begin{array}{rc}
