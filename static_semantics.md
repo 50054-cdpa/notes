@@ -476,7 +476,7 @@ $$
 {\tt (tiOp1)} & \begin{array}{c}
                 OP \in \{+, -, *, /\} \ \ \ E_1 \vDash \hat{T_1}, \kappa_1\ \ \ \ E_2 \vDash \hat{T_2}, \kappa_2
                 \\ \hline
-                E_1\ OP\ E_2 \vDash int, \{(\hat{T_1}, \hat{T_2})\} \cup \kappa_1 \cup \kappa_2
+                E_1\ OP\ E_2 \vDash int, \{(\hat{T_1}, int), (\hat{T_2}, int)\} \cup \kappa_1 \cup \kappa_2
                 \end{array} \\ \\ 
 {\tt (tiOp2)} & \begin{array}{c}
                 OP \in \{<, ==\} \ \ \ E_1 \vDash \hat{T_1}, \kappa_1\ \ \ \ E_2 \vDash \hat{T_2}, \kappa_2
@@ -486,7 +486,7 @@ $$
 \end{array}
 $$
 
-The rules ${\tt (tiOp1)}$ and ${\tt (tiOp2)}$ infer the type of binary operation expressions. Note that they can be broken into 6 different rules to be syntax-directed. ${\tt (tiOp)}$ is applied when the operator is an arithmethic operation, the returned type is $int$ and the inferred constraints is the union of the constraints inferred from the operands plus the entry of $( \hat{T_1}, \hat(T_2))$, which enforces the types of both operands should be the same. ${\tt (tiOp2)}$ supports the case where the operator is a boolean comparison. 
+The rules ${\tt (tiOp1)}$ and ${\tt (tiOp2)}$ infer the type of binary operation expressions. Note that they can be broken into 6 different rules to be syntax-directed. ${\tt (tiOp1)}$ is applied when the operator is an arithmethic operation, the returned type is $int$ and the inferred constraint set is the union of the constraints inferred from the operands plus the entries of enforcing both $\hat{T_1}$ and $\hat{T_2}$ are $int$. ${\tt (tiOp2)}$ supports the case where the operator is a boolean comparison. 
 
 $$
 \begin{array}{rc}
