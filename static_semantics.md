@@ -84,7 +84,12 @@ $$
                 (X,T) \in \Gamma
                 \\ \hline
                 \Gamma \vdash X : T
-                \end{array} \\ \\ 
+                \end{array} 
+\end{array}
+$$
+In the rule ${\tt (tVar)}$, we type check the variable $X$ having type $T$ under the type environment $\Gamma$ if we can find the entry $(X,T)$ in $\Gamma$.
+$$
+\begin{array}{rc}
 {\tt (tInt)} & \begin{array}{c}
                 c\ {\tt is\ an\ integer}
                 \\ \hline
@@ -94,7 +99,12 @@ $$
                 c \in \{true,false\}
                 \\ \hline
                 \Gamma \vdash c : bool
-                \end{array} \\ \\ 
+                \end{array} 
+\end{array}
+$$
+In the rule ${\tt (tInt)}$, we type check an integer constant having type $int$. Similarly, we type check a boolean constant having type $bool$. 
+$$
+\begin{array}{rc}
 {\tt (tOp1)} & \begin{array}{c}
                 \Gamma \vdash E_1:int \ \ \ \Gamma \vdash E_2:int\ \ \ OP \in \{ +, -, *, / \}
                 \\ \hline
@@ -109,11 +119,22 @@ $$
                 \Gamma \vdash E_1:bool \ \ \ \Gamma \vdash E_2:bool
                 \\ \hline
                 \Gamma \vdash E_1\ ==\ E_2 : bool
-                \end{array}  
+                \end{array} 
 \end{array}
 $$
-
-The set of rules for type checking SIMP expressions are similar to those found in lambda calclus. We skip the explanation.
+In the rule ${\tt (tOp1)}$, we type check an integer arithmetic operation having type $int$, if both operands can be type-checked against $int$.
+In the rule ${\tt (tOp2)}$, we type check an integer comparison operation having type $bool$, if both operands can be type-checked against $int$.
+In the rule ${\tt (tOp3)}$, we type check a boolean comparison operation having type $bool$, if both operands can be type-checked against $bool$.
+$$
+\begin{array}{rc}
+{\tt (tParen)} & \begin{array}{c}
+                \Gamma \vdash E :T
+                \\ \hline
+                \Gamma \vdash (E) :T
+                \end{array}
+\end{array}
+$$
+Lastly in rule ${\tt (tParen)}$, we type check a parenthesized expression by type-checking the inner expression. 
 
 ### Type Checking rules for SIMP Statements
 
@@ -467,6 +488,16 @@ $$
 
 The rules ${\tt (tiOp1)}$ and ${\tt (tiOp2)}$ infer the type of binary operation expressions. Note that they can be broken into 6 different rules to be syntax-directed. ${\tt (tiOp)}$ is applied when the operator is an arithmethic operation, the returned type is $int$ and the inferred constraints is the union of the constraints inferred from the operands plus the entry of $( \hat{T_1}, \hat(T_2))$, which enforces the types of both operands should be the same. ${\tt (tiOp2)}$ supports the case where the operator is a boolean comparison. 
 
+$$
+\begin{array}{rc}
+{\tt (tiParen)} & \begin{array}{c}
+                  E \vDash \hat{T}, \kappa
+                  \\ \hline
+                  (E) \vDash \hat{T}, \kappa
+                  \end{array}
+\end{array}
+$$
+The inference ruel for parenthesis expression is trivial, we infer the type from the inner expression.
 
 ### Unification 
 
