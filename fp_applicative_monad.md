@@ -416,46 +416,49 @@ def eval2(e:MathExp)(using m:MonadError[Option, ErrMsg]):Option[Int] = e match {
 }
 ```
 
-Now let's try to refactor the code to make use of `Either[A, ErrMsg]` as the functor instead of `Option[A]`.
+Now let's try to refactor the code to make use of `Either[ErrMsg, A]` as the functor instead of `Option[A]`.
 
 ```scala
-enum Either[+A,+B] {
-    case Left(v:A)
-    case Right(v:B)
+enum Either[+A, +B] {
+    case Left(v: A)
+    case Right(v: B)
     // to support for comprehension
-    def flatMap[C,D>:B](f: A => Either[C,D]):Either[C,D] = this match {
-        case Right(e) => Right(e)
-        case Left(a) => f(a)
+    def flatMap[C>:A,D](f: B => Either[C,D]):Either[C,D] = this match {
+        case Left(a) => Left(a)
+        case Right(b) => f(b)
     }
-    def map[C](f:A => C):Either[C,B] = this match {
-        case Right(e) => Right(e)
-        case Left(a) => Left(f(a))
+    def map[D](f:B => D):Either[A,D] = this match {
+        case Right(b) => Right(f(b))
+        case Left(e) => Left(e)
     }
-}
+} 
 ```
 
 In the above, we have to define `flatMap` and `map` member functions for `Either` type so that we could make
-use of the for comprehension later on. One might argue with the type signaature of `flatMap` should be
-`flatMap[C](f: A => Either[C,B]):Either[C,B]`. The issue here is that the type variable `B` will appear in both co- and contra-variant positions.  The top-level annotation `+B` is no longer true. Hence we "relax" the type constraint here by introducing a new type variable `D` which has a lower bound of `B` (even though we do not need to upcast the result of the Right alternative.)
+use of the for comprehension later on. One might argue with the type signature of `flatMap` should be
+`flatMap[D](f: B => Either[A,D]):Either[A,D]`. The issue here is that the type variable `A` will appear in both co- and contra-variant positions.  The top-level annotation `+A` is no longer true. Hence we "relax" the type constraint here by introducing a new type variable `C` which has a lower bound of `A` (even though we do not need to upcast the result of the Left alternative.)
 
 ```scala
-type EitherErr = [A] =>> Either[A,ErrMsg]
+type EitherErr = [B] =>> Either[ErrMsg,B]
 ```
 
-In the above we define `Either` algebraic datatype and the type construcor `EitherErr`. `[A] =>> Either[A,ErrMsg]` denotes a type lambda, which means that `EitherErr` is a type constructor (or type function) that takes a type `A` and return an `Either[A,ErrMsg]` type.
+In the above we define `Either` algebraic datatype and the type construcor `EitherErr`. `[B] =>> Either[ErrMsg, B]` denotes a type lambda, which means that `EitherErr` is a type constructor (or type function) that takes a type `B` and return an `Either[ErrMsg, B]` type.
 
 Next, we define the type class instance for `MonadError[EitherErr, ErrMsg]`
 
 ```scala
-given eitherErrMonad:MonadError[EitherErr, ErrMsg] = new MonadError[EitherErr, ErrMsg] {
-    import Either.*
-    def raiseError[A](e:ErrMsg):EitherErr[A] = Right(e)
-    def bind[A,B](fa:EitherErr[A])(f:A=>EitherErr[B]):EitherErr[B] = fa match {
-        case Right(s) => Right(s)
-        case Left(a) => f(a)
+given eitherErrMonad: MonadError[EitherErr, ErrMsg] =
+    new MonadError[EitherErr, ErrMsg] {
+        import Either.*
+        def raiseError[B](e: ErrMsg): EitherErr[B] = Left(e)
+        def bind[A, B](
+            fa: EitherErr[A]
+        )(f: A => EitherErr[B]): EitherErr[B] = fa match {
+            case Right(b) => f(b)
+            case Left(s)  => Left(s)
+        }
+        def pure[B](v: B): EitherErr[B] = Right(v)
     }
-    def pure[A](v:A):EitherErr[A] = Left(v)
-}
 ```
 
 And finally, we refactor the `eval` function by changing its type signature. And its body remains unchanged.
