@@ -146,13 +146,13 @@ Alternatively, we can define the `ap` method of the `Applicative[List]` instance
 
 ```scala
     def ap[A, B](ff: List[A => B])(fa: List[A]):List[B] = 
-        ff.flatMap( f => fa.map(a => (f(a)))
+        ff.flatMap( f => fa.map(a => (f(a))))
 ```
 
 Recall that Scala compiler desugars expression of shape
 
 ```scala
-e1.flatMap( v1 => e2.flatMap( v2 => ... en.map(vn => e ... ))
+e1.flatMap( v1 => e2.flatMap( v2 => ... en.map(vn => e ... )))
 ```
 
 into
