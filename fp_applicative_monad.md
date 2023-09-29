@@ -227,6 +227,31 @@ Like Functor laws, every Applicative instance must follow the Applicative laws t
 3. Interchange: `ap(u)(pure(y))` $\equiv$ `ap(pure(f=>f(y)))(u)`
 4. Composition: `ap(ap(ap(pure(f=>f.compose))(u))(v))(w)` $\equiv$ `ap(u)(ap(v)(w))`
 
+* Identity law states that applying a lifted identity function of type `A=>A` is same as an identity function of type `F[A] => F[A]` where `F` is the applicative functor.
+* Homomorphism says that applying a lifted function (which has type `A=>A` before being lifted) to a lifted value, is equivalent to applying the unlifted function to the unlifted value directly and then lift the result.
+ * To understand Interchange law let's consider the following equation
+$$
+u\ y \equiv (\lambda f.(f\ y))\ u
+$$
+    * Interchange law says that the above equation remains valid when $u$ is already lifted, as long as we also lift $y$. 
+
+* To understand the Composition law, we consider the following equation in lambda calculus
+
+$$
+(((\lambda f.(\lambda g.(f \circ g)))\ u)\ v)\ w \equiv u\ (v\ w)
+$$
+
+$$
+\begin{array}{rl}
+(\underline{((\lambda f.(\lambda g.(f \circ g)))\ u)}\ v)\ w & \longrightarrow_{\beta} \\ 
+(\underline{(\lambda g.(u \circ g))\ v})\ w & \longrightarrow_{\beta} \\ 
+(u\circ v)\ w & \longrightarrow_{\tt composition} \\ 
+u\ (v\ w)
+\end{array}
+$$
+
+The Composition Law says that the above equation remains valid when $u$, $v$ and $w$ are lifted, as long as we also lift $\lambda f.(\lambda g.(f \circ g))$.
+
 #### Cohort Exercise
 
 show that any applicative functor satisfying the above laws also satisfies the Functor Laws
