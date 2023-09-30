@@ -616,16 +616,16 @@ For example, suppose we would like to implement some test with a sequence of API
 case class Reader[R, A] (run: R=>A) { 
     // we need flatMap and map for for-comprehension
     def flatMap[B](f:A =>Reader[R,B]):Reader[R,B] = this match {
-        case Reader(ra) => Reader {
+        case Reader(ra) => Reader (
             r => f(ra(r)) match {
                 case Reader(rb) => rb(r)
             }
-        }
+        )
     }
     def map[B](f:A=>B):Reader[R, B] = this match {
-        case Reader(ra) => Reader {
+        case Reader(ra) => Reader (
             r => f(ra(r))
-        }
+        )
     }
 }
 
@@ -659,6 +659,9 @@ In fact, we can re-express `bind` for all Monads as the `flatMap` in their under
 ```scala
 override def bind[A,B](fa:Reader[R, A])(f:A=>Reader[R,B]):Reader[R,B] = fa.flatMap(f)
 ```
+
+The following example shows how Reader Monad can be used in making several API calls (computation) to the same API server (shared input
+`https://127.0.0.1/`). For authentication we need to call the authentication server `https://127.0.0.10/` temporarily. 
 
 ```scala
 case class API(url:String)
