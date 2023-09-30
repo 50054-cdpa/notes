@@ -477,7 +477,7 @@ def eval2(e:MathExp)(using m:MonadError[Option, ErrMsg]):Option[Int] = e match {
     case MathExp.Div(e1, e2)   => for {
         v1 <- eval2(e1)
         v2 <- eval2(e2)
-        _  <- if (v2 !=0) {m.raiseError("div by zero encountered.")} else { m.pure(())}
+        _  <- if (v2 ==0) {m.raiseError("div by zero encountered.")} else { m.pure(())}
     } yield (v1/v2) 
     case MathExp.Const(i)      => m.pure(i)
 }
@@ -547,7 +547,7 @@ def eval3(e:MathExp)(using m:MonadError[EitherErr, ErrMsg]):EitherErr[Int] = e m
     case MathExp.Div(e1, e2)   => for {
         v1 <- eval3(e1)
         v2 <- eval3(e2)
-        _  <- if (v2 !=0) {m.raiseError("div by zero encountered.")} else { m.pure(())}
+        _  <- if (v2 ==0) {m.raiseError("div by zero encountered.")} else { m.pure(())}
     } yield (v1/v2) 
     case MathExp.Const(i)      => m.pure(i)
 }
