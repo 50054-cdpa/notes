@@ -218,6 +218,49 @@ given optApplicative:Applicative[Option] = new Applicative[Option] {
 
 In the above Applicative instance, the `ap` method takes a optional operation and optional value as inputs, tries to apply the operation to the value when both of them are present, otherwise, signal an error by returning `None`. This allows us to focus on the high-level function-value-input-output relation and abstract away the details of handling potential absence of function or value.
 
+Recall the builtin `Option` type is defined as follows,
+
+```scala
+// no need to run this.
+enum Option[+A] {
+    case None
+    case Some(v)
+    def map[B](f:A=>B):Option[B] = this match {
+        case None => None 
+        case Some(v) => Some(f(v))
+    }
+    def flatMap[B](f:A=>Option[B]):Option[B] = this match {
+        case None => None 
+        case Some(v) => f(v) match {
+            case None => None 
+            case Some(u) => Some(u) 
+        }
+    }
+}
+```
+
+Hence `optApplicative` can be simplified as 
+
+```scala
+given optApplicative:Applicative[Option] = new Applicative[Option] {
+    def pure[A](v:A):Option[A] = Some(v)
+    def ap[A,B](ff:Option[A=>B])(fa:Option[A]):Option[B] = 
+        ff.flatMap(f => fa.map(f)) // same as listApplicative
+}
+```
+
+or 
+```scala
+given optApplicative:Applicative[Option] = new Applicative[Option] {
+    def pure[A](v:A):Option[A] = Some(v)
+    def ap[A,B](ff:Option[A=>B])(fa:Option[A]):Option[B] = for 
+    {
+        f <- ff
+        a <- fa
+    } yield f(a) // same as listApplicative
+}
+```
+
 ### Applicative Laws
 
 Like Functor laws, every Applicative instance must follow the Applicative laws to remain computationally predictable.
@@ -386,7 +429,7 @@ Now the readability is restored.
 
 Another advantage of coding with `Monad` is that its abstraction allows us to switch underlying data structure without major code change.
 
-Suppose we would like to use `Either[A, String]` or some other equivalent as return type of `eval` function to support better error message. But before that, let's consider some subclasses of the `Applicative` and the `Monad` type classes.
+Suppose we would like to use `Either[String, A]` or some other equivalent as return type of `eval` function to support better error message. But before that, let's consider some subclasses of the `Applicative` and the `Monad` type classes.
 
 ```scala
 trait ApplicativeError[F[_], E] extends Applicative[F] {
