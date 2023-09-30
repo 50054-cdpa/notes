@@ -437,7 +437,6 @@ trait ApplicativeError[F[_], E] extends Applicative[F] {
 }
 
 trait MonadError[F[_], E] extends Monad[F] with ApplicativeError[F, E] {
-    override def pure[A](v:A):F[A]
     override def raiseError[A](e:E):F[A]
 }   
 
