@@ -146,7 +146,7 @@ Alternatively, we can define the `ap` method of the `Applicative[List]` instance
 
 ```scala
     def ap[A, B](ff: List[A => B])(fa: List[A]):List[B] = 
-        ff.flatMap( f => fa.map(a => (f(a))))
+        ff.flatMap( f => fa.map(f))
 ```
 
 Recall that Scala compiler desugars expression of shape
@@ -218,6 +218,49 @@ given optApplicative:Applicative[Option] = new Applicative[Option] {
 
 In the above Applicative instance, the `ap` method takes a optional operation and optional value as inputs, tries to apply the operation to the value when both of them are present, otherwise, signal an error by returning `None`. This allows us to focus on the high-level function-value-input-output relation and abstract away the details of handling potential absence of function or value.
 
+Recall the builtin `Option` type is defined as follows,
+
+```scala
+// no need to run this.
+enum Option[+A] {
+    case None
+    case Some(v)
+    def map[B](f:A=>B):Option[B] = this match {
+        case None => None 
+        case Some(v) => Some(f(v))
+    }
+    def flatMap[B](f:A=>Option[B]):Option[B] = this match {
+        case None => None 
+        case Some(v) => f(v) match {
+            case None => None 
+            case Some(u) => Some(u) 
+        }
+    }
+}
+```
+
+Hence `optApplicative` can be simplified as 
+
+```scala
+given optApplicative:Applicative[Option] = new Applicative[Option] {
+    def pure[A](v:A):Option[A] = Some(v)
+    def ap[A,B](ff:Option[A=>B])(fa:Option[A]):Option[B] = 
+        ff.flatMap(f => fa.map(f)) // same as listApplicative
+}
+```
+
+or 
+```scala
+given optApplicative:Applicative[Option] = new Applicative[Option] {
+    def pure[A](v:A):Option[A] = Some(v)
+    def ap[A,B](ff:Option[A=>B])(fa:Option[A]):Option[B] = for 
+    {
+        f <- ff
+        a <- fa
+    } yield f(a) // same as listApplicative
+}
+```
+
 ### Applicative Laws
 
 Like Functor laws, every Applicative instance must follow the Applicative laws to remain computationally predictable.
@@ -226,6 +269,31 @@ Like Functor laws, every Applicative instance must follow the Applicative laws t
 2. Homomorphism: `ap(pure(f))(pure(x))` $\equiv$ `pure(f(x))`
 3. Interchange: `ap(u)(pure(y))` $\equiv$ `ap(pure(f=>f(y)))(u)`
 4. Composition: `ap(ap(ap(pure(f=>f.compose))(u))(v))(w)` $\equiv$ `ap(u)(ap(v)(w))`
+
+* Identity law states that applying a lifted identity function of type `A=>A` is same as an identity function of type `F[A] => F[A]` where `F` is the applicative functor.
+* Homomorphism says that applying a lifted function (which has type `A=>A` before being lifted) to a lifted value, is equivalent to applying the unlifted function to the unlifted value directly and then lift the result.
+ * To understand Interchange law let's consider the following equation
+$$
+u\ y \equiv (\lambda f.(f\ y))\ u
+$$
+    * Interchange law says that the above equation remains valid when $u$ is already lifted, as long as we also lift $y$. 
+
+* To understand the Composition law, we consider the following equation in lambda calculus
+
+$$
+(((\lambda f.(\lambda g.(f \circ g)))\ u)\ v)\ w \equiv u\ (v\ w)
+$$
+
+$$
+\begin{array}{rl}
+(\underline{((\lambda f.(\lambda g.(f \circ g)))\ u)}\ v)\ w & \longrightarrow_{\beta} \\ 
+(\underline{(\lambda g.(u \circ g))\ v})\ w & \longrightarrow_{\beta} \\ 
+(u\circ v)\ w & \longrightarrow_{\tt composition} \\ 
+u\ (v\ w)
+\end{array}
+$$
+
+The Composition Law says that the above equation remains valid when $u$, $v$ and $w$ are lifted, as long as we also lift $\lambda f.(\lambda g.(f \circ g))$.
 
 #### Cohort Exercise
 
@@ -361,7 +429,7 @@ Now the readability is restored.
 
 Another advantage of coding with `Monad` is that its abstraction allows us to switch underlying data structure without major code change.
 
-Suppose we would like to use `Either[A, String]` or some other equivalent as return type of `eval` function to support better error message. But before that, let's consider some subclasses of the `Applicative` and the `Monad` type classes.
+Suppose we would like to use `Either[String, A]` or some other equivalent as return type of `eval` function to support better error message. But before that, let's consider some subclasses of the `Applicative` and the `Monad` type classes.
 
 ```scala
 trait ApplicativeError[F[_], E] extends Applicative[F] {
@@ -369,14 +437,13 @@ trait ApplicativeError[F[_], E] extends Applicative[F] {
 }
 
 trait MonadError[F[_], E] extends Monad[F] with ApplicativeError[F, E] {
-    override def pure[A](v:A):F[A]
     override def raiseError[A](e:E):F[A]
 }   
 
 type ErrMsg = String
 ```
 
-In the above, we define an extension to the `Applicative` Monad, named `ApplicativeError` which expects an extra type class parameter `E` that denotes an error. The `raiseError` method takes a value of type `E` and returns the Applicative result.
+In the above, we define an extension to the `Applicative` type class, named `ApplicativeError` which expects an extra type class parameter `E` that denotes an error. The `raiseError` method takes a value of type `E` and returns the Applicative result.
 
 Similarly, we extend `Monad` type class with `MonadError` type class. Next we include the following type class instance to include `Option` as one f the `MonadError` functor.
 
@@ -410,7 +477,7 @@ def eval2(e:MathExp)(using m:MonadError[Option, ErrMsg]):Option[Int] = e match {
     case MathExp.Div(e1, e2)   => for {
         v1 <- eval2(e1)
         v2 <- eval2(e2)
-        _  <- if (v2 !=0) {m.raiseError("div by zero encountered.")} else { m.pure(())}
+        _  <- if (v2 ==0) {m.raiseError("div by zero encountered.")} else { m.pure(())}
     } yield (v1/v2) 
     case MathExp.Const(i)      => m.pure(i)
 }
@@ -480,7 +547,7 @@ def eval3(e:MathExp)(using m:MonadError[EitherErr, ErrMsg]):EitherErr[Int] = e m
     case MathExp.Div(e1, e2)   => for {
         v1 <- eval3(e1)
         v2 <- eval3(e2)
-        _  <- if (v2 !=0) {m.raiseError("div by zero encountered.")} else { m.pure(())}
+        _  <- if (v2 ==0) {m.raiseError("div by zero encountered.")} else { m.pure(())}
     } yield (v1/v2) 
     case MathExp.Const(i)      => m.pure(i)
 }
@@ -549,16 +616,16 @@ For example, suppose we would like to implement some test with a sequence of API
 case class Reader[R, A] (run: R=>A) { 
     // we need flatMap and map for for-comprehension
     def flatMap[B](f:A =>Reader[R,B]):Reader[R,B] = this match {
-        case Reader(ra) => Reader {
+        case Reader(ra) => Reader (
             r => f(ra(r)) match {
                 case Reader(rb) => rb(r)
             }
-        }
+        )
     }
     def map[B](f:A=>B):Reader[R, B] = this match {
-        case Reader(ra) => Reader {
+        case Reader(ra) => Reader (
             r => f(ra(r))
-        }
+        )
     }
 }
 
@@ -583,8 +650,7 @@ trait ReaderMonad[R] extends Monad[ReaderM[R]] {
 }
 ```
 
-In the above `Reader[R,A]` case class defines the structure of the Reader Monad,
-where `R` denotes the shared information for the computation, (source for reader), `A` denotes the output of the computation. We would like to define `Reader[R,_]` as a Monad instance. To do so, we define a type-curry version of `Reader`, i.e. `ReaderM`.
+In the above `Reader[R,A]` case class defines the structure of the Reader type, where `R` denotes the shared information for the computation, (source for reader), `A` denotes the output of the computation. We would like to define `Reader[R,_]` as a Monad instance. To do so, we define a type-curry version of `Reader`, i.e. `ReaderM`.
 
 One crucial observation is that `bind` method in `ReaderMonad` is nearly identical to `flatMap` in `Reader`, with the arguments swapped.
 
@@ -593,6 +659,9 @@ In fact, we can re-express `bind` for all Monads as the `flatMap` in their under
 ```scala
 override def bind[A,B](fa:Reader[R, A])(f:A=>Reader[R,B]):Reader[R,B] = fa.flatMap(f)
 ```
+
+The following example shows how Reader Monad can be used in making several API calls (computation) to the same API server (shared input
+`https://127.0.0.1/`). For authentication we need to call the authentication server `https://127.0.0.10/` temporarily. 
 
 ```scala
 case class API(url:String)
@@ -717,6 +786,11 @@ three Monad Laws.
 1. Left Identity: `bind(pure(a))(f)` $\equiv$ `f(a)`
 2. Right Identity: `bind(m)(pure)` $\equiv$ `m`
 3. Associativity: `bind(bind(m)(f))(g)` $\equiv$ `bind(m)(x => bind(f(x))(g))`
+
+* Intutively speaking, a `bind` operation is to *extract* results of type `A` from its first argument with type `F[A]` and apply `f` to the extracted results.
+* Left identity law enforces that binding a lifted value to `f`, is the same as applying `f` to the unlifted value directly, because the lifting and the *extraction* of the bind cancel each other.
+* Right identity law enforces that binding a lifted value to `pure`,  is the same as the lifted value, because *extracting* results from `m` and `pure` cancel each other.
+* The Associativity law enforces that binding a lifted value `m` to `f` then to `g` is the same as binding `m` to a monadic bind composition `(x => bind(f(x)(g)))`
 
 ## Summary
 
