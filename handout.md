@@ -92,7 +92,9 @@ If you have course/assignment/project related questions, please post it on the d
 
 ## Project
 
-TBD
+* [Lab 1](https://github.com/50054-2023-fall/project/blob/main/simp/lab1.md)
+* [Lab 2](https://github.com/50054-2023-fall/project/blob/main/simp/lab2.md)
+* Lab 3 
 
 
 ## Submission Policy and Plagiarism
