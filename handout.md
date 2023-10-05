@@ -92,9 +92,13 @@ If you have course/assignment/project related questions, please post it on the d
 
 ## Project
 
-* [Lab 1](https://github.com/50054-2023-fall/project/blob/main/simp/lab1.md)
-* [Lab 2](https://github.com/50054-2023-fall/project/blob/main/simp/lab2.md)
-* Lab 3 
+The aim of the project is to apply the techniques and concepts taught in this module to develop a simple compiler for the SIMP language. 
+
+You may work as a team (up to max 3 members). Please register your team [here](https://docs.google.com/spreadsheets/d/1yN4XGpKd7SND2SBqA-ubgJm6eSLjmMwBREFQPm8cqaQ/edit#gid=0).  
+
+* [Lab 1 (10%, Deadline - 12 Nov 2023 23:59)](https://github.com/50054-2023-fall/project/blob/main/simp/lab1.md)
+* [Lab 2 (10%, Deadline - 26 Nov 2023 23:59)](https://github.com/50054-2023-fall/project/blob/main/simp/lab2.md)
+* Lab 3 (15%, Deadline - 10 Dec 2023 23:59)
 
 
 ## Submission Policy and Plagiarism
