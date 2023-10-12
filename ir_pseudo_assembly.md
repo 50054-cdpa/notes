@@ -9,7 +9,7 @@ By the end of this lesson, you should be able to
 1. Describe how pseudo-assembly program is executed.
 1. Apply Maximal Munch algorithms to generate a pseudo-assembly code from a given SIMP source code.
 
-## Recap the compiler pipelien
+## Recap the compiler pipeline
 
 Recall the compiler pipeline
 
@@ -77,7 +77,7 @@ $$
 $$
 
 where $li$, a labeled instruction, is a label $l$ associated with an instruction $i$. For simplicity, we use positive integers as labels. 
-An instruction is either a move operation (moving value from source operand $s$ to destination operatnd $d$), a binary move operation, a return instruction, a conditional jump instruction and a jump instruction. Some non-syntactical restriction exists, e.g. a constant can't be used in a destination position. In Psuedo Assembly, we use `0` to denote `false` and any `1` constant to denote `true`.
+An instruction is either a move operation (moving value from source operand $s$ to destination operatnd $d$), a binary move operation, a return instruction, a conditional jump instruction and a jump instruction. Some non-syntactical restriction exists, e.g. a constant can't be used in a destination position. In Psuedo Assembly, we use `0` to denote `false` and `1`  to denote `true`.
 $r_{ret}$ is a special register for the return statement.
 
 Example (PA1)
@@ -408,7 +408,7 @@ As we observe, we don't quite get the exact output as example PA1. The main reas
 
 Since the ${\tt (mOp)}$ rule is the culprit of causing extra move steps generated in the IR.
 
-We consider a variant the Maximal Munch Algorithm. Instead of using $G_a(X)(E)$ to generate  labeled instructions $lis$ , we use a different sub system $G_e(E)$ to generate a pairs of results, $\^{e}, \v{e}$. where $\^{e}$ is a sequence of label instructions generated from $E$ and $\v{e}$ is the "result" operand storing the final result of $\^{e}$.
+We consider a variant the Maximal Munch Algorithm. Instead of using $G_a(X)(E)$ to generate  labeled instructions $lis$ , we use a different sub system $G_e(E)$ to generate a pair of results, $\^{e}, \v{e}$. where $\v{e}$ is a sequence of label instructions generated from $E$ and $\^{e}$ is the "result" operand storing the final result of $\v{e}$.
 
 The adjusted ${\tt (mConst)}$, ${\tt (mVar)}$ and ${\tt (mOp)}$ rules are as follows,
 
@@ -446,18 +446,18 @@ In the rule ${\tt (m2Paren)}$, we generate the results by recursivelly applying 
 $$
 \begin{array}{rc}
 {\tt (m2Op)} & \begin{array}{c} 
-          G_e(E_1) \vdash (\^{e_1}, \v{e_1}) \\ 
-          G_e(E_2) \vdash (\^{e_2}, \v{e_2}) \\ 
+          G_e(E_1) \vdash (\^{e}_1, \v{e}_1) \\ 
+          G_e(E_2) \vdash (\^{e}_2, \v{e}_2) \\ 
           t \ {\tt is\ a\ fresh\ variable.} \\ 
           l \ {\tt is\ a\ fresh\ label.} \\ 
           \hline
-          G_e(E_1 OP E_2) \vdash (t, \v{e_1} + \v{e_2} + [l : t \leftarrow \^{e_1} OP \v{e_2}] 
+          G_e(E_1 OP E_2) \vdash (t, \v{e}_1 + \v{e}_2 + [l : t \leftarrow \^{e}_1 OP \^{e}_2]) 
           \end{array} \\ 
 \end{array}  
 $$
 
 In the ${\tt (m2Op)}$ rule, we call $G_e(\cdot)$ recursively to generate the 
-results for $E_1$ and $E_2$, namely $(\^{e_1}, \v{e_1})$ and $(\^{e_2}, \v{e_2})$. 
+results for $E_1$ and $E_2$, namely $(\^{e}_1, \v{e}_1)$ and $(\^{e}_2, \v{e}_2)$. 
 We then use them to synthesis the final output. 
 
 
@@ -496,7 +496,7 @@ $$
           G_s(S_3) \vdash lis_3 \\ 
           l_{EndElse}\ {\tt is\ a\ fresh\ label} \\
           l_{EndIf}\ {\tt is\ the\ next\ label\ (w/o\ incr)} \\ 
-          lis_1 = [l_{IfCondJ}: ifn\ \v{e}\ goto\ l_{Else} ] \\ 
+          lis_1 = [l_{IfCondJ}: ifn\ \^{e}\ goto\ l_{Else} ] \\ 
           lis_2' = lis_2 + [l_{EndThen}:goto\ l_{EndIf}] \\ 
           lis_3' = lis_3 + [l_{EndElse}:goto\ l_{EndIf}] \\ 
           \hline  
@@ -515,10 +515,10 @@ $$
           G_s(S) \vdash lis_2\\ 
           l_{EndBody}\ {\tt is\ a\ fresh\ label} \\  
           l_{EndWhile}\ {\tt is\ the\ next\ label\ (w/o\ incr)} \\ 
-          lis_1 = [l_{WhileCondJ}: ifn\ \v{e}\ goto\ l_{EndWhile}] \\
+          lis_1 = [l_{WhileCondJ}: ifn\ \^{e}\ goto\ l_{EndWhile}] \\
           lis_2' = lis_2 + [ l_{EndBody}: goto\ l_{While} ] \\
           \hline
-          G_s(while\ E\ \{S\}) \vdash  \^{e} + lis_1 + lis_2'           
+          G_s(while\ E\ \{S\}) \vdash  \v{e} + lis_1 + lis_2'           
           \end{array} 
 \end{array}
 $$
