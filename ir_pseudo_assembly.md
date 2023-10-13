@@ -96,7 +96,7 @@ Example (PA1)
 
 ### Informal Specification of Pseudo Assembly
 
-We assume that statements of a pseudo assembly program are stored in a list. There exists a mapping from labels to the corresponding instructions, When we execute a pseudo assembly program, we use a program counter to keep track of the current execution context (i.e. the current labeled instruction being considered) and use a stack memory to keep track of the variable to value mapping. 
+We assume that statements of a pseudo assembly program are stored in a list. There exists a mapping from labels to the corresponding instructions, When we execute a pseudo assembly program, we use a program counter to keep track of the current execution context (i.e. the current labeled instruction being considered) and use a set to keep track of the variable to value mapping. 
 
 For example when we execute the above program with `input = 2`
 |Program Counter| Local  Memory | Next Instr | 
