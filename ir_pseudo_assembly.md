@@ -477,9 +477,7 @@ $$
 $$
 \begin{array}{rc}
 {\tt (m2Return)} & \begin{array}{c}
-     G_e(X) \vdash (\^{e}, \v{e}) \ \ l_1, l_2\ {\tt are\ fresh\ labels} \\
-     \hline
-     G_s(return\ X) \vdash \v{e} + [ l_1 : r_{ret} \leftarrow \^{e},  l_2: ret ]
+     G_s(return\ X) \vdash \v{e} + [ l_1 : r_{ret} \leftarrow X,  l_2: ret ]
      \end{array} 
 \end{array}
 $$
