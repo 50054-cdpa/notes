@@ -443,7 +443,7 @@ trait MonadError[F[_], E] extends Monad[F] with ApplicativeError[F, E] {
 type ErrMsg = String
 ```
 
-In the above, we define an extension to the `Applicative` Monad, named `ApplicativeError` which expects an extra type class parameter `E` that denotes an error. The `raiseError` method takes a value of type `E` and returns the Applicative result.
+In the above, we define an extension to the `Applicative` type class, named `ApplicativeError` which expects an extra type class parameter `E` that denotes an error. The `raiseError` method takes a value of type `E` and returns the Applicative result.
 
 Similarly, we extend `Monad` type class with `MonadError` type class. Next we include the following type class instance to include `Option` as one f the `MonadError` functor.
 

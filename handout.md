@@ -92,7 +92,13 @@ If you have course/assignment/project related questions, please post it on the d
 
 ## Project
 
-TBD
+The aim of the project is to apply the techniques and concepts taught in this module to develop a simple compiler for the SIMP language. 
+
+You may work as a team (up to max 3 members). Please register your team [here](https://docs.google.com/spreadsheets/d/1yN4XGpKd7SND2SBqA-ubgJm6eSLjmMwBREFQPm8cqaQ/edit#gid=0).  
+
+* [Lab 1 (10%, Deadline - 12 Nov 2023 23:59)](https://github.com/50054-2023-fall/project/blob/main/simp/lab1.md)
+* [Lab 2 (10%, Deadline - 26 Nov 2023 23:59)](https://github.com/50054-2023-fall/project/blob/main/simp/lab2.md)
+* Lab 3 (15%, Deadline - 10 Dec 2023 23:59)
 
 
 ## Submission Policy and Plagiarism
@@ -108,9 +114,9 @@ TBD
 | 1 | Intro | [FP: Expression, Function, Conditional, Recursion](./fp_intro.md) | [Cohort Problem 1](https://github.com/50054-2023-fall/cohort_probs/tree/main/fp_intro), [Homework 1](https://github.com/50054-2023-fall/homework/tree/main/fp_intro) | Homework 1 no submission required | 
 | 2 | [FP: List, Pattern Matching](./fp_scala.md) | [FP: Algebraic Data Type](./fp_scala.md) | [Cohort Problem 2](https://github.com/50054-2023-fall/cohort_probs/tree/main/fp_scala), [Homework 2](https://github.com/50054-2023-fall/homework/tree/main/fp_scala) |  |
 | 3 | [FP: Generics, GADT](./fp_scala_poly.md) | [FP: Type Classes, Functor](./fp_scala_poly.md) | [Cohort Problem 3](https://github.com/50054-2023-fall/cohort_probs/tree/main/fp_scala_poly), Homework 2 (Cont'd) | Homework 2 5% |
-| 4 | [FP: Applicative](./fp_applicative_monad.md) | [FP: Monad](./fp_applicative_monad.md) |  [Cohort Problem 4](https://github.com/50054-2023-fall/cohort_probs/tree/main/fp_applicative_monad), Homework 3 |  |
+| 4 | [FP: Applicative](./fp_applicative_monad.md) | [FP: Monad](./fp_applicative_monad.md) |  [Cohort Problem 4](https://github.com/50054-2023-fall/cohort_probs/tree/main/fp_applicative_monad), [Homework 3](https://github.com/50054-2023-fall/homework/tree/main/fp_scala_poly) |  |
 | 5 | [Syntax Analysis: Lexing, Parsing](./syntax_analysis.md) | [Top-down Parsing](./syntax_analysis.md) | [Cohort Problem 5](https://github.com/50054-2023-fall/cohort_probs/tree/main/syntax_analysis), Homework 3 (Cont'd) | Homework 3 5% |
-| 6 | [Bottom-up Parsing](./syntax_analysis.md) | [IR: Pseudo-Assembly](./ir_pseudo_assembly.md) | [Cohort Problem 6](https://github.com/50054-2023-fall/cohort_probs/tree/main/syntax_analysis_2_pseudo_ir), Homework 4  |  | 
+| 6 | [Bottom-up Parsing](./syntax_analysis_2.md) | [IR: Pseudo-Assembly](./ir_pseudo_assembly.md) | [Cohort Problem 6](https://github.com/50054-2023-fall/cohort_probs/tree/main/syntax_analysis_2_pseudo_ir), [Homework 4](https://github.com/50054-2023-fall/homework/tree/main/fp_syntax_analysis)  |  | 
 | 7 |  |  |  | Homework 4 5% | 
 | 8 | **Mid-term**, [Semantic Analysis](./semantic_analysis.md)| [Dynamic Semantics](./dynamic_semantics.md) | [Cohort Problem 7](https://github.com/50054-2023-fall/cohort_probs/tree/main/dynamic_semantics) | Mid-term 10%  |
 | 9 | [Static Semantics for SIMP](./static_semantics.md) | [Static Semantics for Lambda Calculus](./static_semantics_2.md) | Cohort Problem 8, Homework 5  | Project Lab 1 10% |
