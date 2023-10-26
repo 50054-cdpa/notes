@@ -107,14 +107,15 @@ For example when we execute the above program with `input = 2`
 | 4 | {input: 2, x : 2, s : 0, c : 0, t : 1} | 5 |
 | 5 | {input: 2, x : 2, s : 0, c : 0, t : 1} | 6 |
 | 6 | {input: 2, x : 2, s : 0, c : 0, t : 1} | 7 |
-| 7 | {input: 2, x : 2, s : 0, c : 1, t : 1} | 4 | 
+| 7 | {input: 2, x : 2, s : 0, c : 1, t : 1} | 8 | 
 | 8 | {input: 2, x : 2, s : 0, c : 1, t : 1} | 4 | 
 | 4 | {input: 2, x : 2, s : 0, c : 1, t : 1} | 5 |
 | 5 | {input: 2, x : 2, s : 0, c : 1, t : 1} | 6 |
 | 6 | {input: 2, x : 2, s : 1, c : 1, t : 1} | 7 |
 | 7 | {input: 2, x : 2, s : 1, c : 2, t : 1} | 8 |
 | 8 | {input: 2, x : 2, s : 1, c : 2, t : 1} | 4 |
-| 4 | {input: 2, x : 2, s : 1, c : 2, t : 0} | 9 |
+| 4 | {input: 2, x : 2, s : 1, c : 2, t : 0} | 5 |
+| 5 | {input: 2, x : 2, s : 1, c : 2, t : 0} | 9 |
 | 9 | {input: 2, x : 2, s : 1, c : 2, t : 0, rret : 1} | 10 |
 | 10 | {input: 2, x : 2, s : 1, c : 2, t : 0, rret : 1} | - | 
 
@@ -178,7 +179,7 @@ $$
                lis_2' = lis_2 + [l_{EndThen}:goto\ l_{EndIf}] \\ 
                lis_3' = lis_3 + [l_{EndElse}:goto\ l_{EndIf}] \\ 
                \hline  
-               G_s(if\ E\ \{S_1\}\ else\ \{S_2\}) \vdash lis_0 + lis_1 + lis_2' + lis_3'               
+               G_s(if\ E\ \{S_2\}\ else\ \{S_3\}) \vdash lis_0 + lis_1 + lis_2' + lis_3'               
                 \end{array} \\  
 \end{array}
 $$
@@ -498,7 +499,7 @@ $$
           lis_2' = lis_2 + [l_{EndThen}:goto\ l_{EndIf}] \\ 
           lis_3' = lis_3 + [l_{EndElse}:goto\ l_{EndIf}] \\ 
           \hline  
-          G_s(if\ E\ \{S_1\}\ else\ \{S_2\}) \vdash \v{e} + lis_1 + lis_2' + lis_3'               
+          G_s(if\ E\ \{S_2\}\ else\ \{S_3\}) \vdash \v{e} + lis_1 + lis_2' + lis_3'               
           \end{array} 
 \end{array}
 $$
