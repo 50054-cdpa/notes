@@ -101,7 +101,7 @@ Static Semantic Analysis focuses on achieving the same goal as dynamic semantic 
 1. Data flow analysis - the goal is determine the possible values being held by a variable at a particular program location.
 1. Model checking - given a specification, to reason the program's correctness using a math model, e.g. logic constraints.
 
-The advantage is that we gain some generality of the results without worry about the limitation of code coverage. The disadvantage is that we
+The advantage is that we gain some generality of the results without worry about the limitation of code coverage. The disadvantage is that we often loose accuracy through approximation
 
 ### Limitation of Static Semantic Analysis
 
