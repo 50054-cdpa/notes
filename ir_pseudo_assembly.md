@@ -70,7 +70,7 @@ $$
 (\tt Operand)       & d,s & ::= & r \mid c \mid t \\
 (\tt Temp\ Var)      & t   & ::= & x \mid y \mid ...  \\
 (\tt Label)         & l   & ::= & 1 \mid 2 \mid ... \\
-(\tt Operator)      & op  & ::= & + \mid - \mid < \mid > \mid == \mid ... \\ 
+(\tt Operator)      & op  & ::= & + \mid - \mid < \mid == \\ 
 (\tt Constant)      & c   & ::= & 0 \mid 1 \mid 2 \mid ... \\ 
 (\tt Register)      & r &   ::= & r_{ret} \mid r_1 \mid r_2 \mid ...  
 \end{array}
