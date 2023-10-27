@@ -205,7 +205,7 @@ while c < x {
     c = c + 1;
 }
 return s;
----> # using s(Seq)
+---> # using (sSeq)
    {(input,1)}, x = input 
    ---> # (sAssign1) 
    {(input,1)}, x = 1
@@ -383,7 +383,7 @@ At last the derivation stop at the return statement. We can return the value `0`
 Small step operational semantics defines the run-time behavior of programs step by step (kinda like slow motion.)
 Some times we want to define the run-time behaviors by "fast-forwarding" to the result.
 This leads us to the big step operatinal semantics.
-Big step operatinal semantics in some literature is also called the structural operatial semantics as it leverages on the syntactic structure of the program.
+Big step operatinal semantics in some literature is also called the structural operational semantics as it leverages on the syntactic structure of the program.
 
 #### Big Step Operational Semantics for SIMP expressions
 
@@ -731,7 +731,7 @@ $$
 \end{array}
 $$
 
-The rules ${\tt (pIfn0)}$ and ${\tt (pIfnNot0)}$ deal with the conditional jump instruction. We first look up the conditional operand's value in the memory environment. If it is 0, we ignore the jump and move on to the next instruction, otherwiwse, we perform a jump but changing the program context to the target label instruction..
+The rules ${\tt (pIfn0)}$ and ${\tt (pIfnNot0)}$ deal with the conditional jump instruction. We first look up the conditional operand's value in the memory environment. If it is 0, we ignore the jump and move on to the next instruction, otherwiwse, we perform a jump but changing the program context to the target label instruction.
 
 $$
 {\tt (pGoto)} ~~ P \vdash (L, l:goto\ l') \longrightarrow (L, P(l'))
