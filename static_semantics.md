@@ -58,13 +58,13 @@ Recall the syntax rules for SIMP
 $$
 \begin{array}{rccl}
 (\tt Statement) & S & ::= & X = E ; \mid return\ X ; \mid nop; \mid if\ E\ \{ \overline{S} \}\ else\ \{ \overline{S} \} \mid while\ E\ \{ \overline{S} \} \\
-(\tt Expression) & E & ::= & E\ OP\ E \mid X \mid C  \\
+(\tt Expression) & E & ::= & E\ OP\ E \mid X \mid C  \mid (E) \\
 (\tt Statements) & \overline{S} & ::= & S \mid S\ \overline{S} \\
-(\tt Operator) & OP & ::= & + \mid - \mid * \mid / \mid < \mid > \mid == \\ 
+(\tt Operator) & OP & ::= & + \mid - \mid * \mid < \mid > \mid == \\ 
 (\tt Constant) & C & ::= & 0 \mid 1 \mid 2 \mid ... \mid true \mid false \\ 
 (\tt Variable) & X & ::= & a \mid b \mid c \mid d \mid ... \\ 
  {\tt (Types)} & T & ::= & int \mid bool  \\ 
- {\tt (Type\ Environments)} & \Gamma & \subseteq & (x \times T)
+ {\tt (Type\ Environments)} & \Gamma & \subseteq & (X \times T)
 \end{array}
 $$
 
@@ -91,14 +91,14 @@ In the rule ${\tt (tVar)}$, we type check the variable $X$ having type $T$ under
 $$
 \begin{array}{rc}
 {\tt (tInt)} & \begin{array}{c}
-                c\ {\tt is\ an\ integer}
+                C\ {\tt is\ an\ integer}
                 \\ \hline
-                \Gamma \vdash c : int
+                \Gamma \vdash C : int
                 \end{array} \\ \\ 
 {\tt (tBool)} & \begin{array}{c}
-                c \in \{true,false\}
+                C \in \{true,false\}
                 \\ \hline
-                \Gamma \vdash c : bool
+                \Gamma \vdash C : bool
                 \end{array} 
 \end{array}
 $$
