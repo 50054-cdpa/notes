@@ -388,11 +388,11 @@ Big step operatinal semantics in some literature is also called the structural o
 #### Big Step Operational Semantics for SIMP expressions
 
 We define the big step oeprational semantics for SIMP expressions via a relation
-$\Delta \vdash E \Downarrow c$, which reads under the memory environment $\Delta$ the expressiopn $E$ is evaluated constant $c$.
+$\Delta \vdash E \Downarrow C$, which reads under the memory environment $\Delta$ the expressiopn $E$ is evaluated constant $C$.
 
 We consider the following three rules
 $$
-{\tt (bConst)} ~~~~ \Delta \vdash c \Downarrow c
+{\tt (bConst)} ~~~~ \Delta \vdash C \Downarrow C
 $$
 In case that the expression is a constant, we return the constant itself.
 
@@ -405,10 +405,10 @@ In case that the expression is a variable $X$, we return the value associated wi
 $$
 \begin{array}{rc}
 {\tt (bOp)} & \begin{array}{c}
-            \Delta \vdash E_1 \Downarrow c_1 ~~~ \Delta \vdash E_2 \Downarrow c_2 ~~~~
-            c_1\ OP\ c_2 = c_3
+            \Delta \vdash E_1 \Downarrow C_1 ~~~ \Delta \vdash E_2 \Downarrow C_2 ~~~~
+            C_1\ OP\ C_2 = C_3
             \\ \hline
-            \Delta \vdash E_1\ OP\ E_2 \Downarrow c_3
+            \Delta \vdash E_1\ OP\ E_2 \Downarrow C_3
             \end{array}
 \end{array}
 $$
