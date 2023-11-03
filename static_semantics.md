@@ -106,12 +106,12 @@ In the rule ${\tt (tInt)}$, we type check an integer constant having type $int$.
 $$
 \begin{array}{rc}
 {\tt (tOp1)} & \begin{array}{c}
-                \Gamma \vdash E_1:int \ \ \ \Gamma \vdash E_2:int\ \ \ OP \in \{ +, -, *, / \}
+                \Gamma \vdash E_1:int \ \ \ \Gamma \vdash E_2:int\ \ \ OP \in \{ +, -, * \}
                 \\ \hline
                 \Gamma \vdash E_1\ OP\ E_2 : int
                 \end{array} \\ \\ 
 {\tt (tOp2)} & \begin{array}{c}
-                \Gamma \vdash E_1:int \ \ \ \Gamma \vdash E_2:int\ \ \ OP \in \{ ==, <, >\}
+                \Gamma \vdash E_1:int \ \ \ \Gamma \vdash E_2:int\ \ \ OP \in \{ ==, <\}
                 \\ \hline
                 \Gamma \vdash E_1\ OP E_2 : bool
                 \end{array} \\ \\
@@ -290,7 +290,7 @@ Let's connect the type-checking rules for SIMP with it dynamic semantics.
 
 ### Definition 1 - Type and Value Environments Consistency
 
-We say $\Gamma \vdash \Delta$ iff for all $(X,c) \in \Delta$ we have $(X,T) \in \Gamma$ and $\Gamma \vdash c : T$. 
+We say $\Gamma \vdash \Delta$ iff for all $(X,C) \in \Delta$ we have $(X,T) \in \Gamma$ and $\Gamma \vdash C : T$. 
 
 It means the type environments and value environments are consistent.
 
