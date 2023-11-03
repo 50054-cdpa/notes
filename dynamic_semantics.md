@@ -418,9 +418,9 @@ in case that the expression is a binary operation, we evaluate the two operands 
 $$
 \begin{array}{rc}
 {\tt (bParen)} & \begin{array}{c}
-                \Delta \vdash E \Downarrow c
+                \Delta \vdash E \Downarrow C
                 \\ \hline
-                \Delta \vdash (E) \Downarrow c
+                \Delta \vdash (E) \Downarrow C
                \end{array}
 \end{array}
 $$
@@ -435,9 +435,9 @@ We consider the following rules
 $$
 \begin{array}{rc}
 {\tt (bAssign)} & \begin{array}{c}
-    \Delta \vdash E \Downarrow c
+    \Delta \vdash E \Downarrow C
     \\ \hline
-    (\Delta, X = E) \Downarrow \Delta \oplus (X, c)
+    (\Delta, X = E) \Downarrow \Delta \oplus (X, C)
     \end{array}
 \end{array}
 $$
