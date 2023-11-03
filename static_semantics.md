@@ -295,7 +295,7 @@ We say $\Gamma \vdash \Delta$ iff for all $(X,C) \in \Delta$ we have $(X,T) \in 
 It means the type environments and value environments are consistent.
 
 ### Property 2 - Progress
-The following property says that a well typed SIMP program must not be stuck until it reachs the return statement.
+The following property says that a well typed SIMP program must not be stuck until it reaches the return statement.
 
 Let $\overline{S}$ be a SIMP statement sequence. Let $\Gamma$ be a type environment such that $\Gamma \vdash \overline{S}$.
 Then $\overline{S}$ is either 
