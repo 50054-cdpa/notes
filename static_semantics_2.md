@@ -39,8 +39,8 @@ $$
                       c\ {\tt is\ an\ integer}
                       \\ \hline
                       \Gamma \vdash c : int
-                      \end{array} \\ 
-{\tt (lctBool)} & \begin{array}{c} \\
+                      \end{array} \\ \\  
+{\tt (lctBool)} & \begin{array}{c} 
                       c\in \{ true, false\}
                       \\ \hline
                       \Gamma \vdash c : bool
@@ -278,8 +278,8 @@ $$
                       c\ {\tt is\ an\ integer}
                       \\ \hline
                       \Gamma \vdash c : int
-                      \end{array} \\ 
-{\tt (hmBool)} & \begin{array}{c} \\
+                      \end{array} \\ \\ 
+{\tt (hmBool)} & \begin{array}{c} 
                       c\in \{ true, false\}
                       \\ \hline
                       \Gamma \vdash c : bool
@@ -423,7 +423,7 @@ $$
 
 Let's consider the type-checking derivation of our running (counter) example. 
 
-Let `Γ = {fix:}` and `Γ1 = {(f,∀α.α->α)}`.
+Let `Γ = {(fix,∀α.(α->α)->α}` and `Γ1 = {(f,∀α.α->α)}`.
 
 ```haskell
                            -------------------(hmVar)
