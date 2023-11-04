@@ -60,7 +60,7 @@ $$
 (\tt Statement) & S & ::= & X = E ; \mid return\ X ; \mid nop; \mid if\ E\ \{ \overline{S} \}\ else\ \{ \overline{S} \} \mid while\ E\ \{ \overline{S} \} \\
 (\tt Expression) & E & ::= & E\ OP\ E \mid X \mid C  \mid (E) \\
 (\tt Statements) & \overline{S} & ::= & S \mid S\ \overline{S} \\
-(\tt Operator) & OP & ::= & + \mid - \mid * \mid < \mid > \mid == \\ 
+(\tt Operator) & OP & ::= & + \mid - \mid * \mid < \mid == \\ 
 (\tt Constant) & C & ::= & 0 \mid 1 \mid 2 \mid ... \mid true \mid false \\ 
 (\tt Variable) & X & ::= & a \mid b \mid c \mid d \mid ... \\ 
  {\tt (Types)} & T & ::= & int \mid bool  \\ 
@@ -357,16 +357,16 @@ $$
 \end{array}
 $$
 
-Where $\alpha$ denotes a type variable. $\kappa$ define a set of pairs of ext types that are supposed to be equal, e.g. $\{ (\alpha, \beta), (\beta, int) \}$ means $\alpha = \beta \wedge \beta = int$.
+Where $\alpha$ denotes a type variable. $\kappa$ define a set of pairs of extended types that are supposed to be equal, e.g. $\{ (\alpha, \beta), (\beta, int) \}$ means $\alpha = \beta \wedge \beta = int$.
 
 Type substititution replace type variable to some other type. 
 
 $$
 \begin{array}{rcll}
-[]\hat{T} & = & \hat{T} \\ 
-[\hat{T}/\alpha]\alpha & = & \hat{T} \\  
-[\hat{T}/\alpha]\beta & = & \beta & if\ \alpha \neq \beta \\
-[\hat{T}/\alpha]T & = & T
+\lbrack\rbrack\hat{T} & = & \hat{T} \\ 
+\lbrack\hat{T}/\alpha\rbrack\alpha & = & \hat{T}  \\
+\lbrack\hat{T}/\alpha\rbrack\beta & = & \beta & if\ \alpha \neq \beta \\
+\lbrack\hat{T}/\alpha\rbrack T & = & T 
 \end{array}
 $$
 
@@ -444,14 +444,14 @@ The type inference rules for the SIMP expressions are defined in a form of $E \v
 $$
 \begin{array}{rc} 
 {\tt (tiInt)} & \begin{array}{c}
-                c\ {\tt is\ an\ integer}
+                C\ {\tt is\ an\ integer}
                 \\ \hline
-                c \vDash int, \{\}
+                C \vDash int, \{\}
                 \end{array} \\ \\ 
 {\tt (tiBool)} & \begin{array}{c}
-                c\ \in \{true, false\}
+                C\ \in \{true, false\}
                 \\ \hline
-                c \vDash bool, \{\}
+                C \vDash bool, \{\}
                 \end{array} 
 \end{array}
 $$
