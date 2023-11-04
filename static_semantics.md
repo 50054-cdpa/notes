@@ -474,7 +474,7 @@ The ${\tt (tiVar)}$ rule just generates a "skolem" type variable $\alpha_X$ whic
 $$
 \begin{array}{rc}
 {\tt (tiOp1)} & \begin{array}{c}
-                OP \in \{+, -, *, /\} \ \ \ E_1 \vDash \hat{T_1}, \kappa_1\ \ \ \ E_2 \vDash \hat{T_2}, \kappa_2
+                OP \in \{+, -, *\} \ \ \ E_1 \vDash \hat{T_1}, \kappa_1\ \ \ \ E_2 \vDash \hat{T_2}, \kappa_2
                 \\ \hline
                 E_1\ OP\ E_2 \vDash int, \{(\hat{T_1}, int), (\hat{T_2}, int)\} \cup \kappa_1 \cup \kappa_2
                 \end{array} \\ \\ 
