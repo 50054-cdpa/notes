@@ -423,7 +423,7 @@ $$
 
 Let's consider the type-checking derivation of our running (counter) example. 
 
-Let `Γ = {(fix,∀α.(α->α)->α}` and `Γ1 = {(f,∀α.α->α)}`.
+Let `Γ = {}` and `Γ1 = {(f,∀α.α->α)}`.
 
 ```haskell
                            -------------------(hmVar)
