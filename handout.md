@@ -120,7 +120,7 @@ You may work as a team (up to max 3 members). Please register your team [here](h
 | 7 |  |  |  | Homework 4 5% | 
 | 8 | **Mid-term**, [Semantic Analysis](./semantic_analysis.md)| [Dynamic Semantics](./dynamic_semantics.md) | [Cohort Problem 7](https://github.com/50054-2023-fall/cohort_probs/tree/main/dynamic_semantics) | Mid-term 10%  |
 | 9 | [Static Semantics for SIMP](./static_semantics.md) | [Static Semantics for Lambda Calculus](./static_semantics_2.md) | Cohort Problem 8, Homework 5  | Project Lab 1 10% |
-| 10 | *Public Holiday. No Class Scheduled* | Name Analysis, SSA |  Cohort Problem 9 | Homework 5 5%  | 
+| 10 | *Public Holiday. No Class Scheduled* | [Name Analysis, SSA](./name_analysis.md) |  Cohort Problem 9 | Homework 5 5%  | 
 | 11 | Lattice, Sign Analysis  | Liveness Analysis | Cohort Problem 10 | Project Lab 2 10% |  
 | 12 | Information Flow Analysis | Code Generation | Cohort Problem 11  |  |
 | 13 | Guest Lecture | Memory Management | Revision | Project Lab 3 15% |  |
