@@ -39,8 +39,8 @@ $$
                       c\ {\tt is\ an\ integer}
                       \\ \hline
                       \Gamma \vdash c : int
-                      \end{array} \\ 
-{\tt (lctBool)} & \begin{array}{c} \\
+                      \end{array} \\ \\  
+{\tt (lctBool)} & \begin{array}{c} 
                       c\in \{ true, false\}
                       \\ \hline
                       \Gamma \vdash c : bool
@@ -278,8 +278,8 @@ $$
                       c\ {\tt is\ an\ integer}
                       \\ \hline
                       \Gamma \vdash c : int
-                      \end{array} \\ 
-{\tt (hmBool)} & \begin{array}{c} \\
+                      \end{array} \\ \\ 
+{\tt (hmBool)} & \begin{array}{c} 
                       c\in \{ true, false\}
                       \\ \hline
                       \Gamma \vdash c : bool
@@ -395,6 +395,7 @@ For the ${\tt (hmLet)}$ rule to work as intended, we need two more rules, namely
 #### Definition - Type Instances
 Let $\sigma_1$ and $\sigma_2$ be type schemes. We say $\sigma_1 \sqsubseteq \sigma_2$ iff $\sigma_1 = \forall \alpha. \sigma_1'$ and there exists a type subsitution $\Psi$ such that $\Psi(\sigma_1') = \sigma_2$.
 
+
 In otherwords, we say $\sigma_1$ is more general that $\sigma_2$ and $\sigma_2$ is a type instance of $\sigma_1$.
 
 Finally the rule ${\tt (hmGen)}$ generalizes existing type to type schemes. In this rule, if a term $t$ can be type-checked against a type scheme $\sigma$, then $t$ can also be type-checked against $\forall \alpha.\sigma$ if $\alpha$ is not a free type variable in $\Gamma$.
@@ -419,11 +420,29 @@ ftv(\Gamma) & = & \{ \alpha \mid (x,\sigma) \in \Gamma \wedge \alpha \in ftv(\si
 \end{array}
 $$
 
+
+The application of a type substitution can be defined as 
+
+$$
+\begin{array}{rcll}
+[] \sigma & = & \sigma \\ 
+[T/\alpha] int & = & int \\
+[T/\alpha] bool & = & bool \\ 
+[T/\alpha] \alpha & = & T \\
+[T/\alpha] \beta & = & \beta & \beta \neq \alpha \\ 
+[T/\alpha] T_1 \rightarrow T_2 & = & ([T/\alpha] T_1) \rightarrow ([T/\alpha] T_2) \\ 
+[T/\alpha] \forall \beta. \sigma & = & \forall \beta. ([T/\alpha]\sigma) & \beta \neq \alpha \wedge \beta \not \in ftv(T) \\ 
+(\Psi_1 \circ \Psi_2)\sigma & = & \Psi_1 (\Psi_2 (\sigma))
+\end{array}
+$$
+
+In case of applying a type subtitution to a type scheme, we need to check whether the quantified type variable $\beta$ is in conflict with the type substitution. In case of conflict, a renaming operation simiilar to $\alpha$ renaming will be applied to $\forall \beta. \sigma$. 
+
 #### Example
 
 Let's consider the type-checking derivation of our running (counter) example. 
 
-Let `Γ = {fix:}` and `Γ1 = {(f,∀α.α->α)}`.
+Let `Γ = {}` and `Γ1 = {(f,∀α.α->α)}`.
 
 ```haskell
                            -------------------(hmVar)

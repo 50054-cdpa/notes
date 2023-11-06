@@ -58,13 +58,13 @@ Recall the syntax rules for SIMP
 $$
 \begin{array}{rccl}
 (\tt Statement) & S & ::= & X = E ; \mid return\ X ; \mid nop; \mid if\ E\ \{ \overline{S} \}\ else\ \{ \overline{S} \} \mid while\ E\ \{ \overline{S} \} \\
-(\tt Expression) & E & ::= & E\ OP\ E \mid X \mid C  \\
+(\tt Expression) & E & ::= & E\ OP\ E \mid X \mid C  \mid (E) \\
 (\tt Statements) & \overline{S} & ::= & S \mid S\ \overline{S} \\
-(\tt Operator) & OP & ::= & + \mid - \mid * \mid / \mid < \mid > \mid == \\ 
+(\tt Operator) & OP & ::= & + \mid - \mid * \mid < \mid == \\ 
 (\tt Constant) & C & ::= & 0 \mid 1 \mid 2 \mid ... \mid true \mid false \\ 
 (\tt Variable) & X & ::= & a \mid b \mid c \mid d \mid ... \\ 
  {\tt (Types)} & T & ::= & int \mid bool  \\ 
- {\tt (Type\ Environments)} & \Gamma & \subseteq & (x \times T)
+ {\tt (Type\ Environments)} & \Gamma & \subseteq & (X \times T)
 \end{array}
 $$
 
@@ -91,14 +91,14 @@ In the rule ${\tt (tVar)}$, we type check the variable $X$ having type $T$ under
 $$
 \begin{array}{rc}
 {\tt (tInt)} & \begin{array}{c}
-                c\ {\tt is\ an\ integer}
+                C\ {\tt is\ an\ integer}
                 \\ \hline
-                \Gamma \vdash c : int
+                \Gamma \vdash C : int
                 \end{array} \\ \\ 
 {\tt (tBool)} & \begin{array}{c}
-                c \in \{true,false\}
+                C \in \{true,false\}
                 \\ \hline
-                \Gamma \vdash c : bool
+                \Gamma \vdash C : bool
                 \end{array} 
 \end{array}
 $$
@@ -106,12 +106,12 @@ In the rule ${\tt (tInt)}$, we type check an integer constant having type $int$.
 $$
 \begin{array}{rc}
 {\tt (tOp1)} & \begin{array}{c}
-                \Gamma \vdash E_1:int \ \ \ \Gamma \vdash E_2:int\ \ \ OP \in \{ +, -, *, / \}
+                \Gamma \vdash E_1:int \ \ \ \Gamma \vdash E_2:int\ \ \ OP \in \{ +, -, * \}
                 \\ \hline
                 \Gamma \vdash E_1\ OP\ E_2 : int
                 \end{array} \\ \\ 
 {\tt (tOp2)} & \begin{array}{c}
-                \Gamma \vdash E_1:int \ \ \ \Gamma \vdash E_2:int\ \ \ OP \in \{ ==, <, >\}
+                \Gamma \vdash E_1:int \ \ \ \Gamma \vdash E_2:int\ \ \ OP \in \{ ==, <\}
                 \\ \hline
                 \Gamma \vdash E_1\ OP E_2 : bool
                 \end{array} \\ \\
@@ -290,12 +290,12 @@ Let's connect the type-checking rules for SIMP with it dynamic semantics.
 
 ### Definition 1 - Type and Value Environments Consistency
 
-We say $\Gamma \vdash \Delta$ iff for all $(X,c) \in \Delta$ we have $(X,T) \in \Gamma$ and $\Gamma \vdash c : T$. 
+We say $\Gamma \vdash \Delta$ iff for all $(X,C) \in \Delta$ we have $(X,T) \in \Gamma$ and $\Gamma \vdash C : T$. 
 
 It means the type environments and value environments are consistent.
 
 ### Property 2 - Progress
-The following property says that a well typed SIMP program must not be stuck until it reachs the return statement.
+The following property says that a well typed SIMP program must not be stuck until it reaches the return statement.
 
 Let $\overline{S}$ be a SIMP statement sequence. Let $\Gamma$ be a type environment such that $\Gamma \vdash \overline{S}$.
 Then $\overline{S}$ is either 
@@ -357,16 +357,16 @@ $$
 \end{array}
 $$
 
-Where $\alpha$ denotes a type variable. $\kappa$ define a set of pairs of ext types that are supposed to be equal, e.g. $\{ (\alpha, \beta), (\beta, int) \}$ means $\alpha = \beta \wedge \beta = int$.
+Where $\alpha$ denotes a type variable. $\kappa$ define a set of pairs of extended types that are supposed to be equal, e.g. $\{ (\alpha, \beta), (\beta, int) \}$ means $\alpha = \beta \wedge \beta = int$.
 
 Type substititution replace type variable to some other type. 
 
 $$
 \begin{array}{rcll}
-[]\hat{T} & = & \hat{T} \\ 
-[\hat{T}/\alpha]\alpha & = & \hat{T} \\  
-[\hat{T}/\alpha]\beta & = & \beta & if\ \alpha \neq \beta \\
-[\hat{T}/\alpha]T & = & T
+\lbrack\rbrack\hat{T} & = & \hat{T} \\ 
+\lbrack\hat{T}/\alpha\rbrack\alpha & = & \hat{T}  \\
+\lbrack\hat{T}/\alpha\rbrack\beta & = & \beta & if\ \alpha \neq \beta \\
+\lbrack\hat{T}/\alpha\rbrack T & = & T 
 \end{array}
 $$
 
@@ -444,14 +444,14 @@ The type inference rules for the SIMP expressions are defined in a form of $E \v
 $$
 \begin{array}{rc} 
 {\tt (tiInt)} & \begin{array}{c}
-                c\ {\tt is\ an\ integer}
+                C\ {\tt is\ an\ integer}
                 \\ \hline
-                c \vDash int, \{\}
+                C \vDash int, \{\}
                 \end{array} \\ \\ 
 {\tt (tiBool)} & \begin{array}{c}
-                c\ \in \{true, false\}
+                C\ \in \{true, false\}
                 \\ \hline
-                c \vDash bool, \{\}
+                C \vDash bool, \{\}
                 \end{array} 
 \end{array}
 $$
@@ -474,7 +474,7 @@ The ${\tt (tiVar)}$ rule just generates a "skolem" type variable $\alpha_X$ whic
 $$
 \begin{array}{rc}
 {\tt (tiOp1)} & \begin{array}{c}
-                OP \in \{+, -, *, /\} \ \ \ E_1 \vDash \hat{T_1}, \kappa_1\ \ \ \ E_2 \vDash \hat{T_2}, \kappa_2
+                OP \in \{+, -, *\} \ \ \ E_1 \vDash \hat{T_1}, \kappa_1\ \ \ \ E_2 \vDash \hat{T_2}, \kappa_2
                 \\ \hline
                 E_1\ OP\ E_2 \vDash int, \{(\hat{T_1}, int), (\hat{T_2}, int)\} \cup \kappa_1 \cup \kappa_2
                 \end{array} \\ \\ 

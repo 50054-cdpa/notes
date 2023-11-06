@@ -205,7 +205,7 @@ while c < x {
     c = c + 1;
 }
 return s;
----> # using s(Seq)
+---> # using (sSeq)
    {(input,1)}, x = input 
    ---> # (sAssign1) 
    {(input,1)}, x = 1
@@ -383,16 +383,16 @@ At last the derivation stop at the return statement. We can return the value `0`
 Small step operational semantics defines the run-time behavior of programs step by step (kinda like slow motion.)
 Some times we want to define the run-time behaviors by "fast-forwarding" to the result.
 This leads us to the big step operatinal semantics.
-Big step operatinal semantics in some literature is also called the structural operatial semantics as it leverages on the syntactic structure of the program.
+Big step operatinal semantics in some literature is also called the structural operational semantics as it leverages on the syntactic structure of the program.
 
 #### Big Step Operational Semantics for SIMP expressions
 
 We define the big step oeprational semantics for SIMP expressions via a relation
-$\Delta \vdash E \Downarrow c$, which reads under the memory environment $\Delta$ the expressiopn $E$ is evaluated constant $c$.
+$\Delta \vdash E \Downarrow C$, which reads under the memory environment $\Delta$ the expressiopn $E$ is evaluated constant $C$.
 
 We consider the following three rules
 $$
-{\tt (bConst)} ~~~~ \Delta \vdash c \Downarrow c
+{\tt (bConst)} ~~~~ \Delta \vdash C \Downarrow C
 $$
 In case that the expression is a constant, we return the constant itself.
 
@@ -405,10 +405,10 @@ In case that the expression is a variable $X$, we return the value associated wi
 $$
 \begin{array}{rc}
 {\tt (bOp)} & \begin{array}{c}
-            \Delta \vdash E_1 \Downarrow c_1 ~~~ \Delta \vdash E_2 \Downarrow c_2 ~~~~
-            c_1\ OP\ c_2 = c_3
+            \Delta \vdash E_1 \Downarrow C_1 ~~~ \Delta \vdash E_2 \Downarrow C_2 ~~~~
+            C_1\ OP\ C_2 = C_3
             \\ \hline
-            \Delta \vdash E_1\ OP\ E_2 \Downarrow c_3
+            \Delta \vdash E_1\ OP\ E_2 \Downarrow C_3
             \end{array}
 \end{array}
 $$
@@ -418,9 +418,9 @@ in case that the expression is a binary operation, we evaluate the two operands 
 $$
 \begin{array}{rc}
 {\tt (bParen)} & \begin{array}{c}
-                \Delta \vdash E \Downarrow c
+                \Delta \vdash E \Downarrow C
                 \\ \hline
-                \Delta \vdash (E) \Downarrow c
+                \Delta \vdash (E) \Downarrow C
                \end{array}
 \end{array}
 $$
@@ -435,9 +435,9 @@ We consider the following rules
 $$
 \begin{array}{rc}
 {\tt (bAssign)} & \begin{array}{c}
-    \Delta \vdash E \Downarrow c
+    \Delta \vdash E \Downarrow C
     \\ \hline
-    (\Delta, X = E) \Downarrow \Delta \oplus (X, c)
+    (\Delta, X = E) \Downarrow \Delta \oplus (X, C)
     \end{array}
 \end{array}
 $$
@@ -731,7 +731,7 @@ $$
 \end{array}
 $$
 
-The rules ${\tt (pIfn0)}$ and ${\tt (pIfnNot0)}$ deal with the conditional jump instruction. We first look up the conditional operand's value in the memory environment. If it is 0, we ignore the jump and move on to the next instruction, otherwiwse, we perform a jump but changing the program context to the target label instruction..
+The rules ${\tt (pIfn0)}$ and ${\tt (pIfnNot0)}$ deal with the conditional jump instruction. We first look up the conditional operand's value in the memory environment. If it is 0, we ignore the jump and move on to the next instruction, otherwiwse, we perform a jump but changing the program context to the target label instruction.
 
 $$
 {\tt (pGoto)} ~~ P \vdash (L, l:goto\ l') \longrightarrow (L, P(l'))
