@@ -116,9 +116,9 @@ $$
                 \Gamma \vdash E_1\ OP E_2 : bool
                 \end{array} \\ \\
 {\tt (tOp3)} & \begin{array}{c}
-                \Gamma \vdash E_1:bool \ \ \ \Gamma \vdash E_2:bool
+                \Gamma \vdash E_1:bool \ \ \ \Gamma \vdash E_2:bool\ \ \ OP \in \{ ==, <\}
                 \\ \hline
-                \Gamma \vdash E_1\ ==\ E_2 : bool
+                \Gamma \vdash E_1\ OP\ E_2 : bool
                 \end{array} 
 \end{array}
 $$
