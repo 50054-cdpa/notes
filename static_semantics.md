@@ -576,13 +576,13 @@ Where [subtree 2] is as follows
                         y|=α_y,{} (tiVar)
                         1|=int,{} (tiInt)
 y|=α_y,{} (tiVar)       --------------(tiOp1)
-x|=α_x,{} (tiVar)       y+1|=int,{(a_y,int)}
+x|=α_x,{} (tiVar)       y+1|=int,{(α_y,int)}
 --------------(tiOp2)  ----------------------(tiAssign)
-y<x|=bool,{(α_y,α_x)}  y=y+1|= {(a_y,int)} 
+y<x|=bool,{(α_y,α_x)}  y=y+1|= {(α_y,int)} 
 ---------------------------------------------(tiWhile) --------------(tiReturn)
-while (y<x) { y=y+1; } |= {(α_y,α_x),(a_y,int)}        return y|= {}
+while (y<x) { y=y+1; } |= {(α_y,α_x),(α_y,int)}        return y|= {}
 ---------------------------------------------------------------------(tiSeq)
-while (y<x) { y=y+1; } return y; |= {(α_y,α_x),(a_y,int)} 
+while (y<x) { y=y+1; } return y; |= {(α_y,α_x),(α_y,int)} 
 ```
 
 ### From Type Substitution to Type Environment
