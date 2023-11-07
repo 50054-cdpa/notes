@@ -654,15 +654,8 @@ We find the list of helper functions defined in Algorithm W.
 
 $$
 \begin{array}{rcl}
-\Psi(\Gamma)  &= & \{ (x,\Psi(\sigma)) \mid (x,\sigma) \in \Gamma \} \\ 
-\Psi_2 \circ \Psi_1 (\Gamma) & = &  \Psi_2( \Psi_1 (\Gamma))
+\Psi(\Gamma)  &= & \{ (x,\Psi(\sigma)) \mid (x,\sigma) \in \Gamma \}
 \end{array}
-$$
-
-Alternatively, the composition of type substitution can also be defined as 
-
-$$
-\Psi_2 \circ \Psi_1 = [\Psi_2(\sigma)/\alpha \mid (\sigma/\alpha) \in \Psi_1] \cup [\sigma/\alpha \mid (\sigma/\alpha) \in \Psi_2 \wedge (\sigma/\alpha) \not\in \Psi_1]
 $$
 
 #### Type Instantiation
