@@ -238,37 +238,37 @@ For example in `PA3`, to analyse the signs for variableswe need two lattices, on
 Let $L$ be a complete lattice, $A$ be a set. Let $A \rightarrow L$ denotes a set of functions 
 
 $$
-\{ f \mid x \in A \wedge f(x) \in L \}
+\{ m \mid x \in A \wedge m(x) \in L \}
 $$
 
-and the $\sqsubseteq$ relation among functions $f, g \in A \rightarrow L$ is defined as 
+and the $\sqsubseteq$ relation among functions $m_1, m_2 \in A \rightarrow L$ is defined as 
 
 $$
-f \sqsubseteq g\ {\tt iff}\ \forall x\in A, f(x) \sqsubseteq g(x)
+m_1 \sqsubseteq m_2\ {\tt iff}\ \forall x\in A, m_1(x) \sqsubseteq m_2(x)
 $$
 
 Then $A \rightarrow L$ is a complete lattice. 
 
-Note that the term "function" used in this definition refers a math function. We could interpret it as a hash table or a Scala `Map[A,L]` object where elements of $A$ are keys and elements of $L$ are the values associated with the keys.
+Note that the term "function" used in this definition refers a math function. We could interpret it as a hash table or a Scala `Map[A,L]` object where elements of $A$ are keys and elements of $L$ are the values associated with the keys. 
 
 Map lattice offers a compact alternative to lattices for sign analysis of variables in program like `PA3` when there are many variables. 
 
 We can define a map lattice consisting of functions that map variables (`x` or `t`) to abstract values in the complete lattice of $(\{ \bot, \top, 0, + , -\}, \sqsubseteq)$. 
 
-For instance, one of the element function in the above-mentioned map lattice could be 
+For instance, one of the element "functions" in the above-mentioned map lattice could be 
 
 $$
-f = [ x \mapsto \top, t \mapsto + ] 
+m_1 = [ x \mapsto \top, t \mapsto + ] 
 $$
 
 
 another element function could be 
 
 $$
-g = [ x \mapsto \top, t \mapsto \top ] 
+m_2 = [ x \mapsto \top, t \mapsto \top ] 
 $$
 
-We conclude that $f\sqsubseteq g$. Let $Var$ denote the set of all variables, and $Sign$ denote the complete lattice $(\{ \bot, \top, 0, + , -\}, \sqsubseteq)$. `f` and `g` are elements of the complete lattice $Var \rightarrow Sign$
+We conclude that $m_1\sqsubseteq m_2$. Let $Var$ denote the set of all variables, and $Sign$ denote the complete lattice $(\{ \bot, \top, 0, + , -\}, \sqsubseteq)$. `m1` and `m2` are elements of the complete lattice $Var \rightarrow Sign$
 
 
 ### Sign analysis with Lattice 
@@ -305,6 +305,7 @@ We define the `++` abstract operator for abstract values $\{\top, \bot, +, -, 0\
 | 0 | $\top$ | + | - | 0 | $\bot$ |
 | $\bot$ | $\bot$ | $\bot$ | $\bot$ | $\bot$ | $\bot$ | 
 
+Where the first column from the 2nd rows onwards are the left operand and the first row from the 2nd column onwards are the right operand.
 Similarly we can define the other abstract operators
 
 | -- | $\top$ | + | - | 0 | $\bot$ | 
@@ -324,8 +325,15 @@ Similarly we can define the other abstract operators
 | 0 | 0 | 0 | 0 | 0 | $\bot$ |
 | $\bot$ | $\bot$ | $\bot$ | $\bot$ | $\bot$ | $\bot$ | 
 
+| << | $\top$ | + | - | 0 | $\bot$ | 
+|---|---|---|---|---|---|
+| $\top$| $\top$| $\top$| $\top$| 0 | $\bot$| 
+| + | $\top$ | $\top$ | 0 | 0 | $\bot$| 
+| - | $\top$ | + | $\top$ | + | $\bot$ |
+| 0 | $\top$ | + | 0 | 0 | $\bot$ |
+| $\bot$ | $\bot$ | $\bot$ | $\bot$ | $\bot$ | $\bot$ | 
 
-Given the definitions of the abstract operators, our next task is to solve the equation among the state variable `s1`, `s2`, `s3` and `s4`
+Given the definitions of the abstract operators, our next task is to solve the equation among the state variable `s0`, `s1`, `s2` and `s3`
 
 ```
 s0 = [x -> top]
@@ -875,3 +883,64 @@ At this point, we reach the fixed point of the $f_4$ functipn w.r.t the $(Var \r
 This naive fixed point algorithm works but not efficient, namely it blindly applies the "update" of a state $s_i$ based on $s_{i-1}$ though there is no changes to $s_{i-1}$ in the last iteration. For example from step 7 to step 8, $s_3$ is updated though there is no change to $s_2$. 
 
 A more efficient algorithm can be derived if we keep track of the dependencies among the states and perform the "update of a state $s_i$ if $s_i$ is based on $s_{i-1}$ and $s_{i-1}$ has changed.
+
+
+### Generalizing the monotone constraints for sign analysis
+
+We would like to have a systematic way to define the monotone constraints (i.e. monotonic functions) for analyses like sign analysis.
+
+Let $v_i$ denote a vertex in CFG. We write $pred(v_i)$ to denote the set of predecesors of $v_i$.
+let $s_i$ denote the state variable of the vertex $v_i$ in the CFG. We write $pred(s_i)$ to denote the set of state variables of the predecessor of $v_i$.
+
+For sign analysis,  we define the following helper function 
+
+$$join(s) = \bigsqcup pred(s)$$
+
+To avoid confusion, we write $src$ to denote the source operands in PA instead of $s$.
+Let $V$ denotes the set of variables in the PA program's being analysed.
+
+The monotonic functions can be defined by the following cases.
+
+* case $l == 0$, $s_0 = \lbrack x \mapsto \top \mid x \in V]$
+* case $l: t \leftarrow src$, $s_l = join(s_l) \lbrack t \mapsto join(s_l)(src)\rbrack$
+* case $l: t \leftarrow src_1\ op\ src_2$, $s_l = join(s_l) \lbrack t \mapsto (join(s_l)(src_1)\ abs(op)\ join(s_l)(src_2))\rbrack$
+* other cases: $s_l = join(s_l)$
+
+Let $m$ be a map lattice object, and $src$ be a PA source operand, the lookup operation $m(src)$ for sign analysis is defined as follows 
+$$
+\begin{array}{rcl}
+m(c) & = & \left \{ 
+        \begin{array}{cc}
+        0 & c == 0 \\
+        + & c > 0 \\
+        - & c < 0     
+        \end{array} 
+        \right . \\ \\
+m(t) & = & \left \{
+        \begin{array}{cc}
+        v & t \mapsto v \in m \\ 
+        error & otherwise
+        \end{array} 
+           \right . \\ \\ 
+m(r) & = & error
+\end{array}
+$$
+
+Let $op$ be PA operator, we define the abstraction operation $abs(op)$ for sign analysis as follows, 
+
+$$
+\begin{array}{rcl}
+abs(+) & = & ++\\
+abs(-) & = & -- \\
+abs(*) & = & ** \\
+abs(<) & = & << \\ 
+abs(==) & = & === 
+\end{array}
+$$
+
+We have seen the definitions of $++, --, **$ and $<<$
+
+> Question: can you define $===$?
+
+> Question: the abstraction operations are pretty coarse (not accurate), can you define a lattice for sign analysis which offers better accuracy?
+
