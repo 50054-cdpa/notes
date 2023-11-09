@@ -3,9 +3,12 @@
 ## Learning Outcomes
 
 
-1.
-1.
-1.
+1. Define the sign analysis problem
+1. Define a lattice and a complete lattice
+1. Define a monotonic function of lattices
+1. Explain the fixed point algorithm
+1. Implement the fixed point algorithm
+1. Apply lattice and fixed point algorithm to solve the sign analysis problem
 
 ## Recap
 
@@ -942,5 +945,6 @@ We have seen the definitions of $++, --, **$ and $<<$
 
 > Question: can you define $===$?
 
-> Question: the abstraction operations are pretty coarse (not accurate), can you define a lattice for sign analysis which offers better accuracy?
+> Question: the abstraction operations are pretty coarse (not accurate). For instance, `<<` and `===` should return either `0` or `1` hence $\top$ is too coarse. Can you define a lattice for sign analysis which offers better accuracy? 
 
+> Question: Convert `SIMP1` into a PA. Can we apply the sign analysis to find out that the `sqrt(x)` is definifely failing?
