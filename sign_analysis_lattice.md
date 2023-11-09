@@ -910,6 +910,7 @@ The monotonic functions can be defined by the following cases.
 * other cases: $s_l = join(s_l)$
 
 Let $m$ be a map lattice object, and $src$ be a PA source operand, the lookup operation $m(src)$ for sign analysis is defined as follows 
+
 $$
 \begin{array}{rcl}
 m(c) & = & \left \{ 
