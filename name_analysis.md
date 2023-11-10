@@ -246,9 +246,9 @@ The third component $p$ in the program context is a label from the preceding ins
 
 
 $$
-{\tt (pConst)} ~~~ P \vdash (L, l:  d \leftarrow c, p) \longrightarrow (L \oplus (d,c), P(l+1), l) \\ 
-{\tt (pRegister)} ~~~P \vdash (L, l: d \leftarrow r, p) \longrightarrow (L \oplus (d,L(r)), P(l+1), l) \\  
-{\tt (pTempVar)} ~~~P \vdash (L, l: d \leftarrow t, p ) \longrightarrow (L \oplus (d,L(t)), P(l+1), l) \\ 
+{\tt (pConst)} ~~~ P \vdash (L, l:  d \leftarrow c, p) \longrightarrow (L \oplus (d,c), P(l+1), l) \\ \\
+{\tt (pRegister)} ~~~P \vdash (L, l: d \leftarrow r, p) \longrightarrow (L \oplus (d,L(r)), P(l+1), l) \\  \\
+{\tt (pTempVar)} ~~~P \vdash (L, l: d \leftarrow t, p ) \longrightarrow (L \oplus (d,L(t)), P(l+1), l) \\ \\
 {\tt (pGoto)} ~~ P \vdash (L, l:goto\ l', p) \longrightarrow (L, P(l'), l)
 $$
 
@@ -273,10 +273,12 @@ $$
      \end{array}
 \end{array}
 $$
+
 All the existing rules are required some minor changes to accomodate the third component in the program context. 
 The adjustments are common, i.e. propogating the label of the current labeled instruction from the LHS to the RHS as the proceding label.
 Note that the above handle the cases in which the labeled instruction has no phi assignments.  In the presence of phi-assignments, 
 we need the following rules to guide the execution.
+
 $$
 \begin{array}{rc}
 {\tt (pPhi1)} &  \begin{array}{c}
