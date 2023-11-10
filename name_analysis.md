@@ -912,3 +912,48 @@ relabel(ifn t goto l,M) = ifn t goto M(l)
 relabel(goto l, M) = goto M(l)
 relabel(i, M) = i
 ```
+
+## Structured SSA
+
+Besides unstructured SSA, it is possible to construct SSA based on a structured program such as SSA. For instance, 
+
+
+```java
+x = input;
+s = 0;
+c = 0;
+while c < x {
+    s = c + s;
+    c = c + 1;
+}
+return s;
+```
+
+Can be converted into a structured SSA 
+
+```java
+x1 = input;
+s1 = 0;
+c1 = 0;
+join { s2 = phi(s1,s3); c2 = phi(c1,c3); } 
+while c2 < x1 {
+    s3 = c2 + s2;
+    c3 = c2 + 1;
+}
+return s2;
+```
+
+In the above SSA form, we have a `join ... while ... ` loop. 
+The join clause encloses the phi assignments merging variable definitions coming from the statement preceding the join while loop and 
+also the body of the loop.  (Similarly we can introduce a `if ... else ... join ...` statement).
+
+Structured SSA allows us to 
+
+1. conduct name analysis closer to the source language. 
+1. conduct flow insensitive analysis by incorporating the use-def information. In some cases we get same precision as the flow sensitive analysis. 
+    
+1. perform code obfuscation. 
+
+### Futher Readings
+* https://dl.acm.org/doi/10.1145/2955811.2955813
+* https://dl.acm.org/doi/abs/10.1145/3605156.3606457
