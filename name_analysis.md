@@ -156,7 +156,7 @@ Same error arises when `input == 0`.
 Static Single Assignment (SSA) form is an intermediate representation 
 widely used in compiler design and program verification. 
 
-In a single static assignment form, 
+In a static single assignment form, 
 
 * Each variable is only allowed to be assigned once syntactically, i.e. it only appears in the LHS of the assignment once. 
 * $\phi$-assignments are placed at the end of branching statements to merge different (re)-definition of the same variable (from the source program). 
@@ -169,6 +169,7 @@ SSA form construction is one of the effective ways to analysis
 ### Unstructured SSA Form
 
 Suppose we extend the pseudo assembly with $\phi$-assignment statements, 
+
 $$
 \begin{array}{rccl}
 (\tt Labeled\ Instruction) & li  & ::= & l : \overline{\phi}\ i \\ 
@@ -183,6 +184,7 @@ $$
 (\tt Register)      & r &   ::= & r_{ret} \mid r_1 \mid r_2 \mid ...  
 \end{array}
 $$
+
 The syntax is largely unchanged, except that for each labeled instruction, there exists a sequence of phi assignments $\overline{\phi}$. (which could be empty) before the actual instruction $i$. When $\overline{\phi}$ is empty, we omit it from the syntax.
 
 we are able convert any "well-defined" pseudo assembly program into an SSA form. Since we build the SSA forms from some unstructured language program (i.e. no nested control flow statements), we call them unstructured SSA forms.
