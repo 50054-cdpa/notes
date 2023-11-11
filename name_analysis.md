@@ -445,7 +445,7 @@ In other words, $v_1 \preceq v_2$ means whenever we execute the program from the
 
 For instance, in the earlier control flow graph for `Graph2_PA1`, 
 
-* the vertex `1` dominates the rest of the vertices. 
+* the vertex `1` dominates all vertices. 
 * the vertex `4` dominates itself, the vertices `5,6,7,8,9,10`.
 
 
@@ -529,7 +529,7 @@ $$
 and 
 
 $$
-df_{up}(v, G) = \{ w \mid w \in df(v) \wedge \neg (idom(v) \prec w)\}~~~(E3)
+df_{up}(v, G) = \{ w \mid w \in df(v,G) \wedge \neg (idom(v) \prec w)\}~~~(E3)
 $$
 
 * $(E1)$ says that the dominance frontier of a vertex $v$ is the union of the local contribution $df_{local}(v,G)$ and the (dominator tree) descendants' upward contribution $\bigcup_{u \in child(v,T)} df_{up}(u, G)$
