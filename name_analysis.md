@@ -548,7 +548,7 @@ The algorithm is structured as follows
 1. For each vertex $v$ by traversing the dominator tree bottom up:
     1. compute $df_{local}(v,G)$
     1. compute $\bigcup_{u \in child(v,T)}df_{up}(u, G)$, which can be looked up from the a memoization table.
-    1. save $df(v,G) = df_{local}(v,G) \cup \bigcup_{u \in child(v,T)}$ in the memoization table.
+    1. save $df(v,G) = df_{local}(v,G) \cup \bigcup_{u \in child(v,T)} df_{up}(u,G)$ in the memoization table.
 
 
 For instance, we make use of `Graph2_PA1` and `Tree2_PA1` to construct the following memoization table `Table2_PA1`
@@ -561,7 +561,7 @@ For instance, we make use of `Graph2_PA1` and `Tree2_PA1` to construct the follo
 | 7  | {8} | {8} | 6 | {} | {4} | {4} | 
 | 6  | {7} | {7} | 5 | {} | {4} | {4} | 
 | 5  | {6,9} | {6,9} | 4 | {} | {4} | {4} | 
-| 4  | {5} | {5} | 3 | {} | {}  | {} |
+| 4  | {5} | {5} | 3 | {} | {}  | {4} |
 | 3  | {4} | {4} | 2 | {} | {} | {} | 
 | 2  | {3} | {3} | 1 | {} | {} | {} |
 | 1  | {2} | {2} |   | {} | {} | {} | 
