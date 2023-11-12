@@ -624,7 +624,7 @@ The phi-assignment insertion process can be described as follows,
         1. case `None`
             1. add `l:i` to `Q`
         1. case `Some(xs)`
-            1. `phis = xs.map( x => x <- phi( k:x | for k in pred(l,G)))`
+            1. `phis = xs.map( x => x <- phi( k:x | (k in pred(l,G)))`
             1. add `l:phis i` to `Q`
 
 $pred(v, G)$ retrieves the set of predecessors of vertex (label) in graph $G$. 
@@ -670,7 +670,7 @@ Given an intermediate output like `PRE_SSA_PA1`, we need to rename the variable 
 
 Inputs: 
     * a dictionary of stacks `K` where the keys are the variable names in the original PA program. e.g. `K(x)` returns the stack for variable `x`. 
-    * the input program in with phi assignment but owning the variable renaming,  e.g. `PRE_SSA_PA1`. We view the program as a dictionary mapping labels to labeled instructions.
+    * the input program in with phi assignment but oweing the variable renaming,  e.g. `PRE_SSA_PA1`. We view the program as a dictionary mapping labels to labeled instructions.
 
 
 1. For each variable `x` in the program, initialize `K(x) = Stack()`.
