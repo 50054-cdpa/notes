@@ -3,12 +3,9 @@
 ## Learning Outcomes
 
 
-1. Define the sign analysis problem
-1. Define a lattice and a complete lattice
-1. Define a monotonic function of lattices
-1. Explain the fixed point algorithm
-1. Implement the fixed point algorithm
-1. Apply lattice and fixed point algorithm to solve the sign analysis problem
+1.
+1.
+1.
 
 ## Recap
 
@@ -330,7 +327,7 @@ Similarly we can define the other abstract operators
 
 | << | $\top$ | + | - | 0 | $\bot$ | 
 |---|---|---|---|---|---|
-| $\top$| $\top$| $\top$| $\top$| 0 | $\bot$| 
+| $\top$| $\top$| $\top$| $\top$| $\top$ | $\bot$| 
 | + | $\top$ | $\top$ | 0 | 0 | $\bot$| 
 | - | $\top$ | + | $\top$ | + | $\bot$ |
 | 0 | $\top$ | + | 0 | 0 | $\bot$ |
@@ -910,7 +907,6 @@ The monotonic functions can be defined by the following cases.
 * other cases: $s_l = join(s_l)$
 
 Let $m$ be a map lattice object, and $src$ be a PA source operand, the lookup operation $m(src)$ for sign analysis is defined as follows 
-
 $$
 \begin{array}{rcl}
 m(c) & = & \left \{ 
@@ -946,6 +942,5 @@ We have seen the definitions of $++, --, **$ and $<<$
 
 > Question: can you define $===$?
 
-> Question: the abstraction operations are pretty coarse (not accurate). For instance, `<<` and `===` should return either `0` or `1` hence $\top$ is too coarse. Can you define a lattice for sign analysis which offers better accuracy? 
+> Question: the abstraction operations are pretty coarse (not accurate), can you define a lattice for sign analysis which offers better accuracy?
 
-> Question: Convert `SIMP1` into a PA. Can we apply the sign analysis to find out that the `sqrt(x)` is definifely failing?

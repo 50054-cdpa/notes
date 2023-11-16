@@ -156,7 +156,7 @@ Same error arises when `input == 0`.
 Static Single Assignment (SSA) form is an intermediate representation 
 widely used in compiler design and program verification. 
 
-In a single static assignment form, 
+In a static single assignment form, 
 
 * Each variable is only allowed to be assigned once syntactically, i.e. it only appears in the LHS of the assignment once. 
 * $\phi$-assignments are placed at the end of branching statements to merge different (re)-definition of the same variable (from the source program). 
@@ -169,6 +169,7 @@ SSA form construction is one of the effective ways to analysis
 ### Unstructured SSA Form
 
 Suppose we extend the pseudo assembly with $\phi$-assignment statements, 
+
 $$
 \begin{array}{rccl}
 (\tt Labeled\ Instruction) & li  & ::= & l : \overline{\phi}\ i \\ 
@@ -183,6 +184,7 @@ $$
 (\tt Register)      & r &   ::= & r_{ret} \mid r_1 \mid r_2 \mid ...  
 \end{array}
 $$
+
 The syntax is largely unchanged, except that for each labeled instruction, there exists a sequence of phi assignments $\overline{\phi}$. (which could be empty) before the actual instruction $i$. When $\overline{\phi}$ is empty, we omit it from the syntax.
 
 we are able convert any "well-defined" pseudo assembly program into an SSA form. Since we build the SSA forms from some unstructured language program (i.e. no nested control flow statements), we call them unstructured SSA forms.
@@ -244,9 +246,9 @@ The third component $p$ in the program context is a label from the preceding ins
 
 
 $$
-{\tt (pConst)} ~~~ P \vdash (L, l:  d \leftarrow c, p) \longrightarrow (L \oplus (d,c), P(l+1), l) \\ 
-{\tt (pRegister)} ~~~P \vdash (L, l: d \leftarrow r, p) \longrightarrow (L \oplus (d,L(r)), P(l+1), l) \\  
-{\tt (pTempVar)} ~~~P \vdash (L, l: d \leftarrow t, p ) \longrightarrow (L \oplus (d,L(t)), P(l+1), l) \\ 
+{\tt (pConst)} ~~~ P \vdash (L, l:  d \leftarrow c, p) \longrightarrow (L \oplus (d,c), P(l+1), l) \\ \\
+{\tt (pRegister)} ~~~P \vdash (L, l: d \leftarrow r, p) \longrightarrow (L \oplus (d,L(r)), P(l+1), l) \\  \\
+{\tt (pTempVar)} ~~~P \vdash (L, l: d \leftarrow t, p ) \longrightarrow (L \oplus (d,L(t)), P(l+1), l) \\ \\
 {\tt (pGoto)} ~~ P \vdash (L, l:goto\ l', p) \longrightarrow (L, P(l'), l)
 $$
 
@@ -271,10 +273,12 @@ $$
      \end{array}
 \end{array}
 $$
+
 All the existing rules are required some minor changes to accomodate the third component in the program context. 
 The adjustments are common, i.e. propogating the label of the current labeled instruction from the LHS to the RHS as the proceding label.
 Note that the above handle the cases in which the labeled instruction has no phi assignments.  In the presence of phi-assignments, 
 we need the following rules to guide the execution.
+
 $$
 \begin{array}{rc}
 {\tt (pPhi1)} &  \begin{array}{c}
@@ -441,7 +445,7 @@ In other words, $v_1 \preceq v_2$ means whenever we execute the program from the
 
 For instance, in the earlier control flow graph for `Graph2_PA1`, 
 
-* the vertex `1` dominates the rest of the vertices. 
+* the vertex `1` dominates all vertices. 
 * the vertex `4` dominates itself, the vertices `5,6,7,8,9,10`.
 
 
@@ -525,7 +529,7 @@ $$
 and 
 
 $$
-df_{up}(v, G) = \{ w \mid w \in df(v) \wedge \neg (idom(v) \prec w)\}~~~(E3)
+df_{up}(v, G) = \{ w \mid w \in df(v,G) \wedge \neg (idom(v) \prec w)\}~~~(E3)
 $$
 
 * $(E1)$ says that the dominance frontier of a vertex $v$ is the union of the local contribution $df_{local}(v,G)$ and the (dominator tree) descendants' upward contribution $\bigcup_{u \in child(v,T)} df_{up}(u, G)$
@@ -544,7 +548,7 @@ The algorithm is structured as follows
 1. For each vertex $v$ by traversing the dominator tree bottom up:
     1. compute $df_{local}(v,G)$
     1. compute $\bigcup_{u \in child(v,T)}df_{up}(u, G)$, which can be looked up from the a memoization table.
-    1. save $df(v,G) = df_{local}(v,G) \cup \bigcup_{u \in child(v,T)}$ in the memoization table.
+    1. save $df(v,G) = df_{local}(v,G) \cup \bigcup_{u \in child(v,T)} df_{up}(u,G)$ in the memoization table.
 
 
 For instance, we make use of `Graph2_PA1` and `Tree2_PA1` to construct the following memoization table `Table2_PA1`
@@ -557,7 +561,7 @@ For instance, we make use of `Graph2_PA1` and `Tree2_PA1` to construct the follo
 | 7  | {8} | {8} | 6 | {} | {4} | {4} | 
 | 6  | {7} | {7} | 5 | {} | {4} | {4} | 
 | 5  | {6,9} | {6,9} | 4 | {} | {4} | {4} | 
-| 4  | {5} | {5} | 3 | {} | {}  | {} |
+| 4  | {5} | {5} | 3 | {} | {}  | {4} |
 | 3  | {4} | {4} | 2 | {} | {} | {} | 
 | 2  | {3} | {3} | 1 | {} | {} | {} |
 | 1  | {2} | {2} |   | {} | {} | {} | 
@@ -620,7 +624,7 @@ The phi-assignment insertion process can be described as follows,
         1. case `None`
             1. add `l:i` to `Q`
         1. case `Some(xs)`
-            1. `phis = xs.map( x => x <- phi( k:x | for k in pred(l,G)))`
+            1. `phis = xs.map( x => x <- phi( k:x | (k in pred(l,G)))`
             1. add `l:phis i` to `Q`
 
 $pred(v, G)$ retrieves the set of predecessors of vertex (label) in graph $G$. 
@@ -666,7 +670,7 @@ Given an intermediate output like `PRE_SSA_PA1`, we need to rename the variable 
 
 Inputs: 
     * a dictionary of stacks `K` where the keys are the variable names in the original PA program. e.g. `K(x)` returns the stack for variable `x`. 
-    * the input program in with phi assignment but owning the variable renaming,  e.g. `PRE_SSA_PA1`. We view the program as a dictionary mapping labels to labeled instructions.
+    * the input program in with phi assignment but oweing the variable renaming,  e.g. `PRE_SSA_PA1`. We view the program as a dictionary mapping labels to labeled instructions.
 
 
 1. For each variable `x` in the program, initialize `K(x) = Stack()`.
@@ -908,3 +912,50 @@ relabel(ifn t goto l,M) = ifn t goto M(l)
 relabel(goto l, M) = goto M(l)
 relabel(i, M) = i
 ```
+
+## Structured SSA
+
+Besides unstructured SSA, it is possible to construct SSA based on a structured program such as SSA. For instance, 
+
+
+```java
+x = input;
+s = 0;
+c = 0;
+while c < x {
+    s = c + s;
+    c = c + 1;
+}
+return s;
+```
+
+Can be converted into a structured SSA 
+
+```java
+x1 = input;
+s1 = 0;
+c1 = 0;
+join { s2 = phi(s1,s3); c2 = phi(c1,c3); } 
+while c2 < x1 {
+    s3 = c2 + s2;
+    c3 = c2 + 1;
+}
+return s2;
+```
+
+In the above SSA form, we have a `join ... while ... ` loop. 
+The join clause encloses the phi assignments merging variable definitions coming from the statement preceding the join while loop and 
+also the body of the loop.  (Similarly we can introduce a `if ... else ... join ...` statement).
+
+Structured SSA allows us to 
+
+1. conduct name analysis closer to the source language. 
+1. conduct flow insensitive analysis by incorporating the use-def information. In some cases we get same precision as the flow sensitive analysis. 
+    
+1. perform code obfuscation. 
+
+### Futher Readings
+
+* https://dl.acm.org/doi/10.1145/2955811.2955813
+* https://dl.acm.org/doi/abs/10.1145/3605156.3606457
+* https://dl.acm.org/doi/10.1145/202530.202532
