@@ -260,7 +260,7 @@ $$
  {\tt (Builtin\ Operators)} & op & ::= & + \mid - \mid * \mid / \mid\ == \\
  {\tt (Builtin\ Constants)} & c & ::= & 0 \mid 1 \mid ... \mid true \mid false \\
  {\tt (Types)} & T & ::= & int \mid bool \mid T \rightarrow T \mid \alpha \\ 
- {\tt (Type Scheme)} & \sigma & ::= & \forall \alpha. T \mid T \\ 
+ {\tt (Type Scheme)} & \sigma & ::= & \forall \alpha. \sigma \mid T \\ 
  {\tt (Type\ Environments)} & \Gamma & \subseteq & (x \times \sigma ) \\
  {\tt (Type\ Substitution)} & \Psi & ::= & [T/\alpha] \mid [] \mid \Psi \circ \Psi 
 \end{array}
@@ -497,7 +497,9 @@ Where [subtree 3] is as follows
 Γ2|-f 1:int
 ```
 
-As we can observe, through the use of rules of ${\tt (hmGen)}$ and ${\tt (hmVar)}$, we are able to give let-bound variables `f` and `g` some generic types (AKA parametric polymorphic types). Through rules ${\tt (hmApp)}$ and ${\tt (hmInst)}$ we are able to "instantiate" these polymoprhic types to the appropriate monomorphic types depending on the contexts.
+As we can observe, through the use of rules of ${\tt (hmGen)}$ and ${\tt (hmVar)}$, we are able to give let-bound variables `f` and `g` some generic types (AKA parametric polymorphic types). Through rules ${\tt (hmApp)}$ and ${\tt (hmInst)}$ we are able to "instantiate" these polymoprhic types to the appropriate monomorphic types depending on the contexts. 
+
+Note that the goal of Hindley Milner type system is to store the most general (or principal) type (scheme) of a lambda term in the type environment, (especially the program variables and function names), so that when an application is being type-checked, we are able to instantiate a specific type based on the context, as we observe that it is always an combo of ${\tt (hmVar)}$ rule followed by ${\tt (hmInst)}$ rule.
 
 
 ### Property 4 - Uniqueness
