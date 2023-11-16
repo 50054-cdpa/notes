@@ -493,7 +493,7 @@ Let $T$ be a dominator tree, we write $child(v,T)$ to denote the set of children
 
 Let $v$ be vertex in a graph $G$, we define the dominance frontier of $v$ as
 $$
-df(v, G) = \{ v_2 \mid (v_1,v_2) \in G \wedge v \preceq v_1 \wedge \neg(v \preceq v_2) \}
+df(v, G) = \{ v_2 \mid (v_1,v_2) \in G \wedge v \preceq v_1 \wedge \neg(v \prec v_2) \}
 $$
 
 In other words, the dominance frontier of a vertex $v$ is the set of vertices that are not dominated by $v$ but their predecesors are (dominated by $v$). 
