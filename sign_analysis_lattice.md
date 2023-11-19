@@ -579,10 +579,10 @@ We say $x$ is a *least fixed point* of $f$ iff $\forall y \in L$, $y$ is a fixed
 For example, for function $f_1$, $\top$ is a fixed point and also the least fixed point. For function $f_2$, $+$, $\top$ are the fixed points and $+$ is the least fixed point.
 
 ### Theorem 14 - Fixed Point Theorem
-Let $L$ be a complete lattice with finite height, every monotonic  function $f$ has a unique least fixed point point, namely $lfp(f)$, defined as 
+Let $L$ be a complete lattice with finite height, every monotonic  function $f$ has a unique least fixed point point, namely ${\tt lfp}(f)$, defined as 
 
 $$
-lfp(f) = \bigsqcup_{i\geq 0}f^i(\bot)
+{\tt lfp}(f) = \bigsqcup_{i\geq 0}f^i(\bot)
 $$
 
 Where $f^n(x)$ is a short hand for 
@@ -618,7 +618,7 @@ With the fixed point theoem and Lemma 15, we are ready to define a general solut
 
 ### Naive Fixed Point Algorithm 
 
-input: a function `f.`
+input: a function `f`.
 
 1. initialize `x` as $\bot$
 1. apply `f(x)` as `x1`
