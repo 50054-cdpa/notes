@@ -3,9 +3,11 @@
 ## Learning Outcomes
 
 
-1.
-1.
-1.
+1. Explain the objective of Sign Analysis
+1. Define Lattice and Complete Lattice
+1. Define Monotonic Functions
+1. Explain the fixed point theorem
+1. Apply the fixed pointed theorem to solve equation constraints of sign analysis
 
 ## Recap
 
@@ -152,7 +154,7 @@ Let's consider the formalism of the lattice and this approach we just presented.
 A set $S$ is a *partial order* iff there exists a binary relation $\sqsubseteq$ with the following condition.
 
 1. reflexivity: $\forall x \in S, x \sqsubseteq x$
-1. transtivity: $\forall x,y,z \in S, x \sqsubseteq y \wedge y\sqsubseteq z$ implies $x \sqsubseteq z$. 
+1. transitivity: $\forall x,y,z \in S, x \sqsubseteq y \wedge y\sqsubseteq z$ implies $x \sqsubseteq z$. 
 1. anti-symmetry: $\forall x,y \in S, x \sqsubseteq y \wedge y\sqsubseteq x$ implies $x = y$.
 
 
@@ -901,12 +903,13 @@ Let $V$ denotes the set of variables in the PA program's being analysed.
 
 The monotonic functions can be defined by the following cases.
 
-* case $l == 0$, $s_0 = \lbrack x \mapsto \top \mid x \in V]$
+* case $l == 0$, $s_0 = \lbrack x \mapsto \top \mid x \in V\rbrack$
 * case $l: t \leftarrow src$, $s_l = join(s_l) \lbrack t \mapsto join(s_l)(src)\rbrack$
 * case $l: t \leftarrow src_1\ op\ src_2$, $s_l = join(s_l) \lbrack t \mapsto (join(s_l)(src_1)\ abs(op)\ join(s_l)(src_2))\rbrack$
 * other cases: $s_l = join(s_l)$
 
 Let $m$ be a map lattice object, and $src$ be a PA source operand, the lookup operation $m(src)$ for sign analysis is defined as follows 
+
 $$
 \begin{array}{rcl}
 m(c) & = & \left \{ 
@@ -942,5 +945,6 @@ We have seen the definitions of $++, --, **$ and $<<$
 
 > Question: can you define $===$?
 
-> Question: the abstraction operations are pretty coarse (not accurate), can you define a lattice for sign analysis which offers better accuracy?
+> Question: the abstraction operations are pretty coarse (not accurate). For instance, `<<` and `===` should return either `0` or `1` hence $\top$ is too coarse. Can you define a lattice for sign analysis which offers better accuracy? 
 
+> Question: Convert `SIMP1` into a PA. Can we apply the sign analysis to find out that the `sqrt(x)` is definifely failing?
