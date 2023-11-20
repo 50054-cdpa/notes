@@ -3,9 +3,11 @@
 ## Learning Outcomes
 
 
-1.
-1.
-1.
+1. Explain the objective of Sign Analysis
+1. Define Lattice and Complete Lattice
+1. Define Monotonic Functions
+1. Explain the fixed point theorem
+1. Apply the fixed pointed theorem to solve equation constraints of sign analysis
 
 ## Recap
 
@@ -152,7 +154,7 @@ Let's consider the formalism of the lattice and this approach we just presented.
 A set $S$ is a *partial order* iff there exists a binary relation $\sqsubseteq$ with the following condition.
 
 1. reflexivity: $\forall x \in S, x \sqsubseteq x$
-1. transtivity: $\forall x,y,z \in S, x \sqsubseteq y \wedge y\sqsubseteq z$ implies $x \sqsubseteq z$. 
+1. transitivity: $\forall x,y,z \in S, x \sqsubseteq y \wedge y\sqsubseteq z$ implies $x \sqsubseteq z$. 
 1. anti-symmetry: $\forall x,y \in S, x \sqsubseteq y \wedge y\sqsubseteq x$ implies $x = y$.
 
 
@@ -231,7 +233,60 @@ $$
 
 We sometimes write $L^n$ as a short-hand for $(L_1 \times ... \times  L_n)$.
 
-For example in `PA3`, to analyse the signs for variableswe need two lattices, one for variable `x` and the other for variable `t`, which forms a product lattice. $Sign \times Sign$ where $Sign$ is a complete lattice is defined as $(\{ \bot, \top, 0, + , -\}, \sqsubseteq)$.
+For example in `PA3`, to analyse the signs for variables we need two lattices, one for variable `x` and the other for variable `t`, which forms a product lattice. $Sign \times Sign$ where $Sign$ is a complete lattice is defined as $(\{ \bot, \top, 0, + , -\}, \sqsubseteq)$.
+
+```mermaid
+graph TD;
+    tt["(⊤,⊤)"] --- t+["(⊤,+)"]
+    tt["(⊤,⊤)"] --- t0["(⊤,0)"]
+    tt["(⊤,⊤)"] --- tm["(⊤,-)"]
+    tt["(⊤,⊤)"] --- +t["(+,⊤)"]
+    tt["(⊤,⊤)"] --- 0t["(0,⊤)"]
+    tt["(⊤,⊤)"] --- mt["(-,⊤)"]
+    t+["(⊤,+)"] --- ++["(+,+)"]
+    t+["(⊤,+)"] --- 0+["(0,+)"]
+    t+["(⊤,+)"] --- m+["(-,+)"]
+    t0["(⊤,0)"] --- 00["(0,0)"]
+    t0["(⊤,0)"] --- +0["(+,0)"]
+    t0["(⊤,0)"] --- m0["(-,0)"]
+    tm["(⊤,-)"] --- +m["(+,-)"]
+    tm["(⊤,-)"] --- 0m["(0,-)"]
+    tm["(⊤,-)"] --- mm["(-,-)"]
+    +t["(+,⊤)"] --- ++["(+,+)"]
+    +t["(+,⊤)"] --- +0["(+,0)"]
+    +t["(+,⊤)"] --- +m["(+,-)"]
+    0t["(0,⊤)"] --- 0+["(0,+)"]
+    0t["(0,⊤)"] --- 00["(0,0)"]
+    0t["(0,⊤)"] --- 0m["(0,-)"]
+    mt["(-,⊤)"] --- m+["(-,+)"] 
+    mt["(-,⊤)"] --- m0["(-,0)"] 
+    mt["(-,⊤)"] --- mm["(-,-)"] 
+    ++["(+,+)"] --- b+["(⊥,+)"]
+    ++["(+,+)"] --- +b["(+,⊥)"]
+    0+["(0,+)"] --- b+["(⊥,+)"]
+    0+["(0,+)"] --- 0b["(0,⊥)"]
+    m+["(-,+)"] --- b+["(⊥,+)"]
+    m+["(-,+)"] --- mb["(-,⊥)"]
+    00["(0,0)"] --- b0["(⊥,0)"]
+    00["(0,0)"] --- 0b["(0,⊥)"]
+    +0["(+,0)"] --- b0["(⊥,0)"]
+    +0["(+,0)"] --- +b["(+,⊥)"]
+    m0["(-,0)"] --- b0["(⊥,0)"]
+    m0["(-,0)"] --- mb["(-,⊥)"]
+    +m["(+,-)"] --- bm["(⊥,-)"]
+    +m["(+,-)"] --- +b["(+,⊥)"]
+    0m["(0,-)"] --- bm["(⊥,-)"]
+    0m["(0,-)"] --- 0b["(0,⊥)"]
+    mm["(-,-)"] --- bm["(⊥,-)"] 
+    mm["(-,-)"] --- mb["(-,⊥)"]
+    b+["(⊥,+)"] --- bb["(⊥,⊥)"]
+    b0["(⊥,0)"] --- bb["(⊥,⊥)"]
+    bm["(⊥,-)"] --- bb["(⊥,⊥)"]
+    +b["(+,⊥)"] --- bb["(⊥,⊥)"]
+    0b["(0,⊥)"] --- bb["(⊥,⊥)"]
+    mb["(-,⊥)"] --- bb["(⊥,⊥)"]
+```
+
 
 ### Map Lattice 
 
@@ -269,6 +324,59 @@ m_2 = [ x \mapsto \top, t \mapsto \top ]
 $$
 
 We conclude that $m_1\sqsubseteq m_2$. Let $Var$ denote the set of all variables, and $Sign$ denote the complete lattice $(\{ \bot, \top, 0, + , -\}, \sqsubseteq)$. `m1` and `m2` are elements of the complete lattice $Var \rightarrow Sign$
+
+
+```mermaid
+graph TD;
+    tt["(x→⊤,t→⊤)"] --- t+["(x→⊤,t→+)"]
+    tt["(x→⊤,t→⊤)"] --- t0["(x→⊤,t→0)"]
+    tt["(x→⊤,t→⊤)"] --- tm["(x→⊤,t→-)"]
+    tt["(x→⊤,t→⊤)"] --- +t["(x→+, t→⊤)"]
+    tt["(x→⊤,t→⊤)"] --- 0t["(x→0, t→⊤)"]
+    tt["(x→⊤,t→⊤)"] --- mt["(x→-, t→⊤)"]
+    t+["(x→⊤,t→+)"] --- ++["(x→+, t→+)"]
+    t+["(x→⊤,t→+)"] --- 0+["(x→0, t→+)"]
+    t+["(x→⊤,t→+)"] --- m+["(x→-, t→+)"]
+    t0["(x→⊤,t→0)"] --- 00["(x→0, t→0)"]
+    t0["(x→⊤,t→0)"] --- +0["(x→+, t→0)"]
+    t0["(x→⊤,t→0)"] --- m0["(x→-, t→0)"]
+    tm["(x→⊤,t→-)"] --- +m["(x→+, t→-)"]
+    tm["(x→⊤,t→-)"] --- 0m["(x→0, t→-)"]
+    tm["(x→⊤,t→-)"] --- mm["(x→-, t→-)"]
+    +t["(x→+, t→⊤)"] --- ++["(x→+, t→+)"]
+    +t["(x→+, t→⊤)"] --- +0["(x→+, t→0)"]
+    +t["(x→+, t→⊤)"] --- +m["(x→+, t→-)"]
+    0t["(x→0, t→⊤)"] --- 0+["(x→0, t→+)"]
+    0t["(x→0, t→⊤)"] --- 00["(x→0, t→0)"]
+    0t["(x→0, t→⊤)"] --- 0m["(x→0, t→-)"]
+    mt["(x→-, t→⊤)"] --- m+["(x→-, t→+)"] 
+    mt["(x→-, t→⊤)"] --- m0["(x→-, t→0)"] 
+    mt["(x→-, t→⊤)"] --- mm["(x→-, t→-)"] 
+    ++["(x→+, t→+)"] --- b+["(x→⊥, t→+)"]
+    ++["(x→+, t→+)"] --- +b["(x→+, t→⊥)"]
+    0+["(x→0, t→+)"] --- b+["(x→⊥, t→+)"]
+    0+["(x→0, t→+)"] --- 0b["(x→0, t→⊥)"]
+    m+["(x→-, t→+)"] --- b+["(x→⊥, t→+)"]
+    m+["(x→-, t→+)"] --- mb["(x→-, t→⊥)"]
+    00["(x→0, t→0)"] --- b0["(x→⊥, t→0)"]
+    00["(x→0, t→0)"] --- 0b["(x→0, t→⊥)"]
+    +0["(x→+, t→0)"] --- b0["(x→⊥, t→0)"]
+    +0["(x→+, t→0)"] --- +b["(x→+, t→⊥)"]
+    m0["(x→-, t→0)"] --- b0["(x→⊥, t→0)"]
+    m0["(x→-, t→0)"] --- mb["(x→-, t→⊥)"]
+    +m["(x→+, t→-)"] --- bm["(x→⊥, t→-)"]
+    +m["(x→+, t→-)"] --- +b["(x→+, t→⊥)"]
+    0m["(x→0, t→-)"] --- bm["(x→⊥, t→-)"]
+    0m["(x→0, t→-)"] --- 0b["(x→0, t→⊥)"]
+    mm["(x→-, t→-)"] --- bm["(x→⊥, t→-)"] 
+    mm["(x→-, t→-)"] --- mb["(x→-, t→⊥)"]
+    b+["(x→⊥, t→+)"] --- bb["(x→⊥, t→⊥)"]
+    b0["(x→⊥, t→0)"] --- bb["(x→⊥, t→⊥)"]
+    bm["(x→⊥, t→-)"] --- bb["(x→⊥, t→⊥)"]
+    +b["(x→+, t→⊥)"] --- bb["(x→⊥, t→⊥)"]
+    0b["(x→0, t→⊥)"] --- bb["(x→⊥, t→⊥)"]
+    mb["(x→-, t→⊥)"] --- bb["(x→⊥, t→⊥)"]
+```
 
 
 ### Sign analysis with Lattice 
@@ -471,10 +579,10 @@ We say $x$ is a *least fixed point* of $f$ iff $\forall y \in L$, $y$ is a fixed
 For example, for function $f_1$, $\top$ is a fixed point and also the least fixed point. For function $f_2$, $+$, $\top$ are the fixed points and $+$ is the least fixed point.
 
 ### Theorem 14 - Fixed Point Theorem
-Let $L$ be a complete lattice with finite height, every monotonic  function $f$ has a unique least fixed point point, namely $lfp(f)$, defined as 
+Let $L$ be a complete lattice with finite height, every monotonic  function $f$ has a unique least fixed point point, namely ${\tt lfp}(f)$, defined as 
 
 $$
-lfp(f) = \bigsqcup_{i\geq 0}f^i(\bot)
+{\tt lfp}(f) = \bigsqcup_{i\geq 0}f^i(\bot)
 $$
 
 Where $f^n(x)$ is a short hand for 
@@ -510,7 +618,7 @@ With the fixed point theoem and Lemma 15, we are ready to define a general solut
 
 ### Naive Fixed Point Algorithm 
 
-input: a function `f.`
+input: a function `f`.
 
 1. initialize `x` as $\bot$
 1. apply `f(x)` as `x1`
@@ -901,12 +1009,13 @@ Let $V$ denotes the set of variables in the PA program's being analysed.
 
 The monotonic functions can be defined by the following cases.
 
-* case $l == 0$, $s_0 = \lbrack x \mapsto \top \mid x \in V]$
+* case $l == 0$, $s_0 = \lbrack x \mapsto \top \mid x \in V\rbrack$
 * case $l: t \leftarrow src$, $s_l = join(s_l) \lbrack t \mapsto join(s_l)(src)\rbrack$
 * case $l: t \leftarrow src_1\ op\ src_2$, $s_l = join(s_l) \lbrack t \mapsto (join(s_l)(src_1)\ abs(op)\ join(s_l)(src_2))\rbrack$
 * other cases: $s_l = join(s_l)$
 
 Let $m$ be a map lattice object, and $src$ be a PA source operand, the lookup operation $m(src)$ for sign analysis is defined as follows 
+
 $$
 \begin{array}{rcl}
 m(c) & = & \left \{ 
@@ -942,5 +1051,6 @@ We have seen the definitions of $++, --, **$ and $<<$
 
 > Question: can you define $===$?
 
-> Question: the abstraction operations are pretty coarse (not accurate), can you define a lattice for sign analysis which offers better accuracy?
+> Question: the abstraction operations are pretty coarse (not accurate). For instance, `<<` and `===` should return either `0` or `1` hence $\top$ is too coarse. Can you define a lattice for sign analysis which offers better accuracy? 
 
+> Question: Convert `SIMP1` into a PA. Can we apply the sign analysis to find out that the `sqrt(x)` is definifely failing?

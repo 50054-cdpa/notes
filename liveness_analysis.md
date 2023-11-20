@@ -362,6 +362,13 @@ From which we can identify at least two possible optimization opportunities.
 
 Given an analysis in which the monotone equations are defined by deriving the current state based on the predecessors's states, we call this analysis a **forward analysis**. 
 
-Given an analysis in which the monotone equations are defined by deriving the current state based on the successor's states, we call this analysis a  **forward analysis**.
+Given an analysis in which the monotone equations are defined by deriving the current state based on the successor's states, we call this analysis a  **backward analysis**.
 
 For instance, the sign analysis is a forward analysis and the liveness analysis is a backward analysis.
+
+## May Analysis vs Must Analysis
+
+Given an analysis that makes use of powerset lattice, it is a **may analysis** if it gives an over-approximation. For example, liveness analysis analyses the set of variables that may be "live" at a program point. 
+
+Given an analysis that makes use of powerset lattice, it is a **must analysis** if it gives an under-approximation. For example, if we negate the result of a liveness analysis to analyse the set of variables that must be "dead" at a program point. In this analysis we can keep track of the set of variables must be dead and use $\sqcap$ (which is $\cap$) instead of $\sqcup$ (which is $\cup$).
+
