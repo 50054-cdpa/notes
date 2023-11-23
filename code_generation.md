@@ -2,7 +2,10 @@
 
 ## Learning Outcomes
 
-1. 
+1. Name the difference among the target code platforms
+1. Apply SSA-based register allocation to generate 3-address code from Pseudo Assembly
+1. Handle register spilling
+1. Implement the target code generation to JVM bytecode given a Pseudo Assembly Program
 
 
 ## Recap Compiler Pipeline
@@ -21,7 +24,7 @@ There are mainly 3 kinds of target platforms.
     * Stack machine. E.g. JVM
 
 
-### Asembly code vs Machine code
+### Assembly code vs Machine code
 
 Note that the instruction formats mentioned here are the human-readable representations of the target code. The actual target code (machine code) is in binary format.
 
