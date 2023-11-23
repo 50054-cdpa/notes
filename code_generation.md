@@ -10,6 +10,15 @@
 
 ## Recap Compiler Pipeline
 
+```mermaid
+graph LR
+A[Lexing] -->B[Parsing] --> C[Semantic Analysis] --> D[Optimization] --> E[Target Code Generation]
+D --> C
+```
+
+For Target Code Generation, we consider some IR as input, the target code (executable) as the output.
+
+
 ## Instruction Selection
 
 Instruction selection is a process of choosing the target platform on which the language to be executed. 
