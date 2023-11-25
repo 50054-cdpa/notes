@@ -39,40 +39,57 @@ Note that the instruction formats mentioned here are the human-readable represen
 
 ### 3-address instruction 
 
-* `dst <- src1 op src2`
-* Simple instruction set
-    ```
-    r <- x + 1
-    ```
-    or
-    ```
-    add r x 1
-    ```
-* More registers (and temp variables)
+In 3-address instruction target platform, each instruction is set to use 3 addresses in maximum.
+For instance, the Pseudo Assembly we studied earlier is a kind of 3-address instruction without the hardware restriction.
 
+For instance in 3 address instruction, we have instructions that look like 
+
+```
+x <- 1
+y <- 2
+r <- x + y
+```
+
+where `r`, `x` and `y` are registers . Alternatively, in some other 3 address instruction format, we express the code fragement above in a prefix notation, 
+
+
+```
+load x 1
+load y 2
+add r x y
+```
+
+The advantage of having more register (addresses) per instruction allows us to huge room of code optimization while keeping a relative simple and small set of instructions (for instance, consider our Pseudo Assembly has a simple set.)
 
 ### 2-address instruction 
 
-* `op dst src`
-* More complex instruction set
-    ```
-    load r x
-    add r 1
-    ```
-* Fewer registers
+In 2-address instruction target platform, each instruction has maximum 2 addresses. As a result, some of the single line instruction in 3-address instruction has to be encoded as multiple instructions in 2 address platform. For example, to add `x` and `y` and store the result in `r`, we have to write
 
+```
+load x 1
+load y 2
+add x y
+```
+
+in the 3rd instruction we add the values stored in registers `x` and `y`. The sum will be stored in `x`. In the last statement, we move the result from `x` to `r`.
+
+As the result, we need fewer registers (in minimum) to carry out operations. On the other hands, the set of instructions in 2-address instruction are often more complex.
 
 ### 1-address instruction 
 
-* AKA P-code, stack machine code
-* More complex instruction set with stack for computation (not to confuse with stack for function call)
-    ```
-    load x
-    load 1
-    add
-    store r
-    ```
-* Minimum registers, e.g. JVM has only 3 registers.
+In the exterem case, we find some target platform has only 1 address instruction. This kind of target is also known as the P-code (P for Pascal) or the stack machine code. 
+
+For example for the same program, we need t9o encode it in 1-address instruction as follows
+
+```
+push 1
+push 2
+add 
+store r
+```
+In the first instruction, we push the constant 1 to the left operand register (or the 1st register). In the second instruction, we push the constant 2 to the right oeprand register (the 2nd register). In the 3rd instruction, we apply the add operation to sum up the two registers and the result is stored in the first register. The 2nd register is cleared (or popped). In the last instruction, we pop the result from the first register store it in a temporary variable `r`
+
+The benefit of 1 address intruction is having a minimum and uniform requirement for the hardware. It requrest the least amount registers, for example, JVM has only 3 registers. On the other hand, its instruction set is the most complex.
 
 
 ## From PA to 3-address target platform
