@@ -810,7 +810,7 @@ $$
 \end{array}
 $$
 
-The rule $(\tt sjLabel)$ processes the $ilabel\ l$ instruction. It is being skipped, because it serves as a syntactical marking (refer to the $procLabel()$ function below), has no impact to the semantic operation.
+The rule $(\tt sjLabel)$ processes the $ilabel\ l$ instruction. It is being skipped, because it serves as a syntactical marking (refer to the $codeAfterLabel()$ function below), has no impact to the semantic operation.
 
 $$
 \begin{array}{rc}
@@ -832,9 +832,9 @@ The rules $(\tt sjAdd)$, $(\tt sjSub)$ and $(\tt sjMul)$ process the binary oper
 
 $$
 \begin{array}{rc}
-(\tt sjGoto) & J \vdash (\Delta, r_0, r_1, igoto\ l';jis) \longrightarrow (\Delta, r_0, r_1, procLabel(J, l')) \\ \\ 
+(\tt sjGoto) & J \vdash (\Delta, r_0, r_1, igoto\ l';jis) \longrightarrow (\Delta, r_0, r_1, codeAfterLabel(J, l')) \\ \\ 
 (\tt sjCmpNE1) & \begin{array}{c} 
-                c_0 \neq c_1 \ \ \ \ jis' = procLabel(J, l')
+                c_0 \neq c_1 \ \ \ \ jis' = codeAfterLabel(J, l')
                 \\ \hline
                 J \vdash  (\Delta, c_0, c_1, if\_icmpne\ l';jis) \longrightarrow (\Delta, \_, \_, jis') 
                 \end{array} \\ \\
@@ -844,7 +844,7 @@ $$
                 J \vdash  (\Delta, c_0, c_1, if\_icmpne\ l';jis) \longrightarrow (\Delta , \_, \_, jis) 
                 \end{array} \\ \\ 
 (\tt sjCmpGE1) & \begin{array}{c} 
-                c_0 \ge c_1 \ \ \ \ jis' = procLabel(J, l')
+                c_0 \ge c_1 \ \ \ \ jis' = codeAfterLabel(J, l')
                 \\ \hline
                 J \vdash  (\Delta, c_0, c_1, if\_icmpge\ l';jis) \longrightarrow (\Delta, \_, \_, jis') 
                 \end{array} \\ \\
@@ -856,18 +856,18 @@ $$
 \end{array}
 $$
 
-The last set of rules handle the jump and conditional jumps. The rule $(\tt sjGoto)$ processes a goto instruction by replacing the instructions to be processed $jis$ by $procLabel(J, l')$. Recall that $J$ is storing the entire sequence of JVM instructions, $procLabel(J, l')$ extracts the suffix of $J$ starting from the point where $ilabel\ l'$ is found. 
+The last set of rules handle the jump and conditional jumps. The rule $(\tt sjGoto)$ processes a goto instruction by replacing the instructions to be processed $jis$ by $codeAfterLabel(J, l')$. Recall that $J$ is storing the entire sequence of JVM instructions, $codeAfterLabel(J, l')$ extracts the suffix of $J$ starting from the point where $ilabel\ l'$ is found. 
 
 $$
 \begin{array}{rcl}
-procLabel(ireturn, l) & = & error \\ 
-procLabel(ilabel\ l;jis, l') & = & 
+codeAfterLabel(ireturn, l) & = & error \\ 
+codeAfterLabel(ilabel\ l;jis, l') & = & 
             \left \{ \begin{array}{lc}
                       jis & l == l'  \\
-                      procLabel(jis, l') & {\tt otherwise}
+                      codeAfterLabel(jis, l') & {\tt otherwise}
                      \end{array}
             \right . \\ 
-procLabel(ji; jis, l) & = & procLabel(jis, l)
+codeAfterLabel(ji; jis, l) & = & codeAfterLabel(jis, l)
 \end{array}
 $$
 
