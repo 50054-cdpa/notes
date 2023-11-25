@@ -757,12 +757,12 @@ if_icmpge l2 // if register 0 >= register 1 jump,
              // regardless of the comparison pop both registers
 iload 4      // push the content of c to register 0
 iload 3      // push the content of s to register 1
-iadd         // sum up the r0 and r1 and result remains in r0
-istore 3     // pop r0 to s
+iadd         // sum up the r0 and r1 and result remains in register 0
+istore 3     // pop register 0 to s
 iload 4      // push the content of c to register 0
 sipush 1     // push a constant 1 to register 1
 iadd        
-istore 4     // pop r0 to c
+istore 4     // pop register 0 to c
 igoto l1
 ilabel 12
 iload 3      // push the content of s to register 0
