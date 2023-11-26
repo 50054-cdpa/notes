@@ -156,7 +156,7 @@ As we can argue, we could avoid the offloading by mapping `w` to `rret` since it
 ```
 However this option is not always possible, as the following the `w` might not be returned variable in some other examples.
 
-We could also avoid the offloading by exploting the liveness analysis, that `x` is not live from instruction `3` onwards, hence we should not even save the result of `r0` to the temporary variable `x`.
+We could also avoid the offloading by exploiting the liveness analysis, that `x` is not live from instruction `3` onwards, hence we should not even save the result of `r0` to the temporary variable `x`.
 
 ```java
 1: r0 <- input
