@@ -321,14 +321,14 @@ The liveness analysis algorithm can be adapted to SSA with the following adjustm
 We define the $join(s_i)$ function as follows
 
 $$
-join(s_i) = \bigsqcup_{v_j \in succ(v_i)} \Psi_{i,j}(s_j) 
+join(s_i) = \bigsqcup_{v_j \in succ(v_i)} \Theta_{i,j}(s_j) 
 $$
 
-where $\Psi_{i,j}$ is a variable substitution derived from phi assignment of the labeled instruction at $j : \overline{\phi}\ instr$. 
+where $\Theta_{i,j}$ is a variable substitution derived from phi assignment of the labeled instruction at $j : \overline{\phi}\ instr$. 
 
 $$
 \begin{array}{rcl}
-\Psi_{i,j} & = & \{ (t_i/t_k) \mid t_k = phi(..., i : t_i, ...) \in \overline{\phi} \}
+\Theta_{i,j} & = & \{ (t_i/t_k) \mid t_k = phi(..., i : t_i, ...) \in \overline{\phi} \}
 \end{array}
 $$
 
