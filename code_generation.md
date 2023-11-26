@@ -39,40 +39,57 @@ Note that the instruction formats mentioned here are the human-readable represen
 
 ### 3-address instruction 
 
-* `dst <- src1 op src2`
-* Simple instruction set
-    ```
-    r <- x + 1
-    ```
-    or
-    ```
-    add r x 1
-    ```
-* More registers (and temp variables)
+In 3-address instruction target platform, each instruction is set to use 3 addresses in maximum.
+For instance, the Pseudo Assembly we studied earlier is a kind of 3-address instruction without the hardware restriction.
 
+For instance in 3 address instruction, we have instructions that look like 
+
+```
+x <- 1
+y <- 2
+r <- x + y
+```
+
+where `r`, `x` and `y` are registers . Alternatively, in some other 3 address instruction format, we express the code fragement above in a prefix notation, 
+
+
+```
+load x 1
+load y 2
+add r x y
+```
+
+The advantage of having more register (addresses) per instruction allows us to huge room of code optimization while keeping a relative simple and small set of instructions (for instance, consider our Pseudo Assembly has a simple set.)
 
 ### 2-address instruction 
 
-* `op dst src`
-* More complex instruction set
-    ```
-    load r x
-    add r 1
-    ```
-* Fever registers
+In 2-address instruction target platform, each instruction has maximum 2 addresses. As a result, some of the single line instruction in 3-address instruction has to be encoded as multiple instructions in 2 address platform. For example, to add `x` and `y` and store the result in `r`, we have to write
 
+```
+load x 1
+load y 2
+add x y
+```
+
+in the 3rd instruction we add the values stored in registers `x` and `y`. The sum will be stored in `x`. In the last statement, we move the result from `x` to `r`.
+
+As the result, we need fewer registers (in minimum) to carry out operations. On the other hands, the set of instructions in 2-address instruction are often more complex.
 
 ### 1-address instruction 
 
-* AKA P-code, stack machine code
-* More complex instruction set with stack for computation (not to confuse with stack for function call)
-    ```
-    load x
-    load 1
-    add
-    store r
-    ```
-* Minimum registers, e.g. JVM has only 3 registers.
+In the exterem case, we find some target platform has only 1 address instruction. This kind of target is also known as the P-code (P for Pascal) or the stack machine code. 
+
+For example for the same program, we need t9o encode it in 1-address instruction as follows
+
+```
+push 1
+push 2
+add 
+store r
+```
+In the first instruction, we push the constant 1 to the left operand register (or the 1st register). In the second instruction, we push the constant 2 to the right oeprand register (the 2nd register). In the 3rd instruction, we apply the add operation to sum up the two registers and the result is stored in the first register. The 2nd register is cleared (or popped). In the last instruction, we pop the result from the first register store it in a temporary variable `r`
+
+The benefit of 1 address intruction is having a minimum and uniform requirement for the hardware. It requrest the least amount registers, for example, JVM has only 3 registers. On the other hand, its instruction set is the most complex.
 
 
 ## From PA to 3-address target platform
@@ -119,7 +136,7 @@ When we only have 3 other registers excluding `rret` we need to offload some res
 1: r0 <- input
 2: r1 <- r0 + 1
 3: r2 <- r1 + 1
-4: t  <- r0
+4: x  <- r0
 5: r0 <- r1 * r2
 6: rret <- r0
 7: ret
@@ -139,7 +156,7 @@ As we can argue, we could avoid the offloading by mapping `w` to `rret` since it
 ```
 However this option is not always possible, as the following the `w` might not be returned variable in some other examples.
 
-We could also avoid the offloading by exploting the liveness analysis, that `x` is not live from instruction `3` onwards, hence we should not even save the result of `r0` to a temporary variable `t`.
+We could also avoid the offloading by exploting the liveness analysis, that `x` is not live from instruction `3` onwards, hence we should not even save the result of `r0` to the temporary variable `x`.
 
 ```java
 1: r0 <- input
@@ -572,7 +589,7 @@ It is clear that the program is allocatable without spilling with 4 registers. L
 |c3    |   |   |   |   |   |   |   |   | * |   |   |   |r0 |   
 
 
-At the peak of the live variables, i.e. instruction `5`, we realize that `x1` is live but not urgently needed until `4` which is 5-hop away from the current location. Hence we spill it from register `r1` to the temporary variable to free up `r1`. 
+At the peak of the live variables, i.e. instruction `5`, we realize that `x1` is live but not urgently needed until `4` which is 5-hop away from the current location. Hence we spill it from register `r1` to the temporary variable to free up `r1`.  Registers are allocated by the next available in round-robin manner.
 
 ```js
 // PA4_REG1
@@ -665,6 +682,8 @@ Although from the above we find `c1` seems to be always dead, but it is not, bec
 
 We also take note we want to `c1` and `c3` to share the same register, and `s1` and `s3`to share the same register. Hence we can allocate the 3 registers according to the above plan. In this case, we have the same result as the first attempt in the conservative approach `PA4_REG1`.
 
+Note that this approach is not guanranteed to produce more efficient results than the conversvative approach. 
+
 
 #### Summary so far
 
@@ -738,9 +757,16 @@ if_icmpge l2 // if register 0 >= register 1 jump,
              // regardless of the comparison pop both registers
 iload 4      // push the content of c to register 0
 iload 3      // push the content of s to register 1
-iadd         // sum up the r0 and r1 and result remains in r0
-istore 3     // pop r0 to s
-
+iadd         // sum up the r0 and r1 and result remains in register 0
+istore 3     // pop register 0 to s
+iload 4      // push the content of c to register 0
+sipush 1     // push a constant 1 to register 1
+iadd        
+istore 4     // pop register 0 to c
+igoto l1
+ilabel 12
+iload 3      // push the content of s to register 0
+ireturn
 ```
 
 ## JVM bytecode operational semantics 
@@ -784,7 +810,7 @@ $$
 \end{array}
 $$
 
-The rule $(\tt sjLabel)$ processes the $ilabel\ l$ instruction. It is being skipped, because it serves as a syntactical marking (refer to the $procLabel()$ function below), has no impact to the semantic operation.
+The rule $(\tt sjLabel)$ processes the $ilabel\ l$ instruction. It is being skipped, because it serves as a syntactical marking (refer to the $codeAfterLabel()$ function below), has no impact to the semantic operation.
 
 $$
 \begin{array}{rc}
@@ -806,9 +832,9 @@ The rules $(\tt sjAdd)$, $(\tt sjSub)$ and $(\tt sjMul)$ process the binary oper
 
 $$
 \begin{array}{rc}
-(\tt sjGoto) & J \vdash (\Delta, r_0, r_1, igoto\ l';jis) \longrightarrow (\Delta, r_0, r_1, procLabel(J, l')) \\ \\ 
+(\tt sjGoto) & J \vdash (\Delta, r_0, r_1, igoto\ l';jis) \longrightarrow (\Delta, r_0, r_1, codeAfterLabel(J, l')) \\ \\ 
 (\tt sjCmpNE1) & \begin{array}{c} 
-                c_0 \neq c_1 \ \ \ \ jis' = procLabel(J, l')
+                c_0 \neq c_1 \ \ \ \ jis' = codeAfterLabel(J, l')
                 \\ \hline
                 J \vdash  (\Delta, c_0, c_1, if\_icmpne\ l';jis) \longrightarrow (\Delta, \_, \_, jis') 
                 \end{array} \\ \\
@@ -818,7 +844,7 @@ $$
                 J \vdash  (\Delta, c_0, c_1, if\_icmpne\ l';jis) \longrightarrow (\Delta , \_, \_, jis) 
                 \end{array} \\ \\ 
 (\tt sjCmpGE1) & \begin{array}{c} 
-                c_0 \ge c_1 \ \ \ \ jis' = procLabel(J, l')
+                c_0 \ge c_1 \ \ \ \ jis' = codeAfterLabel(J, l')
                 \\ \hline
                 J \vdash  (\Delta, c_0, c_1, if\_icmpge\ l';jis) \longrightarrow (\Delta, \_, \_, jis') 
                 \end{array} \\ \\
@@ -830,18 +856,18 @@ $$
 \end{array}
 $$
 
-The last set of rules handle the jump and conditional jumps. The rule $(\tt sjGoto)$ processes a goto instruction by replacing the instructions to be processed $jis$ by $procLabel(J, l')$. Recall that $J$ is storing the entire sequence of JVM instructions, $procLabel(J, l')$ extracts the suffix of $J$ starting from the point where $ilabel\ l'$ is found. 
+The last set of rules handle the jump and conditional jumps. The rule $(\tt sjGoto)$ processes a goto instruction by replacing the instructions to be processed $jis$ by $codeAfterLabel(J, l')$. Recall that $J$ is storing the entire sequence of JVM instructions, $codeAfterLabel(J, l')$ extracts the suffix of $J$ starting from the point where $ilabel\ l'$ is found. 
 
 $$
 \begin{array}{rcl}
-procLabel(ireturn, l) & = & error \\ 
-procLabel(ilabel\ l;jis, l') & = & 
+codeAfterLabel(ireturn, l) & = & error \\ 
+codeAfterLabel(ilabel\ l;jis, l') & = & 
             \left \{ \begin{array}{lc}
                       jis & l == l'  \\
-                      procLabel(jis, l') & {\tt otherwise}
+                      codeAfterLabel(jis, l') & {\tt otherwise}
                      \end{array}
             \right . \\ 
-procLabel(ji; jis, l) & = & procLabel(jis, l)
+codeAfterLabel(ji; jis, l) & = & codeAfterLabel(jis, l)
 \end{array}
 $$
 
