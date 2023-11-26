@@ -693,7 +693,7 @@ To sum up the code generation process from PA to 3-address target could be carri
 1. Perform Liveness Analysis on the SSA. 
 1. Generate the live range table based on the liveness analysis results.
 1. Allocate registers based on the live range table. Detect potential spilling.
-1. Depends on the last approach, either
+1. Depending on the last approach, either
     1. convert SSA back to PA and generate the target code according to the live range table, or 
     1. generate the target code from SSA with register coalesced for the phi assignment operands.
 
