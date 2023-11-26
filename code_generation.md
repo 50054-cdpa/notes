@@ -428,7 +428,7 @@ and reloading before it is needed again. But which one shall we "sacrifice"? The
 1. Spill the live variable that interfere the most. This option works for the bruteforce searching coloring algorithm, the idea was to reduce the level of interference so that the remaining graph without this variable can be colored. 
 
 
-For now lext take the first option. Suppose we extend the liveness analysis to keep track of the label where a variable is marked live.
+For now let's take the first option. Suppose we extend the liveness analysis to keep track of the label where a variable is marked live.
 
 ```java
 // PA3
