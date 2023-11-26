@@ -606,7 +606,7 @@ At the peak of the live variables, i.e. instruction `5`, we realize that `x1` is
    r1 <- r0 < r1 // b1 is r1
 5: ifn r1 goto 9 // 
 6: r2 <- r0 + r2 // s3 is r2
-7: c3 <- r0 + 1  // c3 is r0
+7: r0 <- r0 + 1  // c3 is r0
                  // c2 is r0
                  // s2 is r2
 8: r1 <- x1      // restore r1 from x1
