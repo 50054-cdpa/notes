@@ -764,7 +764,7 @@ sipush 1     // push a constant 1 to register 1
 iadd        
 istore 4     // pop register 0 to c
 igoto l1
-ilabel 12
+ilabel l2
 iload 3      // push the content of s to register 0
 ireturn
 ```
@@ -965,7 +965,7 @@ $$
 $$
 \begin{array}{rl}
      {\tt (jReturn)} & \begin{array}{c}
-                    L \vdash l_1 \Rightarrow jis_0\ \ \ M \vdash s \Rightarrow jis_1\ \ \   M,L \vdash lis \Rightarrow jis_2 \\
+                    L \vdash l_1 \Rightarrow jis_0\ \ \ M \vdash s \Rightarrow jis_1\ \ \ \\
                     \hline
                     M, L \vdash l_1:rret \leftarrow s;  l_2: ret \Rightarrow jis_0 + jis_1 + [ireturn] 
                 \end{array} \\  
