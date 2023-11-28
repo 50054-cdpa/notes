@@ -98,7 +98,7 @@ You may work as a team (up to max 3 members). Please register your team [here](h
 
 * [Lab 1 (10%, Deadline - 12 Nov 2023 23:59)](https://github.com/50054-2023-fall/project/blob/main/simp/lab1.md)
 * [Lab 2 (10%, Deadline - 26 Nov 2023 23:59)](https://github.com/50054-2023-fall/project/blob/main/simp/lab2.md)
-* Lab 3 (15%, Deadline - 10 Dec 2023 23:59)
+* [Lab 3 (15%, Deadline - 10 Dec 2023 23:59)](https://github.com/50054-2023-fall/project/blob/main/simp_lab3/lab3.md)
 
 
 ## Submission Policy and Plagiarism
@@ -122,7 +122,7 @@ You may work as a team (up to max 3 members). Please register your team [here](h
 | 9 | [Static Semantics for SIMP](./static_semantics.md) | [Static Semantics for Lambda Calculus](./static_semantics_2.md) | [Cohort Problem 8](https://github.com/50054-2023-fall/cohort_probs/tree/main/static_semantics), [Homework 5](https://github.com/50054-2023-fall/homework/tree/main/semantic_analysis)  | Project Lab 1 10% |
 | 10 | *Public Holiday. No Class Scheduled* | [Name Analysis, SSA](./name_analysis.md) |  [Cohort Problem 9](https://github.com/50054-2023-fall/cohort_probs/tree/main/name_analysis) | | 
 | 11 | [Lattice, Sign Analysis](./sign_analysis_lattice.md)  | [Liveness Analysis](./liveness_analysis.md) | [Cohort Problem 10](https://github.com/50054-2023-fall/cohort_probs/tree/main/sign_analysis) | Project Lab 2 10%,  Homework 5 5%  |  
-| 12 | [Code Generation](./code_generation.md) | [Information Flow Analysis](./advanced_static_analysis.md) | Cohort Problem 11  |  |
+| 12 | [Code Generation](./code_generation.md) | [Information Flow Analysis](./advanced_static_analysis.md) | [Cohort Problem 11](https://github.com/50054-2023-fall/cohort_probs/tree/main/code_generation)  |  |
 | 13 | Guest Lecture | <s>Memory Management</s> | Revision | Project Lab 3 15% |  |
 | 14 | |  |  |Final Exam (13 Dec Wed 9:00AM-11:00AM) 30%|
 
