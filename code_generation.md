@@ -241,7 +241,7 @@ Fortunatley, we do know a subset of graphs in which a polynomial time coloring a
 
 #### Chordal Graph
 
-A cyclic graph $G = (V,E)$ with at least 4 vertices (i.e. $|V| > 3$) is called *chordal* if there exists an edge $(v_1,v_2) \in E$ such that $(v_1, v_2)$ is not part of the cycle.
+A graph $G = (V,E)$ is *chordal* if, for all cycle $v_1,...,v_n$ in $G$ with $n > 3$ there exists an edge $(v_i,v_j) \in E$ and $i, j \in \{1,...,n\}$ such that $(v_i, v_j)$ is not part of the cycle.
 
 For example, the following graph
 
@@ -262,8 +262,6 @@ graph TD
 ```
 
 is not chordal, or *chordless*.
-
-A graph is called *chordal* for all cyclic sub-graphs are *chordal*.
 
 It is a known result that a the coloring problem of chordal graphs can be solved in polynomial time.
 
@@ -535,7 +533,7 @@ Let's convert it into SSA.
 4: c2 <- phi(3:c1, 8:c3)
    s2 <- phi(3:s1, 8:s3)
    b1 <- c2 < x1 // {c2(4),s2(6,9),x1(4)}
-5: ifn b1 goto 9 // {b1(5),c2(6),s2(6),x1(4)}
+5: ifn b1 goto 9 // {b1(5),c2(6),s2(6,9),x1(4)}
 6: s3 <- c2 + s2 // {c2(6),s2(6),x1(4)}
 7: c3 <- c2 + 1  // {c2(7),s3(4),x1(4)}
 8: goto 4        // {c3(4),s3(4),x1(4)}
@@ -564,7 +562,7 @@ When we translate the SSA back to PA
 3.1: c2 <- c1     
      s2 <- s1    // {s1(3.1),x1(4),c1(3.1)}
 4: b1 <- c2 < x1 // {c2(4),s2(6,9),x1(4)}
-5: ifn b1 goto 9 // {b1(5),c2(6),s2(6),x1(4)}
+5: ifn b1 goto 9 // {b1(5),c2(6),s2(6,9),x1(4)}
 6: s3 <- c2 + s2 // {c2(6),s2(6),x1(4)}
 7: c3 <- c2 + 1  // {c2(7),s3(7.1),x1(4)}
 7.1: c2 <- c3
