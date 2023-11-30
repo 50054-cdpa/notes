@@ -398,7 +398,7 @@ Let's consider another example
 // PA3
 1: x <- 1       // {}
 2: y <- x + 1   // {x}
-3: z <- x * x   // {x}
+3: z <- x * x   // {x,y}
 4: w <- y * x   // {x,y,z}
 5: u <- z + w   // {z,w}
 6: r_ret <- u   // {u}  
@@ -432,7 +432,7 @@ For now let's take the first option. Suppose we extend the liveness analysis to 
 // PA3
 1: x <- 1       // {}
 2: y <- x + 1   // {x(3)}
-3: z <- x * x   // {x(3)}
+3: z <- x * x   // {x(3),y(4)}
 4: w <- y * x   // {x(4),y(4),z(5)}
 5: u <- z + w   // {z(5),w(5)}
 6: r_ret <- u   // {u(6)}  
