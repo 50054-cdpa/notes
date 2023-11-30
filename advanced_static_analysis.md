@@ -484,4 +484,4 @@ graph
 
 where `secret` has a higher level of security than `confidential`. 
 
-* Instead of using `santize` to increase the level of security, we use `hash` (or `declassify`) to lower the level of security.
+* Instead of using `sanitize` to increase the level of security, we use `hash` (or `declassify`) to lower the level of security.
