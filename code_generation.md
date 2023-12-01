@@ -739,7 +739,7 @@ Supposed we have a PA program as follows,
 9: _ret_r <- s
 10: ret
 ```
-For ease of reasoning, we assume that we map PA temporary variables to numerical JVM variables, as `input` to `1`, `x` to `2`, `s` to `3`, `c` to `4` (and `b` to `5`, though `b` is not needed in the JVM instruction).
+For ease of reasoning, we assume that we map PA temporary variables to numerical JVM variables, as `input` to `1`, `x` to `2`, `s` to `3`, `c` to `4` (and `b` to `5`, though `b` is not needed in the JVM instruction). We also map the PA label (the useful ones) to JVM label. `4` to `l1` and `9` to `l2`.
 
 ```js 
 iload 1      // push the content of input to register 0
@@ -880,7 +880,7 @@ The rule $(\tt sjCmpGE2)$ moves onto the next instruction (skpping the jump) whe
 A simple conversion from PA to JVM bytecodes can be described using the following deduction system.
 
 Let $M$ be a mapping from PA temporary variables to JVM local variables.
-Let $L$ be a set of PA labels (which are used as the targets in some jump instructions).
+Let $L$ be a mapping from PA labels (which are used as the targets in some jump instructions) to JVM labels.
 
 We have three types of rules.
 
@@ -905,12 +905,12 @@ $$
      {\tt (jEq)} & \begin{array}{c}
                     L \vdash l_1 \Rightarrow jis_0 \ \ \ M \vdash s_1 \Rightarrow jis_1 \ \ \ M \vdash s_2 \Rightarrow jis_2 \ \ \ M,L \vdash lis \Rightarrow jis_3 \\
                     \hline
-                    M, L \vdash l_1:t \leftarrow s_1 == s_2; l_2:ifn\ t\ goto\ l_3 ; lis \Rightarrow jis_0 + jis_1 + jis_2 + [if\_icmpne\ l_3] + jis_3
+                    M, L \vdash l_1:t \leftarrow s_1 == s_2; l_2:ifn\ t\ goto\ l_3 ; lis \Rightarrow jis_0 + jis_1 + jis_2 + [if\_icmpne\ L(l_3)] + jis_3
                 \end{array} \\  \\
      {\tt (jLThan)} & \begin{array}{c}
                     L \vdash l_1 \Rightarrow jis_0 \ \ \ M \vdash s_1 \Rightarrow jis_1 \ \ \ M \vdash s_2 \Rightarrow jis_2 \ \ \ M,L \vdash lis \Rightarrow jis_3 \\
                     \hline
-                    M, L \vdash l_1:t \leftarrow s_1 < s_2; l_2:ifn\ t\ goto\ l_3 ; lis \Rightarrow jis_0 + jis_1 + jis_2 + [if\_icmpge\ l_3] + jis_3
+                    M, L \vdash l_1:t \leftarrow s_1 < s_2; l_2:ifn\ t\ goto\ l_3 ; lis \Rightarrow jis_0 + jis_1 + jis_2 + [if\_icmpge\ L(l_3)] + jis_3
                 \end{array} \\  
 \end{array}
 $$
