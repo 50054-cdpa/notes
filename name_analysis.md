@@ -867,7 +867,8 @@ Output: a PA program $Q$ being viewed as a list of labeled instructions. (duplic
 1. For each $l: \overline{\phi}\ i \in P$, append $l: i$ to $Q$.
 1. For each $l: \overline{\phi}\ i$.
     1. For each `x = phi(l1:x1, l2:x2)` in $\overline{\phi}$
-        1. append `l1:x=x1` and `l2:x=x2` to $Q$.
+        1. append `l1:x <- x1` and `l2:x <- x2` to $Q$.
+        1. note that the relocated assignment must be placed before the control flow transition from `l1` to `succ(l1)` (and `l2` to `succ(l2)`) 
 1. Sort $Q$ by labels using a stable sorting algorithm.
 
 Now since there are repeated labels in `PA2`, we need an extra relabelling step to convert `PA2` to `PA3`
