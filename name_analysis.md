@@ -625,7 +625,7 @@ The phi-assignment insertion process can be described as follows,
             1. add `l:i` to `Q`
         1. case `Some(xs)`
             1. `phis = xs.map( x => x <- phi( k:x | (k in pred(l,G)))`
-            1. add `l:phis i` to `Q`
+            1. if `phis` has more than 1 operand, add `l:phis i` to `Q`
 
 $pred(v, G)$ retrieves the set of predecessors of vertex (label) in graph $G$. 
 
@@ -640,7 +640,7 @@ We construct $E$ by consulting the dominance frontier table `Table2_PA1`.
 
 ```
 E = Map(
-    4 -> Set("s","c")
+    4 -> Set("s","c", "t")
 )
 ```
 which says that in node/vertex `4`, we should insert the phi-assignments for variable `s` and `c`.
@@ -663,6 +663,8 @@ Now we apply the above algorithm to `PA1` which generates
 9: rret <- s 
 10: ret
 ```
+
+Note that when we try to insert the phi assignment for `t` at `4`, we realize that there is only one operand. This is because `t` is not defined before label `4`. In this case we remove the phi assignment for `t`.
 
 #### Renaming Variables
 
