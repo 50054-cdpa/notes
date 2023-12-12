@@ -671,8 +671,9 @@ Note that when we try to insert the phi assignment for `t` at `4`, we realize th
 Given an intermediate output like `PRE_SSA_PA1`, we need to rename the variable so that there is only one assignment for each variable.
 
 Inputs: 
-    * a dictionary of stacks `K` where the keys are the variable names in the original PA program. e.g. `K(x)` returns the stack for variable `x`. 
-    * the input program in with phi assignment but oweing the variable renaming,  e.g. `PRE_SSA_PA1`. We view the program as a dictionary mapping labels to labeled instructions.
+
+* a dictionary of stacks `K` where the keys are the variable names in the original PA program. e.g. `K(x)` returns the stack for variable `x`. 
+* the input program in with phi assignment but oweing the variable renaming,  e.g. `PRE_SSA_PA1`. We view the program as a dictionary mapping labels to labeled instructions.
 
 
 1. For each variable `x` in the program, initialize `K(x) = Stack()`.
