@@ -42,7 +42,7 @@ The first set of rules deal with expression.
 
 #### Small Step Operational Semantics of SIMP Expression
 
-The set of small stpe operational semantics for expressions is defined in a relation $\Delta \vdash E \longrightarrow E'$.
+The set of small step operational semantics for expressions is defined in a relation $\Delta \vdash E \longrightarrow E'$.
 
 $$
 {\tt (sVar)} ~~~ \Delta \vdash X \longrightarrow \Delta(X)
@@ -326,8 +326,8 @@ return s;
             c + 1 ---> # (sOp1)
             0 + 1 ---> # (SOp3)
             1
-        {(input,1), (x,1), (s,0), (c,0)},
-        c = 0 ---> # (sAssign2)
+        {(input,1), (x,1), (s,0), (c,1)},
+        c = 1 ---> # (sAssign2)
         {(input,1), (x,1), (s,0), (c,1)},
         nop
     ---> # (sNopSeq) 
@@ -388,7 +388,7 @@ Big step operatinal semantics in some literature is also called the structural o
 #### Big Step Operational Semantics for SIMP expressions
 
 We define the big step oeprational semantics for SIMP expressions via a relation
-$\Delta \vdash E \Downarrow C$, which reads under the memory environment $\Delta$ the expressiopn $E$ is evaluated constant $C$.
+$\Delta \vdash E \Downarrow C$, which reads under the memory environment $\Delta$ the expression $E$ is evaluated constant $C$.
 
 We consider the following three rules
 $$
@@ -425,7 +425,7 @@ $$
 \end{array}
 $$
 
-the last rule ${\tt (bParen)}$ evaluetes an expression enclosed by parantheses.  
+the last rule ${\tt (bParen)}$ evaluates an expression enclosed by parantheses.  
 
 #### Big Step Operational Semantics for SIMP statements
 
@@ -495,7 +495,7 @@ $$
 {\tt (bNop)} ~~~~ (\Delta, nop) \Downarrow \Delta
 $$
 
-In case that the statement is a noop statement, there is no change to the memory environment.
+In case that the statement is a `nop` statement, there is no change to the memory environment.
 
 $$
 \begin{array}{rc}
@@ -716,7 +716,7 @@ $$
 {\tt (pIfn0)} & \begin{array}{c}
      L(s) = 0
      \\ \hline
-     P \vdash (L, l: ifn\ s\ goto\ l') \longrightarrow (L, P(l+1))
+     P \vdash (L, l: ifn\ s\ goto\ l') \longrightarrow (L, P(l'))
      \end{array}
 \end{array}
 $$
@@ -726,7 +726,7 @@ $$
 {\tt (pIfnNot0)} & \begin{array}{c}
      L(s) \neq  0
      \\ \hline
-     P \vdash (L, l: ifn\ s\ goto\ l') \longrightarrow (L, P(l'))
+     P \vdash (L, l: ifn\ s\ goto\ l') \longrightarrow (L, P(l+1))
      \end{array}
 \end{array}
 $$
@@ -740,7 +740,7 @@ $$
 The rule ${\tt (pGoto)}$ jumps to to the target label instruction.
 
 Note that there is no rule for $ret$ as the program execution will stop there.
-Further more, the set of rules does not mention the scenario in which the look up of a register (or a temp variable) in the environment fails. In these casse, the program exit with an error.
+Further more, the set of rules does not mention the scenario in which the look up of a register (or a temp variable) in the environment fails. In these cases, the program exit with an error.
 
 For example, let $P$ be
 
@@ -771,7 +771,7 @@ P |- {(input,1), (x,1), (s,0), (c,0), (t,1)}, 6: s <- c + s ---> # (pOp)
 P |- {(input,1), (x,1), (s,0), (c,0), (t,1)}, 7: c <- c + 1 ---> # (pOp)
 P |- {(input,1), (x,1), (s,0), (c,1), (t,1)}, 8: goto 4 ---> # (pGoto)
 P |- {(input,1), (x,1), (s,0), (c,1), (t,1)}, 4: t <- c < x ---> # (pOp)
-P |- {(input,1), (x,1), (s,0), (c,1), (t,0)}, 5: ifn t goto 9 ---> # (pIfn1)
+P |- {(input,1), (x,1), (s,0), (c,1), (t,0)}, 5: ifn t goto 9 ---> # (pIfnNot0)
 P |- {(input,1), (x,1), (s,0), (c,1), (t,0)}, 9: rret <- s ---> # (pTempVar)
 P |- {(input,1), (x,1), (s,0), (c,1), (t,0), (rret, 0)}, 10: ret
 ```
