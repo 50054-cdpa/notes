@@ -51,7 +51,7 @@ By the end of this module, students are able to
 
 The main resources are lecture slides, tutorial sessions, and online documentations. There are no official textbooks. But the following are useful for reference and deeper understanding of some topics.
 
-1. Compilers: Principles, Techniques, and Tools is a computer science textbook by Alfred V. Aho, Monica S. Lam, Ravi Sethi, and Jeffrey D. Ullman
+1. Compilers: Principles, Techniques, and Tools by Alfred V. Aho, Monica S. Lam, Ravi Sethi, and Jeffrey D. Ullman
 1. Modern Compiler Implementation in ML by Andrew W. Appel
 1. Types and Programming Languages by Benjamin C. Pierce
 1. Static Program Analysis by Anders Møller and Michael I. Schwartzbach
