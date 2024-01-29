@@ -10,6 +10,7 @@ This course aims to introduce a new programming paradigm to the learners, Functi
 ## Module Learning Outcomes
 
 By the end of this module, students are able to
+
 1. Implement software solutions using functional programming language and applying design patterns
 1. Define the essential components in a program compilation pipeline
 1. Design a compiler for an imperative programming language
