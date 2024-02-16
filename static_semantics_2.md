@@ -14,6 +14,7 @@
 To illustrate the proocess of type checking for lambda calculus, we consider adding types and type annotations to the lambda calculus language. 
 
 Recall the lambda calculus syntax, with the following adaptation
+
 $$
 \begin{array}{rccl}
  {\tt (Lambda\ Terms)} & t & ::= & x \mid \lambda x:T.t \mid t\ t \mid let\ x:T =\ t\ in\ t \mid  if\ t\ then\ t\ else\ t \mid t\ op\ t \mid c \mid fix\ t \\
@@ -47,6 +48,7 @@ $$
                       \end{array}
 \end{array}
 $$
+
 The rule ${\tt (lctInt)}$ checks whether the given constant value is an integer.
 The rule ${\tt (lctBool)}$ checks whether the given constant value is a boolean.
 
@@ -59,6 +61,7 @@ $$
                \end{array} 
 \end{array}
 $$
+
 In rule ${\tt (lctVar)}$, we type check a variable $x$ against a type $T$, which is only valid where $(x,T)$ can be found in the type environment $\Gamma$.
 
 $$
@@ -70,7 +73,9 @@ $$
                \end{array} 
 \end{array}
 $$
+
 In rule ${\tt (lctLam)}$, we type check a lambda abstraction against a type $T\rightarrow T'$. This is only valid if the body of the lambda expression $t$ has type $T'$ under the extended type environment $\Gamma \oplus (x, T)$.
+
 $$
 \begin{array}{cc}
 {\tt (lctApp)} & \begin{array}{c}
@@ -81,6 +86,7 @@ $$
                \end{array} 
 \end{array}
 $$
+
 In rule ${\tt (lctApp)}$, we type check a function application, applying $t_1$ to $t_2$, against a type $T_2$. This is only valid if $t_1$ is having type $T_1 \rightarrow T_2$ and $t_2$ is having type $T_1$.
 
 $$
@@ -93,6 +99,7 @@ $$
                \end{array} 
 \end{array}
 $$
+
 In rule ${\tt (lctLet)}$, we type check a let binding, $let\ x:T_1 = t_1\ in\ t_2$ against type $T_2$. This is only valid if $t_1$ has type $T_1$ and $t_2$ has type $T_2$ under the extended environment  $\Gamma \oplus (x, T_1)$.
 
 $$
@@ -104,6 +111,7 @@ $$
                \end{array}
 \end{array}
 $$
+
 In rule ${\tt (lctIf)}$, we type check a if-then-else expression against type $T$. This is only valid if 
 $t_1$ has type $bool$ and both $t_1$ and $t_2$ have type $T$.
 
@@ -286,6 +294,7 @@ $$
                       \end{array}
 \end{array}
 $$
+
 The rules for constants remain unchanged. 
 
 $$
@@ -329,6 +338,7 @@ $$
                 \end{array}
 \end{array}
 $$
+
 To type check the $fix$ operator, we assume that $fix$ is predefined in the language library and its type is given in the initial type environment $\Gamma_{init}$.
 
 
@@ -343,6 +353,7 @@ $$
                \end{array} \\ \\ 
 \end{array}
 $$
+
 We made minor adjustment to the rule handling if-else expression, by replacing $T$ with $\sigma$.
 
 $$
@@ -364,6 +375,7 @@ $$
                \end{array} \\ \\  
 \end{array}
 $$
+
 The type checking rules for binary operation remain unchanged.
 
 $$
@@ -386,6 +398,7 @@ $$
                 \end{array}
 \end{array}
 $$
+
 In the rule ${\tt (hmLet)}$, we first type check $t_1$ againt $\sigma_1$, which is a type scheme, which allows $t_1$ to have a generic type. Under the extended type environment $\Gamma \oplus (x, \sigma_1)$ we type-check $t_2$. 
 
 For the ${\tt (hmLet)}$ rule to work as intended, we need two more rules, namely, ${\tt (hmInst)}$ and ${\tt (hmGen)}$. In rule ${\tt (hmInst)}$ we allow a term $t$ to be type-checked against $\sigma_2$, provided we can type check it against $\sigma_1$ and $\sigma_1 \sqsubseteq \sigma_2$.
@@ -626,6 +639,7 @@ $$
                 \end{array}
 \end{array}
 $$
+
 The rule ${\tt (wOp1)}$ handles the type inference for arithmetic binary operation. The result type must be $int$. In the premises, we infer the type of the left operand $t_1$ to be $T_1$ with a type substitution $\Psi_1$. We apply $\Psi_1$ to $\Gamma$ hoping to ground some type variables. We continue to infer the right operand $t_2$ with a type $T_2$ and $\Psi_2$. Finally we need to unify 
 $\Psi_2(T_1)$, $T_2$ and $int$ to form $\Psi_3$. Note that we don't need to apply $\Psi_1$ to $T_2$ during the unification, because $T_2$ is infered from $\Psi_1(\Gamma)$, i.e. type variables in $T_2$ is either already in the domain of $\Psi_1(\Gamma)$, or it is enirely fresh, i.e. not in $T_1$ and $\Psi_1$. We return $\Psi_3 \circ \Psi_2 \circ \Psi_1$ as the final substitution. 
 

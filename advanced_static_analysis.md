@@ -200,6 +200,7 @@ $$
 \bot & = & [+\infty, -\infty] 
 \end{array}
 $$
+
 $[l, h]$ denotes the set of integers $i$ where $l \leq i \leq h$. $\bot$ is an empty range.
 We can think of `gte` as
 

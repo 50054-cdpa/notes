@@ -246,9 +246,18 @@ The third component $p$ in the program context is a label from the preceding ins
 
 
 $$
-{\tt (pConst)} ~~~ P \vdash (L, l:  d \leftarrow c, p) \longrightarrow (L \oplus (d,c), P(l+1), l) \\ \\
-{\tt (pRegister)} ~~~P \vdash (L, l: d \leftarrow r, p) \longrightarrow (L \oplus (d,L(r)), P(l+1), l) \\  \\
-{\tt (pTempVar)} ~~~P \vdash (L, l: d \leftarrow t, p ) \longrightarrow (L \oplus (d,L(t)), P(l+1), l) \\ \\
+{\tt (pConst)} ~~~ P \vdash (L, l:  d \leftarrow c, p) \longrightarrow (L \oplus (d,c), P(l+1), l)
+$$
+
+$$
+{\tt (pRegister)} ~~~P \vdash (L, l: d \leftarrow r, p) \longrightarrow (L \oplus (d,L(r)), P(l+1), l)
+$$
+
+$$
+{\tt (pTempVar)} ~~~P \vdash (L, l: d \leftarrow t, p ) \longrightarrow (L \oplus (d,L(t)), P(l+1), l)
+$$
+
+$$
 {\tt (pGoto)} ~~ P \vdash (L, l:goto\ l', p) \longrightarrow (L, P(l'), l)
 $$
 
@@ -779,10 +788,8 @@ We describe the application the algorithm to `PRE_SSA_PA1` (with the dominator t
 | 6 | `6:s<-c+s` | `6:s2<-c1+s1` | `{x:[0], s:[0,1,2], c:[0,1], t:[0]}` | | | `{1:{x}, 2:{s}. 3:{c}, 4:{s,c,t}, 6:{s}}`  |
 | 7 | `7:c<-c+1`|  `7:c2<-c1+1`|`{x:[0], s:[0,1,2], c:[0,1,2], t:[0]}` | | | `{1:{x}, 2:{s}. 3:{c}, 4:{s,c,t}, 6:{s}, 7:{c}}`  | 
 | 8 | `8:goto 4`| `8:goto 4`| `{x:[0], s:[0,1,2], c:[0,1,2], t:[0]}` | |  |  `4:s1<-phi(3:s0,8:s2);c1<-phi(3:c0,8:c2);t0<-c1<x0` | `{1:{x}, 2:{s}. 3:{c}, 4:{s,c,t}, 6:{s}, 7:{c}}` | 
-| 9 | `9:rret<-s` | `9:rret<-s1` | `{x:[0], s:[0,1], c:[0,1], t:[0]}` | | | 
-|`{1:{x}, 2:{s}. 3:{c}, 4:{s,c,t}}` | 
-| 10 | `10:ret` | `10:ret` | `{x:[0], s:[0,1], c:[0,1], t:[0]}` | | | 
-|`{1:{x}, 2:{s}. 3:{c}, 4:{s,c,t}}` | 
+| 9 | `9:rret<-s` | `9:rret<-s1` | `{x:[0], s:[0,1], c:[0,1], t:[0]}` | | |`{1:{x}, 2:{s}. 3:{c}, 4:{s,c,t}}` | 
+| 10 | `10:ret` | `10:ret` | `{x:[0], s:[0,1], c:[0,1], t:[0]}` | | |`{1:{x}, 2:{s}. 3:{c}, 4:{s,c,t}}` | 
 
 * The label column denotes the current label  being considered.
 * The P(l) column denotes the input labeled instruction being considered.

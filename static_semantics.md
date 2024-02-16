@@ -87,7 +87,9 @@ $$
                 \end{array} 
 \end{array}
 $$
+
 In the rule ${\tt (tVar)}$, we type check the variable $X$ having type $T$ under the type environment $\Gamma$ if we can find the entry $(X,T)$ in $\Gamma$.
+
 $$
 \begin{array}{rc}
 {\tt (tInt)} & \begin{array}{c}
@@ -102,7 +104,9 @@ $$
                 \end{array} 
 \end{array}
 $$
+
 In the rule ${\tt (tInt)}$, we type check an integer constant having type $int$. Similarly, we type check a boolean constant having type $bool$. 
+
 $$
 \begin{array}{rc}
 {\tt (tOp1)} & \begin{array}{c}
@@ -122,9 +126,11 @@ $$
                 \end{array} 
 \end{array}
 $$
+
 In the rule ${\tt (tOp1)}$, we type check an integer arithmetic operation having type $int$, if both operands can be type-checked against $int$.
 In the rule ${\tt (tOp2)}$, we type check an integer comparison operation having type $bool$, if both operands can be type-checked against $int$.
 In the rule ${\tt (tOp3)}$, we type check a boolean comparison operation having type $bool$, if both operands can be type-checked against $bool$.
+
 $$
 \begin{array}{rc}
 {\tt (tParen)} & \begin{array}{c}
@@ -134,6 +140,7 @@ $$
                 \end{array}
 \end{array}
 $$
+
 Lastly in rule ${\tt (tParen)}$, we type check a parenthesized expression by type-checking the inner expression. 
 
 ### Type Checking rules for SIMP Statements
@@ -196,6 +203,7 @@ $$
                \end{array} 
 \end{array}
 $$
+
 The ${\tt (tIf)}$ rule type checks the if-else statement, $if\ E\ \{\overline{S_1}\}\ else\ \{ \overline{S_2} \}$. 
 It is typeable if $E$ has type $bool$ under $\Gamma$ and both then- and else- branches are typeable under the $\Gamma$.
 The ${\tt (tWhile)}$ rule type checks the while statement in a similar way.
@@ -383,13 +391,16 @@ The SIMP type inference rules are defined in terms of a deduction system consist
 ### Type Inference Rules for SIMP statements 
 
 The type inference rules for SIMP statements are described in a form of $\overline{S} \vDash \kappa$, which reads give a sequence of statements $\overline{S}$, we generate a set of type constraints $\kappa$. 
+
 $$
 \begin{array}{rc}
 {\tt (tiNOP)} & nop\vDash \{\} \\ \\ 
 {\tt (tiReturn)} & return\ X \vDash \{\}  
 \end{array}
 $$
+
 The ${\tt (tiNOP)}$ rule handles the $nop$ statement, an empty constraint set is returned.  Similar observation applies to the return statement. 
+
 $$
 \begin{array}{rc}
 {\tt (tiSeq)} & \begin{array}{c} 
@@ -399,7 +410,9 @@ $$
                 \end{array} 
 \end{array}
 $$
+
 The ${\tt (tiSeq)}$ rule generates the type constraints of a sequence statement $S\overline{S}$. We can do so by first generate the constraints $\kappa_1$ from $S$ and $\kappa_2$ from $\overline{S}$ and union $\kappa_1$ and $\kappa_2$.  
+
 $$
 \begin{array}{rc}
 {\tt (tiAssign)} &  \begin{array}{c}
@@ -421,6 +434,7 @@ $$
                 \end{array} \\ \\ 
 \end{array}
 $$
+
 The inference rule for if-else statatement first infers the type of the conditional expression $E$'s type has $\hat{T_1}$ and the constraints $\kappa_1$. $\kappa_2$ and $\kappa_3$ are the constraints inferred from the then- and else-branches. The final result is forming a union of $\kappa_1$, $\kappa_2$ and $\kappa_3$, in addition, requiring $E$'s type must be $bool$. 
 
 $$
@@ -497,6 +511,7 @@ $$
                   \end{array}
 \end{array}
 $$
+
 The inference ruel for parenthesis expression is trivial, we infer the type from the inner expression.
 
 ### Unification 
@@ -650,6 +665,7 @@ in\ \Psi_{22} \circ \Psi_{21} & \longrightarrow \\
 [int/\alpha_{input}] \circ [int/\alpha_{y}]
 \end{array}
 $$
+
 Hence the final result is 
 
 $$ 

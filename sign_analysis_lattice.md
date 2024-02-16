@@ -572,7 +572,9 @@ $$
 \bot \sqsubseteq - \sqsubseteq \top
 \end{array}
 $$
+
 when we apply $g$ to all the abstract values in the above inequalities, we find that 
+
 $$
 \begin{array}{r}
 f_2(\bot) \sqsubseteq f_2(+) \sqsubseteq f_2(\top)\\ 

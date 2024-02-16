@@ -47,7 +47,9 @@ The set of small step operational semantics for expressions is defined in a rela
 $$
 {\tt (sVar)} ~~~ \Delta \vdash X \longrightarrow \Delta(X)
 $$
+
 The ${\tt (sVar)}$ rule looks up the value of variable $X$ from the memory environment. If the variable is not found, it gets stuck and an error is returned.
+
 $$
 \begin{array}{rc}
 {\tt (sOp1)} & \begin{array}{c}
@@ -123,6 +125,7 @@ $$
      \end{array}
 \end{array}
 $$
+
 The rules ${\tt (sAssign1)}$ and ${\tt (sAssign2)}$ handle the assignment statements.
 
 1. ${\tt (sAssign1)}$ matches with the case that the RHS of the assignment is not a constant, it evaluates the RHS expression by one step.
@@ -391,9 +394,11 @@ We define the big step oeprational semantics for SIMP expressions via a relation
 $\Delta \vdash E \Downarrow C$, which reads under the memory environment $\Delta$ the expression $E$ is evaluated constant $C$.
 
 We consider the following three rules
+
 $$
 {\tt (bConst)} ~~~~ \Delta \vdash C \Downarrow C
 $$
+
 In case that the expression is a constant, we return the constant itself.
 
 $$
@@ -432,6 +437,7 @@ the last rule ${\tt (bParen)}$ evaluates an expression enclosed by parantheses.
 We define the big step operational semantics for SIMP statement using a relation $(\Delta, S) \Downarrow \Delta'$, which says the program configuration $(\Delta, S)$ is evaluated to result memory environment $\Delta'$ assuming $S$ is terminating under $\Delta$. Note that big step operational semantics for SIMP statement can only defines the behavior of terminating program configurations.
 
 We consider the following rules
+
 $$
 \begin{array}{rc}
 {\tt (bAssign)} & \begin{array}{c}
@@ -690,13 +696,16 @@ The dynamic semantics of the pseudo assembly program can be defined using a rule
 $$
 {\tt (pConst)}~~~P \vdash (L, l: d \leftarrow c) \longrightarrow (L \oplus (d,c), P(l+1))
 $$
+
 In the ${\tt (pConst)}$ rule, we evaluate an assignment instruction of which the RHS is a constant. We update the value of the LHS in the memory environment as $c$ and move on to the next instruction.
+
 $$
 {\tt (pRegister)} ~~~P \vdash (L, l: d \leftarrow r) \longrightarrow (L \oplus (d,L(r)), P(l+1))  
 $$
 
 $${\tt (pTempVar)} ~~~P \vdash (L, l: d \leftarrow t) \longrightarrow (L \oplus (d,L(t)), P(l+1))
 $$
+
 In the ${\tt (pRegister)}$ and the ${\tt (pTempVar)}$ rules, we evaluate an assignment instruction of which the RHS is a register (or a temp variable). We look up the value of the register (or the temp variable) from the memory environment and use it as the updated value of the LHS in the memory environment. We move on to the next label instruction.
 
 $$
@@ -851,19 +860,19 @@ Let $\Sigma = {\cal P} (X \times (Int\cup Bool))$
 
 $$
 \begin{array}{lll}
-{\mathbb E}\llbracket \cdot \rrbracket\  :\  E  &\rightarrow&\  \Sigma \rightarrow (Int \cup Bool) \\
-{\mathbb E}\llbracket X \rrbracket & = & \lambda\sigma.\sigma(X) \\
-{\mathbb E}\llbracket c \rrbracket & = & \lambda\sigma. c \\
-{\mathbb E}\llbracket E_1\ OP\ E_2 \rrbracket & = &\lambda\sigma.  {\mathbb E}\llbracket E_1\rrbracket\sigma\ \llbracket OP \rrbracket\  {\mathbb E}\llbracket E_2\rrbracket\sigma\\\
+{\mathbb E} [\![ \cdot ]\!]\  :\  E  &\rightarrow&\  \Sigma \rightarrow (Int \cup Bool) \\
+{\mathbb E}[\![ X ]\!] & = & \lambda\sigma.\sigma(X) \\
+{\mathbb E}[\![ c ]\!] & = & \lambda\sigma. c \\
+{\mathbb E}[\![ E_1\ OP\ E_2 ]\!] & = &\lambda\sigma.  {\mathbb E}[\![ E_1]\!]\sigma\ [\![ OP ]\!]\  {\mathbb E}[\![ E_2]\!]\sigma\\\
 \end{array}
 $$
 
 The signature of the semantic function indicates that we map a SIMP expression into a function that takes a memory environment and returns a contant value.
 
-Implicitly, we assume that there exists a builtin semantic function that maps operator symbols to the (actual) semantic operators, i.e., $\llbracket + \rrbracket$ gives us the sum operation among two integers.  Sometimes we omit the parenthesis for function application when there is no ambiguity, e.g. ${\mathbb E}\llbracket E\rrbracket\sigma$ is the short hand for
-$({\mathbb E}\llbracket E\rrbracket)(\sigma)$
+Implicitly, we assume that there exists a builtin semantic function that maps operator symbols to the (actual) semantic operators, i.e., $[\![ + ]\!]$ gives us the sum operation among two integers.  Sometimes we omit the parenthesis for function application when there is no ambiguity, e.g. ${\mathbb E}[\![ E]\!]\sigma$ is the short hand for
+$({\mathbb E}[\![ E]\!])(\sigma)$
 
-As we observe, ${\mathbb E}\llbracket \cdot \rrbracket$ takes an object from the expression syntactic domain and a memory store object from the domain of $\Sigma$, returns a value frmo the union of $Int$ and $Bool$ semantic domains.
+As we observe, ${\mathbb E}[\![ \cdot ]\!]$ takes an object from the expression syntactic domain and a memory store object from the domain of $\Sigma$, returns a value frmo the union of $Int$ and $Bool$ semantic domains.
 
 ### Denotational Semantics for SIMP statements
 
@@ -871,6 +880,7 @@ To define the denotational semantics, we need some extra preparation, in order t
 
 Let $\bot$ be a special element, called *undefined*, that denotes failure or divergence.
 Let $f$ and $g$ be functions, we define
+
 $$
 \begin{array}{rcl}
 f \circ_\bot g & = & \lambda \sigma. \left [ \begin{array}{cc}
@@ -879,23 +889,25 @@ f \circ_\bot g & = & \lambda \sigma. \left [ \begin{array}{cc}
                  \end{array} \right .
 \end{array}
 $$
+
 which is a function composition that propogates $\bot$ if present.
 Now we define the semantic function for SIMP statements.
+
 $$
 \begin{array}{lll}
-{\mathbb S}\llbracket \cdot \rrbracket :   \overline{S}  & \rightarrow\ & \Sigma \ \rightarrow \ \Sigma \cup \{ \bot \} \\
-{\mathbb S} \llbracket  nop \rrbracket& = & \lambda\sigma. \sigma \\
-{\mathbb S} \llbracket return\ X \rrbracket& = & \lambda\sigma. \sigma \\
-{\mathbb S} \llbracket  X = E \rrbracket& = & \lambda\sigma. \sigma \oplus (X, {\mathbb E}\llbracket E \rrbracket\sigma) \\
-{\mathbb S} \llbracket S \overline{S} \rrbracket& = & {\mathbb S} \llbracket \overline{S} \rrbracket \circ_\bot {\mathbb S} \llbracket S \rrbracket\\
-{\mathbb S} \llbracket if \ E\ \{\overline{S_1}\} \ else\ \{\overline{S_2} \} \rrbracket& = & \lambda\sigma. \left [ \begin{array}{cc}
-                    {\mathbb S} \llbracket \overline{S_1} \rrbracket\sigma  & {\mathbb E}\llbracket E \rrbracket\sigma = true \\
-                    {\mathbb S} \llbracket \overline{S_2} \rrbracket\sigma & {\mathbb E}\llbracket E \rrbracket\sigma = false \\
+{\mathbb S}[\![ \cdot ]\!] :   \overline{S}  & \rightarrow\ & \Sigma \ \rightarrow \ \Sigma \cup \{ \bot \} \\
+{\mathbb S} [\![  nop ]\!]& = & \lambda\sigma. \sigma \\
+{\mathbb S} [\![ return\ X ]\!]& = & \lambda\sigma. \sigma \\
+{\mathbb S} [\![  X = E ]\!]& = & \lambda\sigma. \sigma \oplus (X, {\mathbb E}[\![ E ]\!]\sigma) \\
+{\mathbb S} [\![ S \overline{S} ]\!]& = & {\mathbb S} [\![ \overline{S} ]\!] \circ_\bot {\mathbb S} [\![ S ]\!]\\
+{\mathbb S} [\![ if \ E\ \{\overline{S_1}\} \ else\ \{\overline{S_2} \} ]\!]& = & \lambda\sigma. \left [ \begin{array}{cc}
+                    {\mathbb S} [\![ \overline{S_1} ]\!]\sigma  & {\mathbb E}[\![ E ]\!]\sigma = true \\
+                    {\mathbb S} [\![ \overline{S_2} ]\!]\sigma & {\mathbb E}[\![ E ]\!]\sigma = false \\
                 \end{array} \right . \\
-{\mathbb S} \llbracket while \ E\ \{\overline{S}\} \rrbracket& = & fix(F) \\
+{\mathbb S} [\![ while \ E\ \{\overline{S}\} ]\!]& = & fix(F) \\
  {\tt where}\ &  & F= \lambda g.\lambda\sigma. \left [ \begin{array}{cc}
-                    (g \circ_\bot {\mathbb S} \llbracket \overline{S} \rrbracket)(\sigma)  & {\mathbb E}\llbracket E \rrbracket\sigma = true \\
-                    \sigma & {\mathbb E}\llbracket E \rrbracket\sigma = false \\
+                    (g \circ_\bot {\mathbb S} [\![ \overline{S} ]\!])(\sigma)  & {\mathbb E}[\![ E ]\!]\sigma = true \\
+                    \sigma & {\mathbb E}[\![ E ]\!]\sigma = false \\
                 \end{array} \right . \\
 \end{array}
 $$
@@ -910,34 +922,36 @@ In case of while statement, the semantic function returns a fixed point function
 
 $$
 \begin{array}{lll}
-{\mathbb S} \llbracket while \ E\ \{\overline{S}\} \rrbracket& = & \lambda\sigma. \left \{ \begin{array}{cc}
-                    ({\mathbb S} \llbracket while \ E\ \{\overline{S}\}\rrbracket  \circ_\bot {\mathbb S} \llbracket \overline{S} \rrbracket)(\sigma)  & {\mathbb E}\llbracket E \rrbracket\sigma = true \\
-                    \sigma & {\mathbb E}\llbracket E \rrbracket\sigma = false \\
+{\mathbb S} [\![ while \ E\ \{\overline{S}\} ]\!]& = & \lambda\sigma. \left \{ \begin{array}{cc}
+                    ({\mathbb S} [\![ while \ E\ \{\overline{S}\}]\!]  \circ_\bot {\mathbb S} [\![ \overline{S} ]\!])(\sigma)  & {\mathbb E}[\![ E ]\!]\sigma = true \\
+                    \sigma & {\mathbb E}[\![ E ]\!]\sigma = false \\
                 \end{array} \right . \\
 \end{array}
 $$
-which means the function $g$ in the earlier version is a recursive reference to ${\mathbb S} \llbracket while \ E\ \{\overline{S}\} \rrbracket$
+
+which means the function $g$ in the earlier version is a recursive reference to ${\mathbb S} [\![ while \ E\ \{\overline{S}\} ]\!]$
 
 For example, let $\sigma = \{ (input, 1)\}$
 
 $$
 \begin{array}{ll}
-& {\mathbb S} \llbracket x=input; s = 0; c=0; while\ c < x \{s = c + s; c = c + 1;\}return\ s; \rrbracket \sigma \\
-= & ({\mathbb S} \llbracket s = 0; c=0; while\ c < x \{s = c + s; c = c + 1;\}return\ s; \rrbracket \circ_\bot {\mathbb S} \llbracket x=input \rrbracket) (\sigma) \\
-= & {\mathbb S} \llbracket s = 0; c=0; while\ c < x \{s = c + s; c = c + 1;\}return\ s; \rrbracket \sigma_1 \\
-= & ({\mathbb S} \llbracket c=0; while\ c < x \{s = c + s; c = c + 1;\}return\ s; \rrbracket \circ_\bot {\mathbb S} \llbracket s=0 \rrbracket) (\sigma_1) \\
-= & {\mathbb S} \llbracket c=0; while\ c < x \{s = c + s; c = c + 1;\}return\ s; \rrbracket \sigma_2 \\
-= & ({\mathbb S} \llbracket while\ c < x \{s = c + s; c = c + 1;\}return\ s; \rrbracket \circ_\bot {\mathbb S} \llbracket c=0 \rrbracket) (\sigma_2) \\
-= & {\mathbb S} \llbracket while\ c < x \{s = c + s; c = c + 1;\}return\ s; \rrbracket \sigma_3 \\
-= & ({\mathbb S} \llbracket return\ s; \rrbracket \circ_\bot {\mathbb S} \llbracket while\ c < x \{s = c + s; c = c + 1;\} \rrbracket) (\sigma_3) \\
-= & ({\mathbb S} \llbracket return\ s; \rrbracket \circ_\bot {\mathbb S} \llbracket while\ c < x \{s = c + s; c = c + 1;\} \rrbracket \circ_\bot{\mathbb S} \llbracket s = c + s; c = c + 1; \rrbracket) (\sigma_3) \\
-= & ({\mathbb S} \llbracket return\ s; \rrbracket \circ_\bot {\mathbb S} \llbracket while\ c < x \{s = c + s; c = c + 1;\} \rrbracket)(\sigma_4) \\
-= & {\mathbb S} \llbracket return\ s; \rrbracket\sigma_4 \\
+& {\mathbb S} [\![ x=input; s = 0; c=0; while\ c < x \{s = c + s; c = c + 1;\}return\ s; ]\!] \sigma \\
+= & ({\mathbb S} [\![ s = 0; c=0; while\ c < x \{s = c + s; c = c + 1;\}return\ s; ]\!] \circ_\bot {\mathbb S} [\![ x=input ]\!]) (\sigma) \\
+= & {\mathbb S} [\![ s = 0; c=0; while\ c < x \{s = c + s; c = c + 1;\}return\ s; ]\!] \sigma_1 \\
+= & ({\mathbb S} [\![ c=0; while\ c < x \{s = c + s; c = c + 1;\}return\ s; ]\!] \circ_\bot {\mathbb S} [\![ s=0 ]\!]) (\sigma_1) \\
+= & {\mathbb S} [\![ c=0; while\ c < x \{s = c + s; c = c + 1;\}return\ s; ]\!] \sigma_2 \\
+= & ({\mathbb S} [\![ while\ c < x \{s = c + s; c = c + 1;\}return\ s; ]\!] \circ_\bot {\mathbb S} [\![ c=0 ]\!]) (\sigma_2) \\
+= & {\mathbb S} [\![ while\ c < x \{s = c + s; c = c + 1;\}return\ s; ]\!] \sigma_3 \\
+= & ({\mathbb S} [\![ return\ s; ]\!] \circ_\bot {\mathbb S} [\![ while\ c < x \{s = c + s; c = c + 1;\} ]\!]) (\sigma_3) \\
+= & ({\mathbb S} [\![ return\ s; ]\!] \circ_\bot {\mathbb S} [\![ while\ c < x \{s = c + s; c = c + 1;\} ]\!] \circ_\bot{\mathbb S} [\![ s = c + s; c = c + 1; ]\!]) (\sigma_3) \\
+= & ({\mathbb S} [\![ return\ s; ]\!] \circ_\bot {\mathbb S} [\![ while\ c < x \{s = c + s; c = c + 1;\} ]\!])(\sigma_4) \\
+= & {\mathbb S} [\![ return\ s; ]\!]\sigma_4 \\
 = & \sigma_4
 \end{array}
 $$
 
 where
+
 $$
 \begin{array}{l}
 \sigma_1 = \sigma \oplus (x,1) = \{ (input,1), (x,1) \} \\
@@ -952,7 +966,7 @@ Let $\sigma = \{(input, true)\}$
 
 $$
 \begin{array}{ll}
-& {\mathbb S} \llbracket while\ input \{nop;\}return\ input; \rrbracket \sigma \\
+& {\mathbb S} [\![ while\ input \{nop;\}return\ input; ]\!] \sigma \\
 = & fix(F) \sigma \\
 = & \bot
 \end{array}
@@ -963,16 +977,16 @@ where
 $$
 \begin{array}{l}
 F = \lambda g.\lambda\sigma. \left [ \begin{array}{cc}
-                    (g \circ_\bot {\mathbb S} \llbracket nop \rrbracket)(\sigma)  & {\mathbb E}\llbracket input \rrbracket\sigma = true \\
-                    \sigma & {\mathbb E}\llbracket input \rrbracket\sigma = false \\
+                    (g \circ_\bot {\mathbb S} [\![ nop ]\!])(\sigma)  & {\mathbb E}[\![ input ]\!]\sigma = true \\
+                    \sigma & {\mathbb E}[\![ input ]\!]\sigma = false \\
                 \end{array} \right . \\
 \end{array}
 $$
 
-Since ${\mathbb E}\llbracket input \rrbracket\sigma$ is always $true$,
+Since ${\mathbb E}[\![ input ]\!]\sigma$ is always $true$,
 
 $$
-F = \lambda g.\lambda\sigma.(g \circ_\bot {\mathbb S} \llbracket nop \rrbracket)(\sigma)  
+F = \lambda g.\lambda\sigma.(g \circ_\bot {\mathbb S} [\![ nop ]\!])(\sigma)  
 $$
 
 With some math proof, we find that $fix(F)$ is function of type $\Sigma \rightarrow \bot$. We won't be able to discuss the proof until we look into lattice theory in the upcoming classes.

@@ -798,6 +798,7 @@ $$
 (\tt sjPush2) & J \vdash (\Delta, c_0, \_, sipush\ c_2;jis) \longrightarrow (\Delta, c_0, c_1, jis)
 \end{array}
 $$
+
 The rules $(\tt sjLoad1)$ and  $(\tt sjLoad2)$ handles the loading variable's content to the stack registers. 
 The rules $(\tt sjPush1)$ and  $(\tt sjPush2)$ handles the loading constant to the stack registers. 
 
@@ -889,6 +890,7 @@ We have three types of rules.
 * $L \vdash l \Rightarrow jis$, convert a PA label into a JVM bytecode instructions, usually it is either empty or singleton.
 
 ### Converting PA labeled instructions
+
 $$
 \begin{array}{rl}
      {\tt (jMove)} & \begin{array}{c}
@@ -898,6 +900,7 @@ $$
                 \end{array} \\  
 \end{array}
 $$
+
 The rule ${\tt (jMove)}$ handles the case of a move instruction. In this case we make use of the auxiliary rule $L \vdash l_1 \Rightarrow jis_0$ to generate the label, in case the label is used as the target in some jump instructions. The auxiliary rule $M \vdash s \Rightarrow jis_1$ converts a PA operand into a loading instruction in JVM bytecodes. Details fo these auxiliary functions can be found in the next subsection.
 
 $$

@@ -99,6 +99,7 @@ Example (PA1)
 We assume that statements of a pseudo assembly program are stored in a list. There exists a mapping from labels to the corresponding instructions, When we execute a pseudo assembly program, we use a program counter to keep track of the current execution context (i.e. the current labeled instruction being considered) and use a set to keep track of the variable to value mapping. 
 
 For example when we execute the above program with `input = 2`
+
 |Program Counter| Local  Memory | Next Instr | 
 |---|---|---|
 | 1 | {input: 2, x : 2} | 2 | 
@@ -409,7 +410,8 @@ As we observe, we don't quite get the exact output as example PA1. The main reas
 
 Since the ${\tt (mOp)}$ rule is the culprit of causing extra move steps generated in the IR.
 
-We consider a variant the Maximal Munch Algorithm. Instead of using $G_a(X)(E)$ to generate  labeled instructions $lis$ , we use a different sub system $G_e(E)$ to generate a pair of results, $\^{e}, \v{e}$. where $\v{e}$ is a sequence of label instructions generated from $E$ and $\^{e}$ is the "result" operand storing the final result of $\v{e}$.
+
+We consider a variant the Maximal Munch Algorithm. Instead of using $G_a(X)(E)$ to generate  labeled instructions $lis$ , we use a different sub system $G_e(E)$ to generate a pair of results, $\hat{e}, \check{e}$. where $\check{e}$ is a sequence of label instructions generated from $E$ and $\hat{e}$ is the "result" operand storing the final result of $\check{e}$.
 
 The adjusted ${\tt (mConst)}$, ${\tt (mVar)}$ and ${\tt (mOp)}$ rules are as follows,
 
@@ -430,14 +432,14 @@ $$
 \end{array}  
 $$
 
-The rules ${\tt (m2Const)}$ and ${\tt (m2Var)}$ are simple. We just return the constant (variable) as the $\^{e}$ with an empty set of label instructions.
+The rules ${\tt (m2Const)}$ and ${\tt (m2Var)}$ are simple. We just return the constant (variable) as the $\hat{e}$ with an empty set of label instructions.
 
 $$
 \begin{array}{rc}
 {\tt (m2Paren)} & \begin{array}{c} 
-          G_e(E) \vdash (\^{e}, \v{e})
+          G_e(E) \vdash (\hat{e}, \check{e})
           \\ \hline
-          G_e((E)) \vdash (\^{e}, \v{e})
+          G_e((E)) \vdash (\hat{e}, \check{e})
      \end{array} 
 \end{array}  
 $$
@@ -447,29 +449,30 @@ In the rule ${\tt (m2Paren)}$, we generate the results by recursivelly applying 
 $$
 \begin{array}{rc}
 {\tt (m2Op)} & \begin{array}{c} 
-          G_e(E_1) \vdash (\^{e}_1, \v{e}_1) \\ 
-          G_e(E_2) \vdash (\^{e}_2, \v{e}_2) \\ 
+          G_e(E_1) \vdash (\hat{e}_1, \check{e}_1) \\ 
+          G_e(E_2) \vdash (\hat{e}_2, \check{e}_2) \\ 
           t \ {\tt is\ a\ fresh\ variable.} \\ 
           l \ {\tt is\ a\ fresh\ label.} \\ 
           \hline
-          G_e(E_1 OP E_2) \vdash (t, \v{e}_1 + \v{e}_2 + [l : t \leftarrow \^{e}_1 OP \^{e}_2]) 
+          G_e(E_1 OP E_2) \vdash (t, \check{e}_1 + \check{e}_2 + [l : t \leftarrow \hat{e}_1 OP \hat{e}_2]) 
           \end{array} \\ 
 \end{array}  
 $$
 
 In the ${\tt (m2Op)}$ rule, we call $G_e(\cdot)$ recursively to generate the 
-results for $E_1$ and $E_2$, namely $(\^{e}_1, \v{e}_1)$ and $(\^{e}_2, \v{e}_2)$. 
+results for $E_1$ and $E_2$, namely $(\hat{e}_1, \check{e}_1)$ and $(\hat{e}_2, \check{e}_2)$. 
 We then use them to synthesis the final output. 
 
 
 The $G_s(S)$ rules are now calling $G_e(E)$ instead of $G_a(X)(E)$. 
+
 $$
 \begin{array}{rc}
 {\tt (m2Assign)} & \begin{array}{c} 
-     G_e(E) \vdash (\^{e}, \v{e})  \ \ 
+     G_e(E) \vdash (\hat{e}, \check{e})  \ \ 
      l\ {\tt is\ a\ fresh\ label.} \\ 
      \hline
-     G_s(X = E) \vdash \v{e} + [ l : X \leftarrow \^{e}]
+     G_s(X = E) \vdash \check{e} + [ l : X \leftarrow \hat{e}]
      \end{array} \\ 
 \end{array}  
 $$
@@ -478,7 +481,7 @@ $$
 $$
 \begin{array}{rc}
 {\tt (m2Return)} & \begin{array}{c}
-     G_s(return\ X) \vdash \v{e} + [ l_1 : r_{ret} \leftarrow X,  l_2: ret ]
+     G_s(return\ X) \vdash \check{e} + [ l_1 : r_{ret} \leftarrow X,  l_2: ret ]
      \end{array} 
 \end{array}
 $$
@@ -487,7 +490,7 @@ $$
 $$
 \begin{array}{rl}
 {\tt (m2If)} & \begin{array}{c}
-          G_e(E) \vdash (\^{e}, \v{e}) \\ 
+          G_e(E) \vdash (\hat{e}, \check{e}) \\ 
           l_{IfCondJ}\ {\tt is\ a\ fresh\ label} \\
           G_s(S_2) \vdash lis_2 \\ 
           l_{EndThen}\ {\tt  is\ a\ fresh\ label} \\  
@@ -495,11 +498,11 @@ $$
           G_s(S_3) \vdash lis_3 \\ 
           l_{EndElse}\ {\tt is\ a\ fresh\ label} \\
           l_{EndIf}\ {\tt is\ the\ next\ label\ (w/o\ incr)} \\ 
-          lis_1 = [l_{IfCondJ}: ifn\ \^{e}\ goto\ l_{Else} ] \\ 
+          lis_1 = [l_{IfCondJ}: ifn\ \hat{e}\ goto\ l_{Else} ] \\ 
           lis_2' = lis_2 + [l_{EndThen}:goto\ l_{EndIf}] \\ 
           lis_3' = lis_3 + [l_{EndElse}:goto\ l_{EndIf}] \\ 
           \hline  
-          G_s(if\ E\ \{S_2\}\ else\ \{S_3\}) \vdash \v{e} + lis_1 + lis_2' + lis_3'               
+          G_s(if\ E\ \{S_2\}\ else\ \{S_3\}) \vdash \check{e} + lis_1 + lis_2' + lis_3'               
           \end{array} 
 \end{array}
 $$
@@ -509,15 +512,15 @@ $$
 \begin{array}{rl}
 {\tt (m2While)} & \begin{array}{c}
           l_{While}\ {\tt is\ the\ next\ label\ (w/o\ incr)} \\ 
-          G_e(E) \vdash (\^{e}, \v{e}) \\ 
+          G_e(E) \vdash (\hat{e}, \check{e}) \\ 
           l_{WhileCondJ}\ {\tt is\ a\ fresh\ label} \\ 
           G_s(S) \vdash lis_2\\ 
           l_{EndBody}\ {\tt is\ a\ fresh\ label} \\  
           l_{EndWhile}\ {\tt is\ the\ next\ label\ (w/o\ incr)} \\ 
-          lis_1 = [l_{WhileCondJ}: ifn\ \^{e}\ goto\ l_{EndWhile}] \\
+          lis_1 = [l_{WhileCondJ}: ifn\ \hat{e}\ goto\ l_{EndWhile}] \\
           lis_2' = lis_2 + [ l_{EndBody}: goto\ l_{While} ] \\
           \hline
-          G_s(while\ E\ \{S\}) \vdash  \v{e} + lis_1 + lis_2'           
+          G_s(while\ E\ \{S\}) \vdash  \check{e} + lis_1 + lis_2'           
           \end{array} 
 \end{array}
 $$
