@@ -285,9 +285,9 @@ So far we have three rules (roughly)  $\beta $ reduction, substitution, and  $\a
 
 Given a lambda term, in order to evaluate it, we need to identify places that we can apply these rules.
 
-We call a (sub-)expression of shape $\lambda x.t_1\ t_2$ a *redex*.
+We call a (sub-)expression of shape $(\lambda x.t_1)\ t_2$ a *redex*.
 
-The task is to look for redexes in a lambda term and rewrite them by applying  $\beta $ reduction and substitution, and sometimes  $\alpha $ renaming to avoid capturing free variables.
+The task is to look for redexes in a lambda term and rewrite them by applying  $\beta$ reduction and substitution, and sometimes  $\alpha$ renaming to avoid capturing free variables.
 
 But in what order shall we apply these rules?
 
