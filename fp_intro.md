@@ -296,7 +296,7 @@ There are two mostly known strategies
 1. Inner-most, leftmost - Applicative Order Reduction (AOR)
 2. Outer-most, leftmost - Normal Order Reduction (NOR)
 
-Consider $(\lambda x. ((\lambda x. x)\ x))\ (\lambda y.y) $,
+Consider $(\lambda x. ((\lambda x. x)\ x))\ (\lambda y.y)$,
 
 * AOR:
 
