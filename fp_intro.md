@@ -462,10 +462,10 @@ $$
 
 In the above we use a horizontal line to separate complex deduction rules that have some premise. The relations and statement written above the horizontal line are called the **premises**, and the relation the written below is called the **conclusion**. The conclusion holds if the premises are valid.
 
-* The rule ${\tt (ifI)} $ states that if we can evaluate  $t_1$ to  $t_1' $, then  $if\ t_1\ then\ t_2\ else\ t_3 $ can be evaluated to  $if\ t_1' \ then\ t_2\ else\ t_3 $. In otherwords, for us to reduce $if\ t_1\ then\ t_2\ else\ t_3 $ to $if\ t_1' \ then\ t_2\ else\ t_3 $, a pre-condition is to reduce $t_1$ to $t_1'$. 
-* The rule  ${\tt (ifT)} $ states that if the conditional expression is $true$, the entire term is evaluated to the then-branch.
-* The rule  ${\tt (ifF)} $ is similar. Rules  ${\tt (OpI1)}$ and ${\tt (OpI2)} $ are similar to rule ${\tt (IfI)}$.
-* The rule  ${\tt (OpC)} $ invokes the built-in low level call to apply the binary operation to the two operands  $c_1 $ and  $c_2 $.  
+* The rule ${\tt (ifI)}$ states that if we can evaluate  $t_1$ to  $t_1'$, then  $if\ t_1\ then\ t_2\ else\ t_3$ can be evaluated to  $if\ t_1' \ then\ t_2\ else\ t_3$. In otherwords, for us to reduce $if\ t_1\ then\ t_2\ else\ t_3$ to $if\ t_1' \ then\ t_2\ else\ t_3$, a pre-condition is to reduce $t_1$ to $t_1'$. 
+* The rule  ${\tt (ifT)}$ states that if the conditional expression is $true$, the entire term is evaluated to the then-branch.
+* The rule  ${\tt (ifF)}$ is similar. Rules  ${\tt (OpI1)}$ and ${\tt (OpI2)} $ are similar to rule ${\tt (IfI)}$.
+* The rule  ${\tt (OpC)}$ invokes the built-in low level call to apply the binary operation to the two operands  $c_1$ and  $c_2$.  
 
 The substitution rules and free variable function $fv()$ also extended too
 $$
