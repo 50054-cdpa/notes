@@ -462,13 +462,13 @@ For instance, in the earlier control flow graph for `Graph2_PA1`,
 $v_1 \preceq v_2$ and $v_2 \preceq v_3$ implies that $v_1 \preceq v_3$.
 
 
-##### Lemma 2 - Domaince is reflexive
+##### Lemma 2 - Dominance is reflexive
 For any vertex $v$, we have $v \preceq v$.
 
-##### Defintion 6 - Strict Dominance
+##### Definition 6 - Strict Dominance
 We say $v_1$ stricly domainates $v_2$, written $v_1 \prec v_2$ iff $v_1 \preceq v_2$ and $v_1 \neq v_2$.
 
-##### Defintion 7 - Immediate Dominator 
+##### Definition 7 - Immediate Dominator 
 We say $v_1$ is the immediate dominator of $v_2$, written $v_1 = idom(v_2)$ iff $v_1 \prec v_2$ and not exists $v_3$ such that $v_1 \prec v_3$ and $v_3 \prec v_2$.
 
 Note that $idom()$ is a function, i.e. the immediate dominator of a vertex must be unique if it exists.
