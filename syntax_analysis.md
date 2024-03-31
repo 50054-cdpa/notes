@@ -531,6 +531,7 @@ Let `N` be a non-terminal, $\alpha_i$ and
 $\beta_j$ be sequences of symbols (consist of terminals and non-terminals)
 
 Left recursive grammar rules
+
 $$
 \begin{array}{rcl}
 N & ::= & N\alpha_1 \\
@@ -633,6 +634,7 @@ Let $\overline{\sigma}$ denote a sequence of symbols.
 Given a grammar $G$ we define the following functions $null(\overline{\sigma},G)$, $first(\overline{\sigma},G)$ and $follow(\sigma, G)$
 
 $null(\overline{\sigma},G)$ checks whether the language denoted by $\overline{\sigma}$ contains the empty sequence.
+
 $$
 \begin{array}{rcl}
 null(t,G) & = & false \\
