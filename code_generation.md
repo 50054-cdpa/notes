@@ -788,7 +788,7 @@ $$
 J \vdash (\Delta, S, jis) \longrightarrow (\Delta', S', jis')
 $$
 
-$J$ is the entire program, it is required when we process jumps and conditional jump, the rule rewrites a configuration $(L\Delta, S, jis)$ to the next configuration $(\Delta', S', jis')$, where $\Delta$ and $\Delta'$ are the local environments, $S$ and $S'$ are the stacks, $jis$ and $jis'$ are the currrent and next set of instructions to be processed. 
+$J$ is the entire program, it is required when we process jumps and conditional jump, the rule rewrites a configuration $(\Delta, S, jis)$ to the next configuration $(\Delta', S', jis')$, where $\Delta$ and $\Delta'$ are the local environments, $S$ and $S'$ are the stacks, $jis$ and $jis'$ are the currrent and next set of instructions to be processed. 
 
 $$
 \begin{array}{rc}
