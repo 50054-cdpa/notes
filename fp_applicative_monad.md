@@ -443,39 +443,51 @@ As we can observe from above, the bind function for List monad is a variant of `
 
 With the above instance, we can write list processing method in for comprehension which is similar to query languages (as an alternative to list comprehension).
 
-```haskell
-import java.util.Date
-import java.util.Calendar
-import java.util.GregorianCalendar
-import java.text.SimpleDateFormat
-case class Staff(id:Int, dob:Date)
-
-def mkStaff(id:Int, dobStr:String):Staff = {
-    val sdf = new SimpleDateFormat("yyyy-MM-dd")
-    val dobDate = sdf.parse(dobStr)
-    Staff(id, dobDate)
-}
-val staffData = List(
-    mkStaff(1, "1976-01-02"),
-    mkStaff(2, "1986-07-24")
-)
-
-def ageBelow(staff:Staff, age:Int): Boolean = staff match {
-    case Staff(id, dob) => {
-        val today = new Date()
-        val calendar = new GregorianCalendar();
-        calendar.setTime(today)
-        calendar.add(Calendar.YEAR, -age)
-        val ageYearsAgo = calendar.getTime()
-        dob.after(ageYearsAgo)
-    }
-}
-
-def query(data:List[Staff]):List[Staff] = for {
-    staff <- data          // from data 
-    if ageBelow(staff, 40) // where staff.age < 40
-} yield staff              // select *
+We define a scheme of a staff record using the following datatype.
+```hs
+data Staff = Staff {sid::Int, dept::String, salary::Int}
 ```
+
+Note that using `{}` on the right hand side of a data type definition denotes a record style datatype. 
+The components of the record data type are associated with field names. 
+
+The names of the record fields can be used as getter fnuctions.
+The above is almost the same as an algebraic data type 
+
+```hs
+data Staff = Staff Int String Int
+
+sid :: Staff -> Int
+sid (Staff id _ _) = id 
+
+dept :: Staff -> String
+dept (Staff _ d _) = d 
+
+salary :: Staff -> Int 
+salary (Staff _ _ s) = s
+```
+
+
+
+
+
+```hs
+staffData = [
+    Staff 1 "HR" 50000,
+    Staff 2 "IT" 40000,
+    Staff 3 "SALES" 100000,
+    Staff 4 "IT" 60000
+    ]
+
+
+query :: [Staff] -> [Int]
+query table = do
+    staff <- table
+    if salary staff > 50000
+    then return (sid staff)
+    else []
+```
+
 
 ### Reader Monad
 
