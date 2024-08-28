@@ -85,9 +85,12 @@ If you have course/assignment/project related questions, please post it on the d
     * [Win11](https://ubuntu.com/tutorials/install-ubuntu-on-wsl2-on-windows-11-with-gui-support#1-overview)
 * If you are using Linux, it should be perfect.
 * If you are using Mac, please install homebrew.
-* Make sure JVM >=11 is installed and ant is installed.
-* Install Scala >= 3
-  * https://www.scala-lang.org/download/
+* Install Haskell tools
+  1. Install ghcup >= 0.1.30.0 `https://www.haskell.org/ghcup/`
+  1. Install ghc >= 9.6.6 (via the `ghcup tui` command)
+  1. Install cabal >= 3.10.3.0 (via the `ghcup tui` command)
+  1. (Optional) install hls >= 2.7.0.0 (via the `ghcup tui` command)
+  1. Install stack >= 2.15.5 (via the `ghcup tui` command)
 * IDE: It's your choice, but VSCode works fine.
 
 
@@ -97,9 +100,9 @@ The aim of the project is to apply the techniques and concepts taught in this mo
 
 You may work as a team (up to max 3 members). Please register your team [here](https://docs.google.com/spreadsheets/d/1yN4XGpKd7SND2SBqA-ubgJm6eSLjmMwBREFQPm8cqaQ/edit#gid=0).  
 
-* [Lab 1 (10%, Deadline - 12 Nov 2023 23:59)](https://github.com/50054-2023-fall/project/blob/main/simp/lab1.md)
-* [Lab 2 (10%, Deadline - 26 Nov 2023 23:59)](https://github.com/50054-2023-fall/project/blob/main/simp/lab2.md)
-* [Lab 3 (15%, Deadline - 10 Dec 2023 23:59)](https://github.com/50054-2023-fall/project/blob/main/simp_lab3/lab3.md)
+* Lab 1 (10%, Deadline - 12 Nov 2023 23:59)
+* Lab 2 (10%, Deadline - 26 Nov 2023 23:59)
+* Lab 3 (15%, Deadline - 10 Dec 2023 23:59)
 
 
 ## Submission Policy and Plagiarism
@@ -112,7 +115,7 @@ You may work as a team (up to max 3 members). Please register your team [here](h
 ## Schedule
 | Week | Session 1 | Session 2 | Session 3 | Assessment |
 |---|---|---|---|---|
-| 1 | Intro | [FP: Expression, Function, Conditional, Recursion](./fp_intro.md) | [Cohort Problem 1](https://github.com/50054-2023-fall/cohort_probs/tree/main/fp_intro), [Homework 1](https://github.com/50054-2023-fall/homework/tree/main/fp_intro) | Homework 1 no submission required | 
+| 1 | Intro | [FP: Expression, Function, Conditional, Recursion](./fp_intro.md) | Cohort Problem 1, Homework 1 | Homework 1 no submission required | 
 | 2 | [FP: List, Pattern Matching](./fp_scala.md) | [FP: Algebraic Data Type](./fp_scala.md) | [Cohort Problem 2](https://github.com/50054-2023-fall/cohort_probs/tree/main/fp_scala), [Homework 2](https://github.com/50054-2023-fall/homework/tree/main/fp_scala) |  |
 | 3 | [FP: Generics, GADT](./fp_scala_poly.md) | [FP: Type Classes, Functor](./fp_scala_poly.md) | [Cohort Problem 3](https://github.com/50054-2023-fall/cohort_probs/tree/main/fp_scala_poly), Homework 2 (Cont'd) | Homework 2 5% |
 | 4 | [FP: Applicative](./fp_applicative_monad.md) | [FP: Monad](./fp_applicative_monad.md) |  [Cohort Problem 4](https://github.com/50054-2023-fall/cohort_probs/tree/main/fp_applicative_monad), [Homework 3](https://github.com/50054-2023-fall/homework/tree/main/fp_scala_poly) |  |

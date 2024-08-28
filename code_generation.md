@@ -795,7 +795,7 @@ $$
 (\tt sjLoad1) & J \vdash (\Delta, \_, \_, iload\ n;jis) \longrightarrow (\Delta, \Delta(n), \_, jis) \\ \\ 
 (\tt sjLoad2) & J \vdash (\Delta, c, \_, iload\ n;jis) \longrightarrow (\Delta, c, \Delta(n), jis) \\ \\ 
 (\tt sjPush1) & J \vdash (\Delta, \_, \_, sipush\ c;jis) \longrightarrow (\Delta, c, \_, jis) \\ \\ 
-(\tt sjPush2) & J \vdash (\Delta, c_0, \_, sipush\ c_2;jis) \longrightarrow (\Delta, c_0, c_1, jis)
+(\tt sjPush2) & J \vdash (\Delta, c_0, \_, sipush\ c_1;jis) \longrightarrow (\Delta, c_0, c_1, jis)
 \end{array}
 $$
 
