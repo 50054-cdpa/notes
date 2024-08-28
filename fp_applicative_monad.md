@@ -77,7 +77,8 @@ Recall from the last lesson, we make use of the `Functor` type class to define g
 
 ```hs
 -- prelude definitions, please don't execute it.
-class 
+class Functor t where 
+    fmap :: (a -> b) -> t a -> t b
 
 instance Functor List where 
     fmap f l = map f l
@@ -100,152 +101,76 @@ The `Applicative` Functor is a derived type class of `Functor`, which is defined
 -- prelude definitions, please don't execute it.
 class Functor t => Applicative t where 
     pure :: a -> t a
-    (<$>) :: t (a -> b) -> t a -> t b
+    (<*>) :: t (a -> b) -> t a -> t b
+    -- some optional member functions omitted
 ```
 
-Note that we "fix" the `map` for `Applicative` in the type class level in this case. (i.e. we are following the first approach.)
+We will come to the member functions `pure` and `(<*>)` shortly. Since `Applicative` is a derived type class of 
+`Eq`, type instance of `Applicative a` must be also an instance of `Ord a`. 
 
-```haskell
-given listApplicative:Applicative[List] = new Applicative[List] {
-    def pure[A](a:A):List[A] = List(a) 
-    def ap[A, B](ff: List[A => B])(fa: List[A]):List[B] = 
-        ff.map( f => fa.map(f)).flatten
-}
+For example, we consider the predefined instance of `Applicative List` instance from the prelude. 
+
+```hs
+-- prelude definitions, please don't execute it.
+instance Applicative List where 
+    -- pure :: a -> [a]
+    pure x = [x]
+    -- (<*>) :: List (a -> b) -> [a] -> [b]
+    (<*>) fs as = [ f a | f <- fs, a <- as ]
 ```
 
-Recall that ```flatten``` flattens a list of lists.
+In the `pure` function, we take the input argument `a` and enclose it in a list.
+In the `(<*>)` function, (it read as "app"), we encounter a list of functions of type `a -> b` and 
+a list of values of type `a`. We apply list comprehension to extract every function elements in `fs` and 
+apply it to every value element in `as`. 
+If we were to consider the alternative implementation of `<*>` for list, we could use `concatMap` and `map`. 
 
-Alternatively, we can define the `ap` method of the `Applicative[List]` instance `flatMap`. Given `l` is a list,
-`l.flatMap(f)` is the same as `l.map(f).flatten`.
+> Can you try to translate the above list comprehension into an equivalent Haskell expression using `concatMap` and `map`?
 
-```haskell
-    def ap[A, B](ff: List[A => B])(fa: List[A]):List[B] = 
-        ff.flatMap( f => fa.map(f))
+Note that since we have defined `Functor List` in the earlier section, we don't need to repeat.
+
+Let's consider some example that uses `Applicative List`. Imagine we have a set of different operations and a set of data. The operation in the set should operate independently. We want to apply all the operations to all the data. We can use the `<*>` operation.
+
+```hs
+intOps = [\x -> x + 1, \y -> y * 2]
+ints   = [1, 2, 3]
+intOps <*> ints -- ^ yields [2,3,4,2,4,6]
 ```
 
-Recall that haskell compiler desugars expression of shape
 
-```haskell
-e1.flatMap( v1 => e2.flatMap( v2 => ... en.map(vn => e ... )))
+Let's consider another example. Recall that `Maybe a` algebraic datatype which captures a value of type `a` could be potentially empty.
+
+We find that `Functor Maybe` `Applicative Maybe` are in the prelude  the `Applicative[Option]` instance as follows
+
+```hs
+-- prelude definitions, please don't execute it.
+instance Functor Maybe where 
+    fmap f Nothing  = Nothing 
+    fmap f (Just x) = Just (f x)
+
+
+instance Applicative Maybe where 
+    pure x = Just x 
+    (<*>) Nothing _ = Nothing
+    (<*>) _ Nothing = Nothing 
+    (<*>) (Just f) (Just x) = Just (f x)
 ```
 
-into
+In the above Applicative instance, the `<*>` function takes a optional operation and optional value as inputs, tries to apply the operation to the value when both of them are present, otherwise, signal an error by returning `Nothing`. This allows us to focus on the high-level function-value-input-output relation and abstract away the details of handling potential absence of function or value.
 
-```haskell
-for {
-    v1 <- e1
-    v2 <- e2
-    ...
-    vn <- en
-} yield (e)
-```
-
-Hence we can rewrite the `ap` method of the `Applicative[List]` instance as
-
-```haskell
-    def ap[A, B](ff: List[A => B])(fa: List[A]):List[B] = 
-        for {
-            f <- ff
-            a <- fa 
-        } yield (f(a))
-```
-
-It is not suprising the following produces the same results as the functor instance.
-
-```haskell
-listApplicative.map(l)((x:Int) => x + 1)
-```
-
-What about `pure` and `ap`? when can we use them?
-
-Let's consider the following contrived example. Suppose we would like to apply two sets of operations to elements from `l`, each operation will produce its own set of results, and the inputs do not depend on the output of the other set. i.e. If the two set of operations, are `(x:Int)=> x+1` and `(y:Int)=>y*2`.
-
-```haskell
-val intOps= List((x:Int)=>x+1, (y:Int)=>y*2)
-listApplicative.ap(intOps)(l)
-```
-
-we get
-
-```haskell
-List(2, 3, 4, 2, 4, 6)
-```
-
-as the result.
-
-Let's consider another example. Recall that `Option[A]` algebraic datatype which captures a value of type `A` could be potentially empty.
-
-We define the `Applicative[Option]` instance as follows
-
-```haskell
-given optApplicative:Applicative[Option] = new Applicative[Option] {
-    def pure[A](v:A):Option[A] = Some(v)
-    def ap[A,B](ff:Option[A=>B])(fa:Option[A]):Option[B]  = ff match {
-        case None => None
-        case Some(f) => fa match {
-            case None => None
-            case Some(a) => Some(f(a))
-        }
-    }
-}
-```
-
-In the above Applicative instance, the `ap` method takes a optional operation and optional value as inputs, tries to apply the operation to the value when both of them are present, otherwise, signal an error by returning `None`. This allows us to focus on the high-level function-value-input-output relation and abstract away the details of handling potential absence of function or value.
-
-Recall the builtin `Option` type is defined as follows,
-
-```haskell
-// no need to run this.
-enum Option[+A] {
-    case None
-    case Some(v)
-    def map[B](f:A=>B):Option[B] = this match {
-        case None => None 
-        case Some(v) => Some(f(v))
-    }
-    def flatMap[B](f:A=>Option[B]):Option[B] = this match {
-        case None => None 
-        case Some(v) => f(v) match {
-            case None => None 
-            case Some(u) => Some(u) 
-        }
-    }
-}
-```
-
-Hence `optApplicative` can be simplified as 
-
-```haskell
-given optApplicative:Applicative[Option] = new Applicative[Option] {
-    def pure[A](v:A):Option[A] = Some(v)
-    def ap[A,B](ff:Option[A=>B])(fa:Option[A]):Option[B] = 
-        ff.flatMap(f => fa.map(f)) // same as listApplicative
-}
-```
-
-or 
-```haskell
-given optApplicative:Applicative[Option] = new Applicative[Option] {
-    def pure[A](v:A):Option[A] = Some(v)
-    def ap[A,B](ff:Option[A=>B])(fa:Option[A]):Option[B] = for 
-    {
-        f <- ff
-        a <- fa
-    } yield f(a) // same as listApplicative
-}
-```
 
 ### Applicative Laws
 
 Like Functor laws, every Applicative instance must follow the Applicative laws to remain computationally predictable.
 
-1. Identity: `ap(pure(x=>x))` $\equiv$ `x=>x`
-2. Homomorphism: `ap(pure(f))(pure(x))` $\equiv$ `pure(f(x))`
-3. Interchange: `ap(u)(pure(y))` $\equiv$ `ap(pure(f=>f(y)))(u)`
-4. Composition: `ap(ap(ap(pure(f=>f.compose))(u))(v))(w)` $\equiv$ `ap(u)(ap(v)(w))`
+1. Identity: `(<*>) (pure \x->x)` $\equiv$ `\x->x`
+2. Homomorphism: `(pure f) <*> (pure x))` $\equiv$ `pure (f x)`
+3. Interchange: `u <*> (pure y)` $\equiv$ `(pure (\f->f y)) <*> u`
+4. Composition: `(((pure (.))) <*> u) <*> v) <*> w` $\equiv$ `u <*> (v <*> w)`
 
-* Identity law states that applying a lifted identity function of type `A=>A` is same as an identity function of type `F[A] => F[A]` where `F` is the applicative functor.
-* Homomorphism says that applying a lifted function (which has type `A=>A` before being lifted) to a lifted value, is equivalent to applying the unlifted function to the unlifted value directly and then lift the result.
+
+* Identity law states that applying a lifted identity function of type `a->a` is same as an identity function of type `t a -> t a` where `t` is an applicative functor.
+* Homomorphism says that applying a lifted function (which has type `a->a` before being lifted) to a lifted value, is equivalent to applying the unlifted function to the unlifted value directly and then lift the result.
  * To understand Interchange law let's consider the following equation
 $$
 u\ y \equiv (\lambda f.(f\ y))\ u
@@ -279,252 +204,219 @@ Monad is one of the essential coding/design pattern for many functional programm
 
 Let's consider a motivating example.  Recall that in the earlier lesson, we came across the following example.
 
-```haskell
+```hs
+data MathExp = 
+    Plus  MathExp MathExp | 
+    Minus MathExp MathExp |
+    Mult  MathExp MathExp |
+    Div   MathExp MathExp | 
+    Const Int
 
-enum MathExp {
-    case Plus(e1:MathExp, e2:MathExp)
-    case Minus(e1:MathExp, e2:MathExp)
-    case Mult(e1:MathExp, e2:MathExp)
-    case Div(e1:MathExp, e2:MathExp)
-    case Const(v:Int)
-}
 
-def eval(e:MathExp):Option[Int] = e match {
-    case MathExp.Plus(e1, e2)  => eval(e1) match {
-        case None     => None
-        case Some(v1) => eval(e2) match {
-            case None     => None 
-            case Some(v2) => Some(v1 + v2)            
-        }
-    }
-    case MathExp.Minus(e1, e2) => eval(e1) match {
-        case None     => None
-        case Some(v1) => eval(e2) match {
-            case None     => None 
-            case Some(v2) => Some(v1 - v2)            
-        }
-    }
-    case MathExp.Mult(e1, e2)  => eval(e1) match {
-        case None     => None
-        case Some(v1) => eval(e2) match {
-            case None     => None 
-            case Some(v2) => Some(v1 * v2)            
-        }
-    }
-    case MathExp.Div(e1, e2)   => eval(e1) match {
-        case None     => None
-        case Some(v1) => eval(e2) match {
-            case None     => None 
-            case Some(0)  => None
-            case Some(v2) => Some(v1 / v2)            
-        }
-    }
-    case MathExp.Const(i)      => Some(i)
-}
+eval :: MathExp -> Maybe Int 
+eval (Plus e1 e2) = case eval e1 of 
+    Nothing -> Nothing 
+    Just v1 -> case eval e2 of 
+        Nothing -> Nothing 
+        Just v2 -> Just (v1 + v2)
+eval (Minus e1 e2) = case eval e1 of 
+    Nothing -> Nothing 
+    Just v1 -> case eval e2 of 
+        Nothing -> Nothing 
+        Just v2 -> Just (v1 - v2)
+eval (Mult e1 e2) = case eval e1 of 
+    Nothing -> Nothing 
+    Just v1 -> case eval e2 of 
+        Nothing -> Nothing 
+        Just v2 -> Just (v1 * v2)
+eval (Div e1 e2) = case eval e1 of 
+    Nothing -> Nothing 
+    Just v1 -> case eval e2 of 
+        Nothing -> Nothing
+        Just 0  -> Nothing 
+        Just v2 -> Just (v1 `div` v2)
+eval (Const v) = Just v 
 ```
 
-In which we use `Option[A]` to capture the potential div-by-zero error.
-One issue with the above is that it is very verbose, we lose some readability of the code thus, it takes us a while to migrate to `Either[A,B]` if we want to have better error messages. Monad is a good application here.
+In which we use `Maybe` to capture the potential div-by-zero error.
+One issue with the above is that it is very verbose, we lose some readability of the code thus, it takes us a while to migrate to `Either a b` if we want to have better error messages. Monad is a good application here.
 
-Let's consider the type class definition of `Monad[F[_]]`.
+Let's consider the type class definition of `Monad m`.
 
-```haskell
-trait Monad[F[_]] extends Applicative[F] {
-    def bind[A,B](fa:F[A])(f:A => F[B]):F[B]
-    def pure[A](v:A):F[A]
-    def ap[A, B](ff: F[A => B])(fa: F[A]): F[B] = 
-        bind(ff)((f:A=>B) => bind(fa)((a:A)=> pure(f(a))))
-}
+```hs
+-- prelude definitions, please don't execute it.
+class Applicative m => Monad m where 
+    (>>=) :: m a -> (a -> m b) -> m b
+    -- optional
+    return :: a -> a
+    return = pure
+    (>>) :: m a -> m b -> m b
+    (>>) m k = m >>= \_ -> k 
+```
+As suggested by the above definition, `Monad` is a derived type class of `Applicative`. The minimal requirement of a Monad instance is to implement the `(>>=)` (pronounced as "bind") function besides the obligation from `Applicative` and `Functor`.
 
-given optMonad:Monad[Option] = new Monad[Option] {
-    def bind[A,B](fa:Option[A])(f:A=>Option[B]):Option[B] = fa match {
-        case None => None
-        case Some(a) => f(a)
-    }
-    def pure[A](v:A):Option[A] = Some(v)
-}
+> In the history of Haskell, `Monad` was not defined not as a derived type class of `Applicative` and `Functor`. It was reported and resolved since GHC version 7.10 onwards. Such approach was adopted by other language and systems.
+
+Let's take a look at the `Monad Maybe` instance provided by the Haskell prelude.
+```hs
+instance Monad Maybe where
+    (>>=) Nothing _ = Nothing 
+    (>>=) (Just a) f = f a 
 ```
 
-The `eval` function can be re-expressed using `Monad[Option]`.
+The `eval` function can be re-expressed using `Monad Maybe`.
 
 ```haskell
-def eval(e:MathExp)(using m:Monad[Option]):Option[Int] = e match {
-    case MathExp.Plus(e1, e2)  => 
-        m.bind(eval(e1))( v1 => {
-            m.bind(eval(e2))( {v2 => m.pure(v1+v2)})
-        })        
-    case MathExp.Minus(e1, e2) =>         
-        m.bind(eval(e1))( v1 => {
-            m.bind(eval(e2))( {v2 => m.pure(v1-v2)})
-        }) 
-    case MathExp.Mult(e1, e2)  =>
-        m.bind(eval(e1))( v1 => {
-            m.bind(eval(e2))( {v2 => m.pure(v1*v2)})
-        }) 
-    case MathExp.Div(e1, e2)   => 
-        m.bind(eval(e1))( v1 => {
-            m.bind(eval(e2))( {v2 => if (v2 == 0) {None} else {m.pure(v1/v2)}})
-        }) 
-    case MathExp.Const(i)      => m.pure(i)
-}
+eval :: MathExp -> Maybe Int 
+eval (Plus e1 e2) = 
+    (eval e1) >>= (\v1 -> (eval e2) >>= (\v2 -> return (v1 + v2)))
+eval (Minus e1 e2) = 
+    (eval e1) >>= (\v1 -> (eval e2) >>= (\v2 -> return (v1 - v2)))
+eval (Mult e1 e2) = 
+    (eval e1) >>= (\v1 -> (eval e2) >>= (\v2 -> return (v1 - v2)))
+eval (Div e1 e2) = 
+    (eval e1) >>= (\v1 -> (eval e2) >>= (\v2 -> 
+        if v2 == 0
+        then Nothing
+        else return (v1 `div` v2)))
+eval (Const i) = return i
 ```
 
 It certainly reduces the level of verbosity, but the readability is worsened.
-Thankfully, we can make use of for comprehension since `Option` has the member functions `flatMap` and `map` defined.
+Thankfully, we can make use of a `do` syntactic sugar provided by Haskell.
 
-Recall that haskell desugars `for {...} yield` expression into `flatMap` and `map`.
-
-Thus the above can be rewritten as
-
-```haskell
-def eval(e:MathExp)(using m:Monad[Option]):Option[Int] = e match {
-    case MathExp.Plus(e1, e2)  => for {
-        v1 <- eval(e1)
-        v2 <- eval(e2)
-    } yield (v1+v2) 
-    case MathExp.Minus(e1, e2) => for {
-        v1 <- eval(e1)
-        v2 <- eval(e2)
-    } yield (v1-v2) 
-    case MathExp.Mult(e1, e2)  => for {
-        v1 <- eval(e1)
-        v2 <- eval(e2)
-    } yield (v1*v2) 
-    case MathExp.Div(e1, e2)   => for {
-        v1 <- eval(e1)
-        v2 <- eval(e2)
-        if (v2 !=0)
-    } yield (v1/v2) 
-    case MathExp.Const(i)      => m.pure(i)
+In Haskell expression 
+```hs
+do 
+{ v1 <- e1
+; v2 <- e2
+...
+; vn <- en 
+; return e
 }
+```
+is automatically desugared into 
+
+```hs
+e1 >>= (\v1 -> e2 >>= (\v2 -> ... en >>= (\vn -> return e)))
+```
+
+Hence we can rewrite the above `eval` function as 
+
+```hs
+eval :: MathExp -> Maybe Int 
+eval (Plus e1 e2) = do 
+    v1 <- eval e1 
+    v2 <- eval e2 
+    return (v1 + v2)
+eval (Minus e1 e2) = do 
+    v1 <- eval e1
+    v2 <- eval e2 
+    return (v1 - v2)
+eval (Mult e1 e2) = do 
+    v1 <- eval e1
+    v2 <- eval e2 
+    return (v1 * v2)
+eval (Div e1 e2) = do 
+    v1 <- eval e1
+    v2 <- eval e2 
+    if v2 == 0 
+    then Nothing 
+    else return (v1 `div` v2)
+eval (Const i) = return i
 ```
 
 Now the readability is restored.
 
 Another advantage of coding with `Monad` is that its abstraction allows us to switch underlying data structure without major code change.
 
-Suppose we would like to use `Either[String, A]` or some other equivalent as return type of `eval` function to support better error message. But before that, let's consider some subclasses of the `Applicative` and the `Monad` type classes.
+Suppose we would like to use `Either String a` or some other equivalent as return type of `eval` function to support better error message. But before that, let's consider some subclasses of the `Monad` type classes provided in the Haskell standard library `mtl`.
 
-```haskell
-trait ApplicativeError[F[_], E] extends Applicative[F] {
-    def raiseError[A](e:E):F[A]
-}
-
-trait MonadError[F[_], E] extends Monad[F] with ApplicativeError[F, E] {
-    override def raiseError[A](e:E):F[A]
-}   
-
-type ErrMsg = String
+```hs
+-- mtl definition, please don't execute it.
+class Monad m => MonadError e m | m -> e where
+    throwError :: e -> m a 
+    catchError :: m a -> (e -> m a) -> m a
 ```
 
-In the above, we define an extension to the `Applicative` type class, named `ApplicativeError` which expects an extra type class parameter `E` that denotes an error. The `raiseError` method takes a value of type `E` and returns the Applicative result.
+In the above, we define a derived type class of `Monad`, called `MonadError e m` where `m` is the Monadic functor and `e` is the error type. The additional declaration `| m -> e` denotes a *functional depenedency* between the instances of `m` and `e`. (You can think of it in terms of database FDs.)
+It says that whenever we fix a concrete instance of `m`, we can uniquely identify the corresponding instance of `e`.  The member function `throwErrow` takes an error message and injects into the Monad result. Function `catchError` runs an monad computation `m a`. In case of error, it applies the 2nd argument, a function of type `e -> m a` to handle it. You can think of  `catchError` is the `try ... catch` equivalent in `MonadError`. 
 
-Similarly, we extend `Monad` type class with `MonadError` type class. Next we include the following type class instance to include `Option` as one f the `MonadError` functor.
 
-```haskell
-given optMonadError:MonadError[Option, ErrMsg] = new MonadError[Option, ErrMsg] {
-    def raiseError[A](e:ErrMsg):Option[A] = None
-    def bind[A,B](fa:Option[A])(f:A=>Option[B]):Option[B] = fa match {
-        case None => None
-        case Some(a) => f(a)
-    }
-    def pure[A](v:A):Option[A] = Some(v)
-}
+
+Similarly, we extend `Monad` type class with `MonadError` type class. Next we examine type class instance `MonadError () Maybe`. We use `()` (pronounced as "unit") as the error type as we can't really propogate error message in `Maybe` other than `Nothing`.
+
+```hs
+-- mtl definition, please don't execute it.
+instance MonadError () Maybe where 
+    throwError _ = Nothing 
+    catchError ma handle = case ma of 
+        Nothing -> handle () 
+        Just v  -> Just v
 ```
 
-Next, we adjust the `eval` function to takes in a `MonadError` context instead of a `Monad` context. In addition, we make the error signal more explicit by calling the `raiseError()` method from the `MonadError` type class context.
+Next, we adjust the `eval` function to takes in a `MonadError` context instead of a `Monad` context. In addition, we make the error signal more explicit by calling the `throwError` function from the `MonadError` type class.
 
-```haskell
-def eval2(e:MathExp)(using m:MonadError[Option, ErrMsg]):Option[Int] = e match {
-    case MathExp.Plus(e1, e2)  => for {
-        v1 <- eval2(e1)
-        v2 <- eval2(e2)
-    } yield (v1+v2) 
-    case MathExp.Minus(e1, e2) => for {
-        v1 <- eval2(e1)
-        v2 <- eval2(e2)
-    } yield (v1-v2) 
-    case MathExp.Mult(e1, e2)  => for {
-        v1 <- eval2(e1)
-        v2 <- eval2(e2)
-    } yield (v1*v2) 
-    case MathExp.Div(e1, e2)   => for {
-        v1 <- eval2(e1)
-        v2 <- eval2(e2)
-        _  <- if (v2 ==0) {m.raiseError("div by zero encountered.")} else { m.pure(())}
-    } yield (v1/v2) 
-    case MathExp.Const(i)      => m.pure(i)
-}
+```hs
+eval :: MathExp -> Maybe Int 
+eval (Plus e1 e2) = do 
+    v1 <- eval e1 
+    v2 <- eval e2 
+    return (v1 + v2)
+eval (Minus e1 e2) = do 
+    v1 <- eval e1
+    v2 <- eval e2 
+    return (v1 - v2)
+eval (Mult e1 e2) = do 
+    v1 <- eval e1
+    v2 <- eval e2 
+    return (v1 * v2)
+eval (Div e1 e2) = do 
+    v1 <- eval e1
+    v2 <- eval e2 
+    if v2 == 0 
+    then throwError ()
+    else return (v1 `div` v2)
+eval (Const i) = return i
 ```
 
-Now let's try to refactor the code to make use of `Either[ErrMsg, A]` as the functor instead of `Option[A]`.
+Now let's try to refactor the code to make use of `Either String Int` as the functor instead of `Maybe Int`.
 
-```haskell
-enum Either[+A, +B] {
-    case Left(v: A)
-    case Right(v: B)
-    // to support for comprehension
-    def flatMap[C>:A,D](f: B => Either[C,D]):Either[C,D] = this match {
-        case Left(a) => Left(a)
-        case Right(b) => f(b)
-    }
-    def map[D](f:B => D):Either[A,D] = this match {
-        case Right(b) => Right(f(b))
-        case Left(e) => Left(e)
-    }
-} 
+```hs
+-- mtl definition, please don't execute it.
+instance MonadError String (Either String) where 
+    throwError msg = Left msg 
+    catchError ma handle = case ma of 
+        Left msg -> handle msg
+        Right v  -> Right v
 ```
+In the above, we define `MonadError String (Either String)` instance, which satisfies the functional dependency set by the type class as `Either String` functionally determines `String`. 
 
-In the above, we have to define `flatMap` and `map` member functions for `Either` type so that we could make
-use of the for comprehension later on. One might argue with the type signature of `flatMap` should be
-`flatMap[D](f: B => Either[A,D]):Either[A,D]`. The issue here is that the type variable `A` will appear in both co- and contra-variant positions.  The top-level annotation `+A` is no longer true. Hence we "relax" the type constraint here by introducing a new type variable `C` which has a lower bound of `A` (even though we do not need to upcast the result of the Left alternative.)
+> Note that the concept of currying is applicable to the type constructors. `Either` has kind `* -> * -> *` therefore `Either String` has kind `* -> *`.
 
-```haskell
-type EitherErr = [B] =>> Either[ErrMsg,B]
-```
+Now we can refactor the `eval` function by changing its type signature. And its body remains unchanged (almost).
 
-In the above we define `Either` algebraic datatype and the type construcor `EitherErr`. `[B] =>> Either[ErrMsg, B]` denotes a type lambda, which means that `EitherErr` is a type constructor (or type function) that takes a type `B` and return an `Either[ErrMsg, B]` type.
-
-Next, we define the type class instance for `MonadError[EitherErr, ErrMsg]`
-
-```haskell
-given eitherErrMonad: MonadError[EitherErr, ErrMsg] =
-    new MonadError[EitherErr, ErrMsg] {
-        import Either.*
-        def raiseError[B](e: ErrMsg): EitherErr[B] = Left(e)
-        def bind[A, B](
-            fa: EitherErr[A]
-        )(f: A => EitherErr[B]): EitherErr[B] = fa match {
-            case Right(b) => f(b)
-            case Left(s)  => Left(s)
-        }
-        def pure[B](v: B): EitherErr[B] = Right(v)
-    }
-```
-
-And finally, we refactor the `eval` function by changing its type signature. And its body remains unchanged.
-
-```haskell
-def eval3(e:MathExp)(using m:MonadError[EitherErr, ErrMsg]):EitherErr[Int] = e match {
-    case MathExp.Plus(e1, e2)  => for {
-        v1 <- eval3(e1)
-        v2 <- eval3(e2)
-    } yield (v1+v2) 
-    case MathExp.Minus(e1, e2) => for {
-        v1 <- eval3(e1)
-        v2 <- eval3(e2)
-    } yield (v1-v2) 
-    case MathExp.Mult(e1, e2)  => for {
-        v1 <- eval3(e1)
-        v2 <- eval3(e2)
-    } yield (v1*v2) 
-    case MathExp.Div(e1, e2)   => for {
-        v1 <- eval3(e1)
-        v2 <- eval3(e2)
-        _  <- if (v2 ==0) {m.raiseError("div by zero encountered.")} else { m.pure(())}
-    } yield (v1/v2) 
-    case MathExp.Const(i)      => m.pure(i)
-}
+```hs
+eval :: MathExp -> Either String Int 
+eval (Plus e1 e2) = do 
+    v1 <- eval e1 
+    v2 <- eval e2 
+    return (v1 + v2)
+eval (Minus e1 e2) = do 
+    v1 <- eval e1
+    v2 <- eval e2 
+    return (v1 - v2)
+eval (Mult e1 e2) = do 
+    v1 <- eval e1
+    v2 <- eval e2 
+    return (v1 * v2)
+eval (Div e1 e2) = do 
+    v1 <- eval e1
+    v2 <- eval e2 
+    if v2 == 0 
+    then throwError "division by zero error."
+    else return (v1 `div` v2)
+eval (Const i) = return i
 ```
 
 ## Commonly used Monads
@@ -536,15 +428,20 @@ We have seen the option Monad and the either Monad. Let's consider a few commonl
 We know that `List` is a Functor and an Applicative.
 It is not surprising that `List` is also a Monad.
 
-```haskell
-given listMonad:Monad[List] = new Monad[List] {
-    def pure[A](v:A):List[A] = List(v)
-    def bind[A,B](fa:List[A])(f:A => List[B]):List[B] = 
-        fa.flatMap(f)
-}
+```hs
+-- prelude definitions, please don't execute it.
+
+flip :: (a -> b -> c) -> b -> a -> c
+flip f b a = f a b
+
+instance Monad List where 
+    -- (>>=) :: [a] -> (a -> [b]) -> [b]
+    (>>=) as f = flip concatMap as f
 ```
 
-With the above instance, we can write list processing method in for comprehension which is similar to query languages.
+As we can observe from above, the bind function for List monad is a variant of `concatMap`.
+
+With the above instance, we can write list processing method in for comprehension which is similar to query languages (as an alternative to list comprehension).
 
 ```haskell
 import java.util.Date
@@ -559,7 +456,7 @@ def mkStaff(id:Int, dobStr:String):Staff = {
     Staff(id, dobDate)
 }
 val staffData = List(
-    mkStaff(1, "1076-01-02"),
+    mkStaff(1, "1976-01-02"),
     mkStaff(2, "1986-07-24")
 )
 
