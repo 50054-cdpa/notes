@@ -9,129 +9,103 @@
 
 ## Derived Type Class
 
-Recall that in our previous lesson, we talk about the `Ordering` type class.
+Recall that in our previous lesson, we encountered the `Eq` and `Ord` type classes from the Haskell prelude.
 
-```scala
-trait Ordering[A] {
-    def compare(x:A,y:A):Int // less than: -1, equal: 0, greater than 1
-}
+```hs
+-- prelude definitions, please don't execute it.
+class Eq a where 
+    (==) :: a -> a -> Bool 
 
+data Ordering = LT | EQ | GT
+
+class Eq a => Ord a where 
+    compare              :: a -> a -> Ordering
+    (<), (<=), (>), (>=) :: a -> a -> Bool
+    max, min             :: a -> a -> a
+
+    compare x y = if x == y then EQ
+                  else if x <= y then LT
+                  else GT
+
+    x <= y = case compare x y of { GT -> False; _ -> True }
+    x >= y = y <= x
+    x > y = not (x <= y)
+    x < y = not (y <= x)
+
+    max x y = if x <= y then y else x
+    min x y = if x <= y then x else y
+    {-# MINIMAL compare | (<=) #-}    
 ```
+In the above,  the `Eq` type class is a super class of the `Ord` type class, because any instance of `Ord` type class should also be an instance of the `Ord` (by some type class instance declaration),
 
-Let's consider a variant called `Order` (actually it is defined in a popular Scala library named `cats`).
+We also say `Ord` is a derived type class of `Eq`.
 
-```scala
-trait Eq[A] {
-    def eqv(x:A, y:A):Boolean
-}
-
-trait Order[A] extends Eq[A] { 
-    def compare(x:A, y:A):Int
-    def eqv(x:A, y:A):Boolean = compare(x,y) == 0
-    def gt(x:A,  y:A):Boolean = compare(x,y) > 0
-    def lt(x:A,  y:A):Boolean = compare(x,y) < 0
-}
-```
-
-In the above,  the `Eq` type class is a supertype of the `Order` type class, because all instances of `Order` type class should have the method `eqv` implemented.
-
-We also say `Order` is a derived type class of `Eq`.
+In addition, we find some default implementations of the member functions of `Ord` in the type class body. Minimally, we only need provide the implementation for either `compare` or `(<=)` in an instance of the `Ord` type class.
 
 Let's consider some instances
 
-```scala
-given eqInt:Eq[Int] = new Eq[Int] {
-    def eqv(x:Int, y:Int):Boolean = x == y
-}
+```hs
+module DerivedTypeClass where
 
-given orderInt:Order[Int] = new Order[Int] {
-    def compare(x:Int, y:Int):Int = x - y
-}
+data BTree a = Empty | 
+    Node a (BTree a) (BTree a) -- ^ a node with a value and the left and right sub trees.
 
-eqInt.eqv(1,1)
-orderInt.eqv(1,1)
+
+instance Eq a => Eq (BTree a) where 
+    (==) Empty Empty = True 
+    (==) (Node v1 l1 r1) (Node v2 l2 r2) = v1 == v2 && l1 == l2 && r1 == r2
+    (==) _ _ = False 
+
+instance Ord a => Ord (BTree a) where
+    compare Empty Empty = EQ 
+    compare (Node v1 l1 r1) (Node v2 l2 r2) = 
+        case compare v1 v2 of 
+            EQ -> case compare l1 l2 of 
+                EQ -> compare r1 r2
+                o  -> o
+            o  -> o
+    compare Empty (Node _ _ _) = LT 
+    compare (Node _ _ _) Empty = GT
+
+Node 1 Empty (Node 2 Empty Empty) <= Node 1 (Node 2 Empty Empty) Empty -- True
 ```
 
-### An alternative approach
-
-```scala
-trait Order[A] extends Eq[A] { 
-    def compare(x:A, y:A):Int
-    // def eqv(x:A, y:A):Boolean = compare(x,y) == 0
-    def gt(x:A,  y:A):Boolean = compare(x,y) > 0
-    def lt(x:A,  y:A):Boolean = compare(x,y) < 0
-}
-
-given eqInt:Eq[Int] = new Eq[Int] {
-    def eqv(x:Int, y:Int):Boolean = x == y
-}
-
-given orderInt(using eqInt:Eq[Int]):Order[Int] = new Order[Int] {
-    def eqv(x:Int,y:Int):Boolean = eqInt.eqv(x,y)
-    def compare(x:Int, y:Int):Int = x - y
-}
-
-eqInt.eqv(1,1)
-orderInt.eqv(1,1)
-```
-
-In the above definition, we skip the default implementatoin of `eqv` in `Order` and make use of the type class instance context to synthesis the `eqv` method based on the existing type class instances of `Eq`. (This approach is closer to the one found in Haskell.)
-
-### Which one is better?
-
-Both have their own pros and cons. In the first approach, we give a default implementation for the `eqv` overridden method in `Order` type class, it frees us from re-defining the `eqv` in every type class instance of `Order`. In this case, the rule/logic is fixed at the top level. In the second approach, `eqv` in `Order` type class is not defined. We are required to define it for every single type class instance of `Order`, that means more work. The advantage is that we have flexibility to redefine/re-mix definition of `eqv` coming from other type class instances.
 
 ## Functor (Recap)
 
 Recall from the last lesson, we make use of the `Functor` type class to define generic programming style of data processing.
 
-```scala
-trait Functor[T[_]] {
-    def map[A,B](t:T[A])(f:A => B):T[B]
-}
+```hs
+-- prelude definitions, please don't execute it.
+class 
 
-given listFunctor:Functor[List] = new Functor[List] {
-    def map[A,B](t:List[A])(f:A => B):List[B] = t.map(f)
-}
-
-enum BTree[+A]{
-    case Empty
-    case Node(v:A, lft:BTree[A], rgt:BTree[A])
-}
-
-
-given btreeFunctor:Functor[BTree] = new Functor[BTree] {
-    import BTree.*
-    def map[A,B](t:BTree[A])(f:A => B):BTree[B] = t match {
-        case Empty => Empty
-        case Node(v, lft, rgt) => Node(f(v), map(lft)(f), map(rgt)(f))
-    }
-}
-
-val l = List(1,2,3)
-listFunctor.map(l)((x:Int) => x + 1)
-
-val t = BTree.Node(2, BTree.Node(1, BTree.Empty, BTree.Empty), BTree.Node(3, BTree.Empty, BTree.Empty))
-btreeFunctor.map(t)((x:Int) => x + 1)
+instance Functor List where 
+    fmap f l = map f l
 ```
 
-Note that we also swap the first and the second arguments of the `map` function.
+```hs
+-- our user defined instance Functor BTree
+instance Functor BTree where 
+    fmap f Empty = Empty
+    fmap f (Node v lft rgt) = 
+        Node (f v) (fmap f lft) (fmap f rgt)
+```
+
 
 ## Applicative Functor
 
 The `Applicative` Functor is a derived type class of `Functor`, which is defined as follows
 
-```scala
-trait Applicative[F[_]] extends Functor[F] {
-    def ap[A, B](ff: F[A => B])(fa: F[A]): F[B]
-    def pure[A](a: A): F[A]
-    def map[A, B](fa: F[A])(f: A => B): F[B] = ap(pure(f))(fa) 
-}
+```hs
+-- prelude definitions, please don't execute it.
+class Functor t => Applicative t where 
+    pure :: a -> t a
+    (<$>) :: t (a -> b) -> t a -> t b
 ```
 
 Note that we "fix" the `map` for `Applicative` in the type class level in this case. (i.e. we are following the first approach.)
 
-```scala
+```haskell
 given listApplicative:Applicative[List] = new Applicative[List] {
     def pure[A](a:A):List[A] = List(a) 
     def ap[A, B](ff: List[A => B])(fa: List[A]):List[B] = 
@@ -144,20 +118,20 @@ Recall that ```flatten``` flattens a list of lists.
 Alternatively, we can define the `ap` method of the `Applicative[List]` instance `flatMap`. Given `l` is a list,
 `l.flatMap(f)` is the same as `l.map(f).flatten`.
 
-```scala
+```haskell
     def ap[A, B](ff: List[A => B])(fa: List[A]):List[B] = 
         ff.flatMap( f => fa.map(f))
 ```
 
-Recall that Scala compiler desugars expression of shape
+Recall that haskell compiler desugars expression of shape
 
-```scala
+```haskell
 e1.flatMap( v1 => e2.flatMap( v2 => ... en.map(vn => e ... )))
 ```
 
 into
 
-```scala
+```haskell
 for {
     v1 <- e1
     v2 <- e2
@@ -168,7 +142,7 @@ for {
 
 Hence we can rewrite the `ap` method of the `Applicative[List]` instance as
 
-```scala
+```haskell
     def ap[A, B](ff: List[A => B])(fa: List[A]):List[B] = 
         for {
             f <- ff
@@ -178,7 +152,7 @@ Hence we can rewrite the `ap` method of the `Applicative[List]` instance as
 
 It is not suprising the following produces the same results as the functor instance.
 
-```scala
+```haskell
 listApplicative.map(l)((x:Int) => x + 1)
 ```
 
@@ -186,14 +160,14 @@ What about `pure` and `ap`? when can we use them?
 
 Let's consider the following contrived example. Suppose we would like to apply two sets of operations to elements from `l`, each operation will produce its own set of results, and the inputs do not depend on the output of the other set. i.e. If the two set of operations, are `(x:Int)=> x+1` and `(y:Int)=>y*2`.
 
-```scala
+```haskell
 val intOps= List((x:Int)=>x+1, (y:Int)=>y*2)
 listApplicative.ap(intOps)(l)
 ```
 
 we get
 
-```scala
+```haskell
 List(2, 3, 4, 2, 4, 6)
 ```
 
@@ -203,7 +177,7 @@ Let's consider another example. Recall that `Option[A]` algebraic datatype which
 
 We define the `Applicative[Option]` instance as follows
 
-```scala
+```haskell
 given optApplicative:Applicative[Option] = new Applicative[Option] {
     def pure[A](v:A):Option[A] = Some(v)
     def ap[A,B](ff:Option[A=>B])(fa:Option[A]):Option[B]  = ff match {
@@ -220,7 +194,7 @@ In the above Applicative instance, the `ap` method takes a optional operation an
 
 Recall the builtin `Option` type is defined as follows,
 
-```scala
+```haskell
 // no need to run this.
 enum Option[+A] {
     case None
@@ -241,7 +215,7 @@ enum Option[+A] {
 
 Hence `optApplicative` can be simplified as 
 
-```scala
+```haskell
 given optApplicative:Applicative[Option] = new Applicative[Option] {
     def pure[A](v:A):Option[A] = Some(v)
     def ap[A,B](ff:Option[A=>B])(fa:Option[A]):Option[B] = 
@@ -250,7 +224,7 @@ given optApplicative:Applicative[Option] = new Applicative[Option] {
 ```
 
 or 
-```scala
+```haskell
 given optApplicative:Applicative[Option] = new Applicative[Option] {
     def pure[A](v:A):Option[A] = Some(v)
     def ap[A,B](ff:Option[A=>B])(fa:Option[A]):Option[B] = for 
@@ -305,7 +279,7 @@ Monad is one of the essential coding/design pattern for many functional programm
 
 Let's consider a motivating example.  Recall that in the earlier lesson, we came across the following example.
 
-```scala
+```haskell
 
 enum MathExp {
     case Plus(e1:MathExp, e2:MathExp)
@@ -354,7 +328,7 @@ One issue with the above is that it is very verbose, we lose some readability of
 
 Let's consider the type class definition of `Monad[F[_]]`.
 
-```scala
+```haskell
 trait Monad[F[_]] extends Applicative[F] {
     def bind[A,B](fa:F[A])(f:A => F[B]):F[B]
     def pure[A](v:A):F[A]
@@ -373,7 +347,7 @@ given optMonad:Monad[Option] = new Monad[Option] {
 
 The `eval` function can be re-expressed using `Monad[Option]`.
 
-```scala
+```haskell
 def eval(e:MathExp)(using m:Monad[Option]):Option[Int] = e match {
     case MathExp.Plus(e1, e2)  => 
         m.bind(eval(e1))( v1 => {
@@ -398,11 +372,11 @@ def eval(e:MathExp)(using m:Monad[Option]):Option[Int] = e match {
 It certainly reduces the level of verbosity, but the readability is worsened.
 Thankfully, we can make use of for comprehension since `Option` has the member functions `flatMap` and `map` defined.
 
-Recall that Scala desugars `for {...} yield` expression into `flatMap` and `map`.
+Recall that haskell desugars `for {...} yield` expression into `flatMap` and `map`.
 
 Thus the above can be rewritten as
 
-```scala
+```haskell
 def eval(e:MathExp)(using m:Monad[Option]):Option[Int] = e match {
     case MathExp.Plus(e1, e2)  => for {
         v1 <- eval(e1)
@@ -431,7 +405,7 @@ Another advantage of coding with `Monad` is that its abstraction allows us to sw
 
 Suppose we would like to use `Either[String, A]` or some other equivalent as return type of `eval` function to support better error message. But before that, let's consider some subclasses of the `Applicative` and the `Monad` type classes.
 
-```scala
+```haskell
 trait ApplicativeError[F[_], E] extends Applicative[F] {
     def raiseError[A](e:E):F[A]
 }
@@ -447,7 +421,7 @@ In the above, we define an extension to the `Applicative` type class, named `App
 
 Similarly, we extend `Monad` type class with `MonadError` type class. Next we include the following type class instance to include `Option` as one f the `MonadError` functor.
 
-```scala
+```haskell
 given optMonadError:MonadError[Option, ErrMsg] = new MonadError[Option, ErrMsg] {
     def raiseError[A](e:ErrMsg):Option[A] = None
     def bind[A,B](fa:Option[A])(f:A=>Option[B]):Option[B] = fa match {
@@ -460,7 +434,7 @@ given optMonadError:MonadError[Option, ErrMsg] = new MonadError[Option, ErrMsg] 
 
 Next, we adjust the `eval` function to takes in a `MonadError` context instead of a `Monad` context. In addition, we make the error signal more explicit by calling the `raiseError()` method from the `MonadError` type class context.
 
-```scala
+```haskell
 def eval2(e:MathExp)(using m:MonadError[Option, ErrMsg]):Option[Int] = e match {
     case MathExp.Plus(e1, e2)  => for {
         v1 <- eval2(e1)
@@ -485,7 +459,7 @@ def eval2(e:MathExp)(using m:MonadError[Option, ErrMsg]):Option[Int] = e match {
 
 Now let's try to refactor the code to make use of `Either[ErrMsg, A]` as the functor instead of `Option[A]`.
 
-```scala
+```haskell
 enum Either[+A, +B] {
     case Left(v: A)
     case Right(v: B)
@@ -505,7 +479,7 @@ In the above, we have to define `flatMap` and `map` member functions for `Either
 use of the for comprehension later on. One might argue with the type signature of `flatMap` should be
 `flatMap[D](f: B => Either[A,D]):Either[A,D]`. The issue here is that the type variable `A` will appear in both co- and contra-variant positions.  The top-level annotation `+A` is no longer true. Hence we "relax" the type constraint here by introducing a new type variable `C` which has a lower bound of `A` (even though we do not need to upcast the result of the Left alternative.)
 
-```scala
+```haskell
 type EitherErr = [B] =>> Either[ErrMsg,B]
 ```
 
@@ -513,7 +487,7 @@ In the above we define `Either` algebraic datatype and the type construcor `Eith
 
 Next, we define the type class instance for `MonadError[EitherErr, ErrMsg]`
 
-```scala
+```haskell
 given eitherErrMonad: MonadError[EitherErr, ErrMsg] =
     new MonadError[EitherErr, ErrMsg] {
         import Either.*
@@ -530,7 +504,7 @@ given eitherErrMonad: MonadError[EitherErr, ErrMsg] =
 
 And finally, we refactor the `eval` function by changing its type signature. And its body remains unchanged.
 
-```scala
+```haskell
 def eval3(e:MathExp)(using m:MonadError[EitherErr, ErrMsg]):EitherErr[Int] = e match {
     case MathExp.Plus(e1, e2)  => for {
         v1 <- eval3(e1)
@@ -562,7 +536,7 @@ We have seen the option Monad and the either Monad. Let's consider a few commonl
 We know that `List` is a Functor and an Applicative.
 It is not surprising that `List` is also a Monad.
 
-```scala
+```haskell
 given listMonad:Monad[List] = new Monad[List] {
     def pure[A](v:A):List[A] = List(v)
     def bind[A,B](fa:List[A])(f:A => List[B]):List[B] = 
@@ -572,7 +546,7 @@ given listMonad:Monad[List] = new Monad[List] {
 
 With the above instance, we can write list processing method in for comprehension which is similar to query languages.
 
-```scala
+```haskell
 import java.util.Date
 import java.util.Calendar
 import java.util.GregorianCalendar
@@ -612,7 +586,7 @@ Next we consider the `Reader` Monad.  `Reader` Monad denotes a shared input envi
 
 For example, suppose we would like to implement some test with a sequence of API calls. Most of these API calls are having the same host IP. We can set the host IP as part of the reader's environment.
 
-```scala
+```haskell
 case class Reader[R, A] (run: R=>A) { 
     // we need flatMap and map for for-comprehension
     def flatMap[B](f:A =>Reader[R,B]):Reader[R,B] = this match {
@@ -656,14 +630,14 @@ One crucial observation is that `bind` method in `ReaderMonad` is nearly identic
 
 In fact, we can re-express `bind` for all Monads as the `flatMap` in their underlying case class.
 
-```scala
+```haskell
 override def bind[A,B](fa:Reader[R, A])(f:A=>Reader[R,B]):Reader[R,B] = fa.flatMap(f)
 ```
 
 The following example shows how Reader Monad can be used in making several API calls (computation) to the same API server (shared input
 `https://127.0.0.1/`). For authentication we need to call the authentication server `https://127.0.0.10/` temporarily. 
 
-```scala
+```haskell
 case class API(url:String)
 
 given APIReader:ReaderMonad[API] = new ReaderMonad[API] {}
@@ -691,11 +665,11 @@ def runtest1():Unit = test1 match {
 
 ### State Monad
 
-We consider the `State` Monad. A `State` Monad allows programmers capture and manipulate stateful computation without using assignment and mutable variable. One advantage of doing so is that program has full control of the state without having direct access to the computer memory. In a typeful language like Scala, the type system segregates the pure computation from the stateful computation. This greatly simplify software verification and debugging.
+We consider the `State` Monad. A `State` Monad allows programmers capture and manipulate stateful computation without using assignment and mutable variable. One advantage of doing so is that program has full control of the state without having direct access to the computer memory. In a typeful language like haskell, the type system segregates the pure computation from the stateful computation. This greatly simplify software verification and debugging.
 
 The following we define a `State` case class, which has a member computation `run:S => (S,A)`.
 
-```scala
+```haskell
 case class State[S,A]( run:S=>(S,A)) { 
     def flatMap[B](f: A => State[S,B]):State[S,B] = this match {
         case State(ssa) => State(
@@ -720,7 +694,7 @@ As suggested by the type, the computationn `S=>(S,A)`, takes in a state `S` as i
 
 The State Monad type class is defined as a dervied type class of `Monad[StateM[S]]`.
 
-```scala
+```haskell
 type StateM = [S] =>> [A] =>> State[S,A]
 
 trait StateMonad[S] extends Monad[StateM[S]] {
@@ -738,7 +712,7 @@ trait StateMonad[S] extends Monad[StateM[S]] {
 In the `pure` method's default implementation, we takes a value `v` of type `A` and return
 a `State` case class oject by wrapping a lambda which takes a state `s` and returns back the same state `s` with the input value `v`. In the default implementation of the `bind` method, we take a computation `fa` of type `State[S,A]`, i.e. a stateful computation over state type `S` and return a result of type `A`. In addition, we take a function that expects input of type `A` and returns a stateful computation `State[S,B]`. We apply `flatMap` of `fa` to `ff`., which can be expanded to
 
-```scala
+```haskell
 fa.flatMap(ff) -->
 fa match {
     case State(ssa) => State ( s => {
@@ -758,7 +732,7 @@ The `get` and the `set` methods give us access to the state environment of type 
 
 For instance,
 
-```scala
+```haskell
 case class Counter(c:Int)
 
 given counterStateMonad:StateMonad[Counter] = new StateMonad[Counter]  {
@@ -809,7 +783,7 @@ In this lesson we have discussed the following
 
 The dual of the `Reader` Monad is the `Writer` Monad, which has the following definition.
 
-```scala
+```haskell
 // inspired by https://kseo.github.io/posts/2017-01-21-writer-monad.html
 trait Monoid[A]{ // We omitted the super class SemiRing[A]
     def mempty:A
@@ -836,7 +810,7 @@ case class Writer[W,A]( run: (W,A))(using mw:Monoid[W]) {
 
 Similar to the `Reader` Monad, in the above we define a case class `Writer`, which has a member value `run` that returns a tuple of `(W,A)`.  The subtle difference is that the writer memory `W` has to be an instance of the `Monoid` type class, in which `mempty` and `mappend` operations are defined.
 
-```scala
+```haskell
 type WriterM = [W] =>> [A] =>> Writer[W,A] 
 
 trait WriterMonad[W] extends Monad[WriterM[W]] {
@@ -864,7 +838,7 @@ we need to include the type class `Monoid[W]` to ensure that `mempty` and `mappe
 
 In the following we define a simple application with logging mechanism using the `Writer` Monad.
 
-```scala
+```haskell
 case class LogEntry(msg:String)
 
 given logWriterMonad:WriterMonad[List[LogEntry]] = new WriterMonad[List[LogEntry]] {
@@ -899,7 +873,7 @@ def runApp(): Int = app match {
 
 Is the following class a Monad?
 
-```scala
+```haskell
 case class MyState[S,A]( run:S=>Option[(S,A)]) 
 ```
 
@@ -907,7 +881,7 @@ The difference between this class and the `State` class we've seen earlier is th
 
 It is ascertained that `MyState` is also a Monad, and it is a kind of special State Monad.
 
-```scala
+```haskell
 case class MyState[S, A](run: S => Option[(S, A)]) {
     def flatMap[B](f: A => MyState[S, B]): MyState[S, B] = this match {
         case MyState(ssa) =>
@@ -951,7 +925,7 @@ Seeking the answer to this question leads us to *Monad Transformer*.
 
 We begin by parameterizing the `Option` functor in `MyState`
 
-```scala
+```haskell
 case class StateT[S, M[_], A](run: S => M[(S, A)])(using m:Monad[M]) {
     def flatMap[B](f: A => StateT[S, M, B]): StateT[S, M, B] = this match {
         case StateT(ssa) =>
@@ -980,7 +954,7 @@ In the above it is largely similar to `MyState` class, except that we parameteri
 
 Naturally, we can define a derived type class called `StateTMonad`.
 
-```scala
+```haskell
 type StateTM = [S] =>> [M[_]] =>> [A] =>> StateT[S, M, A]
 
 trait StateTMonad[S,M[_]] extends Monad[StateTM[S][M]]  {
@@ -998,7 +972,7 @@ trait StateTMonad[S,M[_]] extends Monad[StateTM[S][M]]  {
 
 Given that `Option` is a Monad, we can redefine `MyStateMonad`  in terms of `StateTMonad` and `optMonad`.
 
-```scala
+```haskell
 trait StateOptMonad[S] extends StateTMonad[S, Option] { 
     override def M0 = optMonad
 }
@@ -1006,7 +980,7 @@ trait StateOptMonad[S] extends StateTMonad[S, Option] {
 
 What about the original *vanilla* `State` Monad? We could introduce an Identity Monad.
 
-```scala
+```haskell
 case class Identity[A](run:A) {
     def flatMap[B](f:A=>Identity[B]):Identity[B] = this match {
         case Identity(a) => f(a)
@@ -1024,7 +998,7 @@ given identityMonad:Monad[Identity] = new Monad[Identity] {
 
 Then we can re-define the vanilla `State` Monad as follows, (in fact like many existing Monad libraries out there.)
 
-```scala
+```haskell
 trait StateIdentMonad[S] extends StateTMonad[S, Identity] { // same as StateMonad
     override def M0 = identityMonad
 }
@@ -1034,7 +1008,7 @@ One advantage of having Monad Transformer is that now we can create new Monad by
 
 Similarly we could generalize the `Reader` Monad  to its transformer variant.
 
-```scala
+```haskell
 case class ReaderT[R, M[_], A](run: R => M[A])(using m:Monad[M]) {
     def flatMap[B](f: A => ReaderT[R, M, B]):ReaderT[R, M, B] = this match {
         case ReaderT(ra) => ReaderT( r => m.bind(ra(r))
@@ -1076,7 +1050,7 @@ Note that the order of how Monad Transfomers being stacked up makes a difference
 
 For instance, can you explain what is the difference between the following two?
 
-```scala
+```haskell
 trait ReaderStateIdentMonad[R, S] extends ReaderTMonad[R, StateTM[S][Identity]] {
     override def M0:StateIdentMonad[S] = new StateIdentMonad[S]{}
 }

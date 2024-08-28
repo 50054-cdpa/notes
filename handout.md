@@ -116,8 +116,8 @@ You may work as a team (up to max 3 members). Please register your team [here](h
 | Week | Session 1 | Session 2 | Session 3 | Assessment |
 |---|---|---|---|---|
 | 1 | Intro | [FP: Expression, Function, Conditional, Recursion](./fp_intro.md) | Cohort Problem 1, Homework 1 | Homework 1 no submission required | 
-| 2 | [FP: List, Pattern Matching](./fp_scala.md) | [FP: Algebraic Data Type](./fp_scala.md) | [Cohort Problem 2](https://github.com/50054-2023-fall/cohort_probs/tree/main/fp_scala), [Homework 2](https://github.com/50054-2023-fall/homework/tree/main/fp_scala) |  |
-| 3 | [FP: Generics, GADT](./fp_scala_poly.md) | [FP: Type Classes, Functor](./fp_scala_poly.md) | [Cohort Problem 3](https://github.com/50054-2023-fall/cohort_probs/tree/main/fp_scala_poly), Homework 2 (Cont'd) | Homework 2 5% |
+| 2 | [FP: List, Pattern Matching](./fp_haskell.md) | [FP: Algebraic Data Type](./fp_haskell.md) | [Cohort Problem 2](https://github.com/50054-2023-fall/cohort_probs/tree/main/fp_scala), [Homework 2](https://github.com/50054-2023-fall/homework/tree/main/fp_scala) |  |
+| 3 | [FP: Generics, GADT](./fp_haskell_poly.md) | [FP: Type Classes, Functor](./fp_haskell_poly.md) | [Cohort Problem 3](https://github.com/50054-2023-fall/cohort_probs/tree/main/fp_scala_poly), Homework 2 (Cont'd) | Homework 2 5% |
 | 4 | [FP: Applicative](./fp_applicative_monad.md) | [FP: Monad](./fp_applicative_monad.md) |  [Cohort Problem 4](https://github.com/50054-2023-fall/cohort_probs/tree/main/fp_applicative_monad), [Homework 3](https://github.com/50054-2023-fall/homework/tree/main/fp_scala_poly) |  |
 | 5 | [Syntax Analysis: Lexing, Parsing](./syntax_analysis.md) | [Top-down Parsing](./syntax_analysis.md) | [Cohort Problem 5](https://github.com/50054-2023-fall/cohort_probs/tree/main/syntax_analysis), Homework 3 (Cont'd) | Homework 3 5% |
 | 6 | [Bottom-up Parsing](./syntax_analysis_2.md) | [IR: Pseudo-Assembly](./ir_pseudo_assembly.md) | [Cohort Problem 6](https://github.com/50054-2023-fall/cohort_probs/tree/main/syntax_analysis_2_pseudo_ir), [Homework 4](https://github.com/50054-2023-fall/homework/tree/main/fp_syntax_analysis)  |  | 

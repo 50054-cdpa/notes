@@ -59,6 +59,7 @@ $$
 In Haskell, there exists a prelude function (predefined function) `(.)` which composes two functions 
 
 ```hs
+-- prelude definitions, please don't execute it.
 (.) :: (b -> c) -> (a -> b) -> a -> c 
 (.) g f = \x -> g (f x)
 ```
@@ -237,7 +238,7 @@ class JS a where
 
 In the above, we define a type class `JS` via the `class ... where` keywords. 
 If this is the first time you encounter Haskell type class, you could treat it as the Haskell way of definining an interface in Java.  In the above definition, we define an type class `JS a` which says whatever type `a` could be in `JS a` shoud have an obligational implementation of `toJS :: a -> String`.  
-> The GHC pragma `{-# LANGUAGE FlexibleInstances #-}` indicates that we need to enable the flexible-insances extension to support `JS String` (which is `JS [Char]`). Without this pragma, we can't define complex type expression type class instances that involving a type constructor.
+> The GHC pragma `{-# LANGUAGE FlexibleInstances #-}` indicates that we need to enable the flexible-insances extension to support `JS String` (which is `JS [Char]`). Without this pragma, we can't define complex type expression type class instances that involving a type constructor being applied to non type variables.
 
 Using `instance ... where` keywords, we define some type class instances (concrete implementation) of `JS a` as follows
 
@@ -324,6 +325,7 @@ It turns out that extending `map` to different datatypes is similar to `toJS` fu
 
 
 ```hs
+-- prelude definitions, please don't execute it.
 class Functor t where 
     fmap :: (a -> b) -> t a -> t b
 ```
@@ -332,6 +334,7 @@ In the above type class definition, `t` denotes a type parameter of kind `* -> *
 
 The following is a prelude type class instance for `Functor List` (or as short-hand `Functor []`) 
 ```hs
+-- prelude definitions, please don't execute it.
 instance Functor List where 
     fmap f l = map f l
 ```
@@ -371,6 +374,7 @@ Let `i` be a functor instance
 Similarly we find a prelude type class `Foldable` for `foldl` and `foldr` operations
 
 ```hs
+-- prelude definitions, please don't execute it.
 class Foldable t where 
     foldl :: (b -> a -> b) -> b -> t a -> b
     foldr :: (a -> b -> b) -> b -> t a -> b
@@ -442,6 +446,7 @@ A more fine-grained approach is to use algebraic datatype to "inform" the compil
 Consider the following prelude Haskell datatype `Maybe`
 
 ```hs
+-- prelude definitions, please don't execute it.
 data Maybe a = None | Just a
 ```
 
@@ -479,6 +484,7 @@ There are still two drawbacks. Firstly, the updated version of the `eval` functi
 We could instead of using `Maybe`, use the `Either` datatype, which is also defined in the prelude.
 
 ```hs
+-- prelude definitions, please don't execute it.
 data Either a b = Left a | Right b
 ```
 
