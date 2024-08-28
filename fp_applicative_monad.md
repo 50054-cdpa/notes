@@ -467,10 +467,14 @@ salary :: Staff -> Int
 salary (Staff _ _ s) = s
 ```
 
+One difference is that we can use the record name in the record data type as an pseudo update function.
 
+```hs
+tom = Staff 1 "hr" 500000
+happierTom = tom{salary=(salary tom)*2} -- ^ a new staff with same id and dept and doubled salary.
+```
 
-
-
+Now we are ready to write some query in Haskell list monad. Given a table of data, 
 ```hs
 staffData = [
     Staff 1 "HR" 50000,
@@ -478,13 +482,16 @@ staffData = [
     Staff 3 "SALES" 100000,
     Staff 4 "IT" 60000
     ]
+```
 
+We can use the follow query to retrieve all the staff ids whose salary is more than 50000.
 
+```hs
 query :: [Staff] -> [Int]
 query table = do
-    staff <- table
-    if salary staff > 50000
-    then return (sid staff)
+    staff <- table           -- from  staff
+    if salary staff > 50000  -- where salary > 50000
+    then return (sid staff)  -- select sid
     else []
 ```
 
