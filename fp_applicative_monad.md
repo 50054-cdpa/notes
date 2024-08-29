@@ -502,422 +502,440 @@ Next we consider the `Reader` Monad.  `Reader` Monad denotes a shared input envi
 
 For example, suppose we would like to implement some test with a sequence of API calls. Most of these API calls are having the same host IP. We can set the host IP as part of the reader's environment.
 
-```haskell
-case class Reader[R, A] (run: R=>A) { 
-    // we need flatMap and map for for-comprehension
-    def flatMap[B](f:A =>Reader[R,B]):Reader[R,B] = this match {
-        case Reader(ra) => Reader (
-            r => f(ra(r)) match {
-                case Reader(rb) => rb(r)
-            }
-        )
-    }
-    def map[B](f:A=>B):Reader[R, B] = this match {
-        case Reader(ra) => Reader (
-            r => f(ra(r))
-        )
-    }
-}
 
-type ReaderM = [R] =>> [A] =>> Reader[R, A]
 
-trait ReaderMonad[R] extends Monad[ReaderM[R]] {
-    override def pure[A](v:A):Reader[R, A] = Reader (r => v)
-    override def bind[A,B](fa:Reader[R, A])(f:A=>Reader[R,B]):Reader[R,B] = fa match {
-        case Reader(ra) => Reader (
-            r=> f(ra(r)) match {
-                case Reader(rb) => rb(r)
-            }
-        ) 
-    }
-    def ask:Reader[R,R] = Reader( r => r)
-    def local[A](f:R=>R)(r:Reader[R,A]):Reader[R,A] = r match {
-        case Reader(ra) => Reader( r => {
-            val localR = f(r)
-            ra(localR)
-        })
-    }    
-}
+
+First let's consider the reader data type
+```hs
+-- mtl definition with monomorphication, please don't execute it.
+data Reader r a = Reader {run :: r -> a}
 ```
 
-In the above `Reader[R,A]` case class defines the structure of the Reader type, where `R` denotes the shared information for the computation, (source for reader), `A` denotes the output of the computation. We would like to define `Reader[R,_]` as a Monad instance. To do so, we define a type-curry version of `Reader`, i.e. `ReaderM`.
+It denotes a computation that takes the reference (shared) environment `r` and produces some result `a`.
 
-One crucial observation is that `bind` method in `ReaderMonad` is nearly identical to `flatMap` in `Reader`, with the arguments swapped.
 
-In fact, we can re-express `bind` for all Monads as the `flatMap` in their underlying case class.
+Then we provide the necessarily implementation to qualify `Reader r` as a `Monad` instance.
 
-```haskell
-override def bind[A,B](fa:Reader[R, A])(f:A=>Reader[R,B]):Reader[R,B] = fa.flatMap(f)
+```hs
+-- mtl definition with monomorphication, please don't execute it.
+data Reader r a = Reader {run :: r -> a}
+instance Functor (Reader r) where 
+    -- fmap :: (a -> b) -> Reader r a -> Reader r b
+    fmap f ra = Reader ( \r ->
+        let a = run ra r
+        in f a ) 
+
+instance Applicative (Reader r) where 
+    -- pure :: a -> Reader r a 
+    pure a = Reader (\_ -> a)
+    -- (<*>) :: Reader r (a -> b) -> Reader r a -> Reader r b 
+    rf <*> ra = Reader (\r ->
+        let f = run rf r
+            a = run ra r
+        in f a)
+
+instance Monad (Reader r) where
+    -- (>>=) :: Reader r a -> (a -> Reader r b) -> Reader r b
+    ra >>= g = Reader (\r ->
+        let a = run ra r
+            rb = g a
+        in run rb r)
+```
+
+* `fmap` function takes a function `f` and a reader `ra` and returns a reader whose computation function takes an input referenced object `r` and runs `ra` with r to obtain `a`, then applly `f` to `a`.
+* `pure` function takes a value of type `a` and wraps it into a reader object whose computation function is returning the input value ignoring the referenced object `r`. 
+* The app function (`<*>`) takes a reader `rf` that produces function(s), and a reader that produces value `a`. It returns a reader whose computation function takes a referenced object `r` and run `rf` with `ra` with it to produce the function `f` and the value `a`. Finally it applies `f` to `a`.
+* The bind function (`>>=`) takes a reader `ra` and a function `g`, it returns a reader whose computation function takes a referenced object `r` and run `ra` with `r` to obtained `a`, next it applies `g` to `a` to generate the reader `rb`, finally, it runs `rb` with `r`.
+
+
+We consider the `MonadReader` type class definition as follows,
+
+```hs
+-- mtl definition, please don't execute it.
+class Monad m => MonadReader r m | m -> r where
+    -- | Retrieves the monad environment.
+    ask   :: m r
+    ask = reader id
+
+    -- | Executes a computation in a modified environment.
+    local :: (r -> r) -- ^ The function to modify the environment.
+          -> m a      -- ^ Reader to run in the modified environment.
+          -> m a
+```
+
+We provide the implementation for `MonadReader r (Reader r)`.
+
+```hs
+-- mtl definition with monomorphication, please don't execute it.
+instance MonadReader r (Reader r) where
+    -- ask :: Reader r r
+    ask = Reader (\r -> r)
+    -- local :: (r -> r) -> Reader r a -> Reader r a
+    local f ra = Reader (\r -> 
+        let t = f r
+        in run ra t)
 ```
 
 The following example shows how Reader Monad can be used in making several API calls (computation) to the same API server (shared input
-`https://127.0.0.1/`). For authentication we need to call the authentication server `https://127.0.0.10/` temporarily. 
+`https://127.0.0.1/`). 
+For authentication we need to call the authentication server `https://127.0.0.10/` temporarily. 
 
-```haskell
-case class API(url:String)
+```hs
+import Debug.Trace (trace)
+data API = API {url::String} 
 
-given APIReader:ReaderMonad[API] = new ReaderMonad[API] {}
-
-def get(path:String)(using pr:ReaderMonad[API]):Reader[API,Unit] = for {
-    r <- pr.ask
-    s <- r match {
-        case API(url) => pr.pure(println(s"${url}${path}"))
-    }
-} yield s
-
-def authServer(api:API):API = API("https://127.0.0.10/")
-
-def test1(using pr:ReaderMonad[API]):Reader[API, Unit] = for {
-    a <- pr.local(authServer)(get("auth"))
-    t <- get("time")
-    j <- get("job")
-} yield (())
+call :: String -> Reader API () 
+call path = do 
+    api <- ask
+    -- we use trace to simulate the api call
+    -- the actual one requires IO monad to be wrapped
+    io <- trace ("calling " ++ url api ++ path) (return ())
+    return () 
 
 
-def runtest1():Unit = test1 match {
-    case Reader(run) => run(API("https://127.0.0.1/"))
-}
+authServer = API "https://127.0.0.10/"
+apiServer = API "https://127.0.0.1/"
+
+test1 :: Reader API () 
+test1 = do 
+    a <- local (\_ -> authServer) (call "auth")
+    t <- call "time"
+    j <- call "job"
+    a `seq` t `seq` j `seq` return ()
+```
+
+Calling `run test1 apiServer` yields the following debugging messages.
+
+```
+calling https://127.0.0.10/auth
+calling https://127.0.0.1/time
+calling https://127.0.0.1/job
 ```
 
 ### State Monad
 
-We consider the `State` Monad. A `State` Monad allows programmers capture and manipulate stateful computation without using assignment and mutable variable. One advantage of doing so is that program has full control of the state without having direct access to the computer memory. In a typeful language like haskell, the type system segregates the pure computation from the stateful computation. This greatly simplify software verification and debugging.
+Next we consider the `State` Monad. 
+A `State` Monad allows programmers capture and manipulate stateful computation without using assignment and mutable variable. One advantage of doing so is that program has full control of the state without having direct access to the computer memory. In a typeful language like haskell, the type system segregates the pure computation from the stateful computation. This greatly simplify software verification and debugging.
 
-The following we define a `State` case class, which has a member computation `run:S => (S,A)`.
+We consider the following state data type 
 
-```haskell
-case class State[S,A]( run:S=>(S,A)) { 
-    def flatMap[B](f: A => State[S,B]):State[S,B] = this match {
-        case State(ssa) => State(
-            s=> ssa(s) match {
-                case (s1,a) => f(a) match {
-                    case State(ssb) => ssb(s1)
-                }
-            }
-        )
-    }
-    def map[B](f:A => B):State[S,B] = this match {
-        case State(ssa) => State(
-            s=> ssa(s) match {
-                case (s1, a) => (s1, f(a))
-            }
-        )
-    }
-}
+```hs
+-- mtl definition with monomorphication, please don't execute it.
+data State s a = State {run :: s -> (a, s)}
 ```
 
-As suggested by the type, the computationn `S=>(S,A)`, takes in a state `S` as input and return a tuple of output, consists a new state and the result of the computation.
+It denotes a computation that takes the state environment `s` and produces some result `a` and the updated state envrionment.
 
-The State Monad type class is defined as a dervied type class of `Monad[StateM[S]]`.
 
-```haskell
-type StateM = [S] =>> [A] =>> State[S,A]
+Then we provide the necessarily implementation to qualify `State s` as a `Monad` instance.
 
-trait StateMonad[S] extends Monad[StateM[S]] {
-    override def pure[A](v:A):State[S,A] = State( s=> (s,v))
-    override def bind[A,B](
-        fa:State[S,A]
-        )(
-            ff:A => State[S,B]
-        ):State[S,B] = fa.flatMap(ff)
-    def get:State[S, S] = State(s => (s,s))
-    def set(v:S):State[S,Unit] = State(s => (v,()))
-}
+```hs
+-- mtl definition with monomorphication, please don't execute it.
+instance Functor (State s) where 
+    -- fmap :: (a -> b) -> State s a -> State s b
+    fmap f sa = State (\s -> 
+        case run sa s of 
+            (a, s1) -> (f a, s1))
+
+instance Applicative (State s) where 
+    -- pure :: a -> State s a
+    pure a = State (\s -> (a, s))
+    -- (<*>) :: State s (a -> b) -> State s a -> State s b
+    sf <*> sa = State (\s -> 
+        case run sf s of 
+            (f, s1) -> case run sa s1 of 
+                (a, s2) -> (f a, s2))
+
+instance Monad (State s) where 
+    -- (>>=) :: State s a -> (a -> State s b) -> State s b
+    sa >>= f = State (\s -> 
+        case run sa s of 
+            (a, s1) ->  run (f a) s1)
 ```
 
-In the `pure` method's default implementation, we takes a value `v` of type `A` and return
-a `State` case class oject by wrapping a lambda which takes a state `s` and returns back the same state `s` with the input value `v`. In the default implementation of the `bind` method, we take a computation `fa` of type `State[S,A]`, i.e. a stateful computation over state type `S` and return a result of type `A`. In addition, we take a function that expects input of type `A` and returns a stateful computation `State[S,B]`. We apply `flatMap` of `fa` to `ff`., which can be expanded to
 
-```haskell
-fa.flatMap(ff) -->
-fa match {
-    case State(ssa) => State ( s => {
-        ssa(s) match {
-            case (s1,a) => ff(a) match {
-                case State(ssb) => ssb(s1) 
-            }
-        }
-    })
-}
+* The `fmap` function takes a function `f` and a state object `sa` and returns a state object whose computation takes a state `s` and runs `sa` with `s` to copmute the result value `a` and the updated state `s1`. Finally, it returns the result of applying `f` to `a` and `s1`.
+* The `pure` function takes a value of type `a` and return a `State` object by wrapping a lambda which takes a state `s` and returns back the same state `s` with the input value.
+* The app function (`<*>`) takes a state object `sf` and a state object `sa`, its returned value is a state object that expects an input state `s` and run `sf` with `s` to extract the underlying function `f` with the updated state `s1`, then it runs `sa` with `s1` to extract the result `a` and the updated state `s2`. Finally, it returns the result of applying `f` to `a` and the updated state `s2`.
+* In the bind function (`>>=`), we take a computation `sa` of type `State s a`, i.e. a stateful computation over state type `s` and return a result of type `a`. In addition, we take a function that expects input of type `a` and returns a stateful computation `State s b`. We return
+a `State` object contains a function that takes the input state `s`, and running with `sa` to retrieve
+the result `a` and the updated state `s1`, finally, the function run the state monad `f a` with `s1` to
+compute `b` and the output state.
 
+
+We consider the `MonadState` type class definition as follows,
+
+```hs
+-- mtl definition, please don't execute it.
+class Monad m => MonadState s m | m -> s where
+    -- | Return the state from the internals of the monad.
+    get :: m s
+    get = state (\s -> (s, s))
+    -- | Replace the state inside the monad.
+    put :: s -> m ()
+    put s = state (\_ -> ((), s))
+```
+where `get` is the query function that accesses the current state, 
+`put` is the setter function which "updates" the state by returning a (potentially new) state.
+
+We provide the implementation for `MonadState s (State s)`.
+
+```hs
+instance MonadState s (State s) where
+    -- get :: State s s
+    get = State (\s -> (s,s)) 
+    -- put :: s -> State s ()
+    put s = State (\_ -> ((), s))
 ```
 
-In essence it "opens" the computation in `fa` to extract the run function `ssa` which takes a state returns result `A` with the output state. As the output, we construct stateful computation in which a state `s` is taken as input, we immediately apply `s` with `ssa` (i.e. the computation extracted from `fa`) to compute the intermediate state `s1` and the output `a` (of type `A`).  Next we apply `ff` to `a` which returns a Stateful computation `State[S,B]`. We extract the run function from this stateful copmutation, namley `ssb` and apply it to `s1` to continue with the result of the computation. In otherwords, `bind` function chains up a stateful computation  `fa` with a lambda expressoin that consumes the result from `fa` and continue with another stateful copmutation.
+Let's consider the following example 
 
-The `get` and the `set` methods give us access to the state environment of type `S`.
+```hs
+data Counter = Counter {c::Int} deriving Show
 
-For instance,
+incr :: State Counter () 
+incr = do 
+    Counter c <- get
+    put (Counter (c+1))
 
-```haskell
-case class Counter(c:Int)
 
-given counterStateMonad:StateMonad[Counter] = new StateMonad[Counter]  {
-}
-
-def incr(using csm:StateMonad[Counter]):State[Counter,Unit] = for {
-    Counter(c) <- csm.get
-    _ <- csm.set(Counter(c+1))
-} yield ()
-
-def app(using csm:StateMonad[Counter]):State[Counter, Int] = for {
-    _ <- incr
-    _ <- incr
-    Counter(v) <- csm.get
-} yield v
+app :: State Counter Int
+app = do 
+    incr
+    incr 
+    Counter c <- get 
+    return c
 ```
 
-In the above we define the state environment as an integer counter. Monadic function `incr` increase the counter in the state.
+In the above we define the state environment as an integer counter. Monadic function `incr` increase the counter in the state. The `deriving` keyword generate the type class instance `Show Counter` automatically. Running `run app (Counter 0)` yields `(2, Counter {c = 2})`.
+
 
 ## Monad Laws
 
 Similar to Functor and Applicative, all instances of Monad must satisfy the following
 three Monad Laws.
 
-1. Left Identity: `bind(pure(a))(f)` $\equiv$ `f(a)`
-2. Right Identity: `bind(m)(pure)` $\equiv$ `m`
-3. Associativity: `bind(bind(m)(f))(g)` $\equiv$ `bind(m)(x => bind(f(x))(g))`
+1. Left Identity: `(return a) >>= f` $\equiv$ `f a`
+2. Right Identity: `m >>= return` $\equiv$ `m`
+3. Associativity: `(m >>= f) >>= g` $\equiv$ `m >>= (\x -> ((f x) >>= g))`
 
-* Intutively speaking, a `bind` operation is to *extract* results of type `A` from its first argument with type `F[A]` and apply `f` to the extracted results.
+* Intutively speaking, a bind operation is to *extract* results of type `a` from its first argument with type `m a` and apply `f` to the extracted results.
 * Left identity law enforces that binding a lifted value to `f`, is the same as applying `f` to the unlifted value directly, because the lifting and the *extraction* of the bind cancel each other.
-* Right identity law enforces that binding a lifted value to `pure`,  is the same as the lifted value, because *extracting* results from `m` and `pure` cancel each other.
-* The Associativity law enforces that binding a lifted value `m` to `f` then to `g` is the same as binding `m` to a monadic bind composition `(x => bind(f(x)(g)))`
+* Right identity law enforces that binding a lifted value to `return`,  is the same as the lifted value, because *extracting* results from `m` and `return` cancel each other.
+* The Associativity law enforces that binding a lifted value `m` to `f` then to `g` is the same as binding `m` to a monadic bind composition `\x -> ((f x) >>= g)`
 
 ## Summary
 
 In this lesson we have discussed the following
 
 1. A derived type class is a type class that extends from another one.
-2. An Applicative Functor is a sub-class of Functor, with the methods `pure` and `ap`.
+2. An Applicative Functor is a sub-class of Functor, with the methods `pure` and `<*>`.
 3. The four laws for Applicative Functor.
-4. A Monad Functor is a sub-class of Applicative Functor, with the method `bind`.
+4. A Monad Functor is a sub-class of Applicative Functor, with the method `>>=`.
 5. The three laws of Monad Functor.
 6. A few commonly used Monad such as, List Monad, Option Monad, Reader Monad and State Monad.
 
-## Extra Materials
+## Extra Materials (You don't need to know these to finish the project nor to score well in the exams)
 
 ### Writer Monad
 
 The dual of the `Reader` Monad is the `Writer` Monad, which has the following definition.
 
-```haskell
-// inspired by https://kseo.github.io/posts/2017-01-21-writer-monad.html
-trait Monoid[A]{ // We omitted the super class SemiRing[A]
-    def mempty:A
-    def mappend:A => A => A
-}
+```hs
+-- mtl definition, please don't execute it.
+data Writer w a = Writer { run :: (a,w) }
 
-given listMonoid[A]:Monoid[List[A]] = new Monoid[List[A]] {
-    def mempty:List[A] = Nil
-    def mappend:List[A]=>List[A]=>List[A] = 
-        (l1:List[A])=>(l2:List[A]) => l1 ++ l2 
-}
+instance Functor (Writer w) where 
+    -- fmap :: (a -> b) -> Write w a -> Writer w b
+    fmap f (Writer (a,w)) = Writer (f a, w)
 
-case class Writer[W,A]( run: (W,A))(using mw:Monoid[W]) {
-    def flatMap[B](f:A => Writer[W,B]):Writer[W,B] = this match {
-        case Writer((w,a)) => f(a) match {
-            case Writer((w2,b)) => Writer((mw.mappend(w)(w2), b))
-        } 
-    }
-    def map[B](f:A=>B):Writer[W, B] = this match {
-        case Writer((w,a)) => Writer((w, f(a)))
-    }
-}
+instance Monoid w => Applicative (Writer w) where 
+    -- pure :: a -> Writer w a
+    pure a = Writer (a, mempty)
+    -- (<*>) :: Writer w (a -> b) -> Writer w a -> Writer w b
+    (Writer (f,w1)) <*> (Writer (a,w2)) = Writer (f a, w1 <> w2)
+
+instance Monoid w => Monad (Writer w) where 
+    -- (>>=) :: Writer w a -> (a -> Writer w b) -> Writer w b
+    (Writer (a,w)) >>= f = case f a of 
+        (Writer (b, w')) -> (Writer (b, w <> w'))
 ```
 
-Similar to the `Reader` Monad, in the above we define a case class `Writer`, which has a member value `run` that returns a tuple of `(W,A)`.  The subtle difference is that the writer memory `W` has to be an instance of the `Monoid` type class, in which `mempty` and `mappend` operations are defined.
-
-```haskell
-type WriterM = [W] =>> [A] =>> Writer[W,A] 
-
-trait WriterMonad[W] extends Monad[WriterM[W]] {
-    implicit def W0:Monoid[W]
-    override def pure[A](v: A): Writer[W, A] = Writer((W0.mempty, v))
-    override def bind[A, B](
-        fa: Writer[W, A]
-    )(f: A => Writer[W, B]): Writer[W, B] = fa match {
-        case Writer((w, a)) =>
-            f(a) match {
-                case Writer((w2, b)) => {
-                    Writer((W0.mappend(w)(w2), b))
-                }
-            }
-    }
-    def tell(w: W): Writer[W, Unit] = Writer((w, ()))
-    def pass[A](ma: Writer[W, (A, W => W)]): Writer[W, A] = ma match {
-        case Writer((w, (a, f))) => Writer((f(w), a))
-    }
-}
+A writer object stores the result and writer output state object which can be empty (via `mempty`) 
+and extended (via `<>`). For simplicity, we can think of `mempty` is the default empty state,
+for example, empty list `[]`, and `<>` is the append operation like `++`. For details about the `Monoid` type class refer to 
+```url
+https://hackage.haskell.org/package/base-4.16.3.0/docs/Prelude.html#g:9
 ```
 
-In the above we define `WriterMonad` to be a derived type class of `Monad[WriterM[W]]`. For a similar reason,
-we need to include the type class `Monoid[W]` to ensure that `mempty` and `mappend` are defined on `W`. Besides the `pure` and `bind` members, we introduce `tell` and `pass`. `tell` writes the given argument into the writer's memory. `pass` execute a given computation which returns a value of type `A` and a memory update function `W=>W`, and return a `Writer` whose memory is updated by applied the update function to the memory.
+The type class definition of `MonadWriter` is given in the `mtl` package as follows
 
-In the following we define a simple application with logging mechanism using the `Writer` Monad.
+```hs 
+-- mtl definition, please don't execute it.
+class (Monoid w, Monad m) => MonadWriter w m | m -> w where
+    -- | 'tell' w is an action that produces the output w
+    tell   :: w -> m ()
+    -- | 'listen' m is an action that executes the action m and adds
+    -- its output to the value of the computation.
+    listen :: m a -> m (a, w)
+    -- | 'pass' m is an action that executes the action m, which
+    -- returns a value and a function, and returns the value, applying
+    -- the function to the output.
+    pass   :: m (a, w -> w) -> m a
 
-```haskell
-case class LogEntry(msg:String)
+instance Monoid w => MonadWriter w (Writer w) where 
+    -- tell :: w -> Writer w ()
+    tell w = Writer ((),w)
+    -- listen :: Writer w a -> Writer w (a, w)
+    listen (Writer (a,w)) = Writer ((a,w),w)
+    -- pass :: Writer w (a, w -> w) -> Writer w a
+    pass (Writer ((a, f), w)) = Writer (a, f w)
+```
 
-given logWriterMonad:WriterMonad[List[LogEntry]] = new WriterMonad[List[LogEntry]] {
-    override def W0:Monoid[List[LogEntry]] = new Monoid[List[LogEntry]] {
-        override def mempty = Nil
-        override def mappend = (x:List[LogEntry]) => (y:List[LogEntry]) => x ++ y
-    }
-}
+With these we are above to define a simple logger app as follows,
 
-def logger(m: String)(using
-    wm: WriterMonad[List[LogEntry]]
-): Writer[List[LogEntry], Unit] = wm.tell(List(LogEntry(m)))
+```hs
+data LogEntry = LogEntry {msg::String} deriving Show 
 
-def app(using
-    wm: WriterMonad[List[LogEntry]]
-): Writer[List[LogEntry], Int] = for {
-    _ <- logger("start")
-    x <- wm.pure(1 + 1)
-    _ <- logger(s"result is ${x}")
-    _ <- logger("done")
-} yield x
+logger :: String -> Writer [LogEntry] () 
+logger s = tell [LogEntry s]
 
-def runApp(): Int = app match {
-    case Writer((w, i)) => {
-        println(w)
-        i
-    }
-}
+app :: Writer [LogEntry] Int
+app = do 
+    logger "start"
+    x <- return (1 + 1)
+    logger ("the result is " ++ show x)
+    logger ("done")
+    return x
+```
+
+Running `run app` yields 
+
+```hs
+(2,[LogEntry {msg = "start"},LogEntry {msg = "the result is 2"},LogEntry {msg = "done"}])
 ```
 
 ### Monad Transformer
 
-Is the following class a Monad?
 
-```haskell
-case class MyState[S,A]( run:S=>Option[(S,A)]) 
+In the earlier exection, we encounter our `State` datatype to record the computation in a state monad. 
+What about the following, can it be use as a state datatype for a state monad? 
+
+```hs
+data MyState s a = MyState {run' :: s -> Maybe (a,s)}
 ```
 
-The difference between this class and the `State` class we've seen earlier is that the execution method `run` yields result of type `Option[(S,A)]` instead of `(S,A)` which means that it can potentially fail.
+The difference between this class and the `State` class we've seen earlier is that the execution method `run'` yields result of type `Maybe (s,a)` instead of `(s,a)` which means that it can potentially fail.
 
 It is ascertained that `MyState` is also a Monad, and it is a kind of special State Monad.
 
-```haskell
-case class MyState[S, A](run: S => Option[(S, A)]) {
-    def flatMap[B](f: A => MyState[S, B]): MyState[S, B] = this match {
-        case MyState(ssa) =>
-            MyState(s =>
-                ssa(s) match {
-                    case None => None
-                    case Some((s1, a)) =>
-                        f(a) match {
-                            case MyState(ssb) => ssb(s1)
-                        }
-                }
-            )
-    }
-    def map[B](f: A => B): MyState[S, B] = this match {
-        case MyState(ssa) =>
-            MyState(s =>
-                ssa(s) match {
-                    case None          => None
-                    case Some((s1, a)) => Some((s1, f(a)))
-                }
-            )
-    }
-}
+```hs
+instance Functor (MyState s) where 
+    -- fmap :: (a -> b) -> MyState s a -> MyState s b
+    fmap f sa = MyState (\s -> 
+        case run' sa s of 
+            Nothing -> Nothing
+            Just (a, s1) -> Just (f a, s1))
 
-type MyStateM = [S] =>> [A] =>> MyState[S,A]
+instance Applicative (MyState s) where 
+    -- pure :: a -> MyState s a
+    pure a = MyState (\s -> Just (a, s))
+    -- (<*>) :: MyState s (a -> b) -> MyState s a -> MyState s b
+    sf <*> sa = MyState (\s -> 
+        case run' sf s of 
+            Nothing -> Nothing 
+            Just (f, s1) -> case run' sa s1 of 
+                Nothing -> Nothing 
+                Just (a, s2) -> Just (f a, s2))
 
-trait MyStateMonad[S] extends Monad[MyStateM[S]] {
-    override def pure[A](v:A):MyState[S,A] = MyState( s=> Some((s,v)))
-    override def bind[A,B](
-        fa:MyState[S,A]
-        )(
-            ff:A => MyState[S,B]
-        ):MyState[S,B] = fa.flatMap(ff)
-    def get:MyState[S, S] = MyState(s => Some((s,s)))
-    def set(v:S):MyState[S,Unit] = MyState(s => Some((v,())))
-}
+instance Monad (MyState s) where 
+    -- (>>=) :: MyState s a -> (a -> MyState s b) -> MyState s b
+    sa >>= f = MyState (\s -> 
+        case run' sa s of 
+            Nothing -> Nothing 
+            Just (a, s1) ->  run' (f a) s1)
+
+instance MonadState s (MyState s) where
+    -- get :: MyState s s
+    get = MyState (\s -> Just (s,s)) 
+    -- put :: s -> MyState s ()
+    put s = MyState (\_ -> Just ((), s))
 ```
 
-Besides "stuffing-in" an `Option` type, one could use an `Either` type and etc. Is there a way to generalize this by parameterizing?
+Besides "stuffing-in" an `Maybe` type, one could use an `Either` type and etc. Is there a way to generalize this by parameterizing?
 Seeking the answer to this question leads us to *Monad Transformer*.
 
 We begin by parameterizing the `Option` functor in `MyState`
 
-```haskell
-case class StateT[S, M[_], A](run: S => M[(S, A)])(using m:Monad[M]) {
-    def flatMap[B](f: A => StateT[S, M, B]): StateT[S, M, B] = this match {
-        case StateT(ssa) =>
-            StateT(s => m.bind(ssa(s))
-                (sa => sa match {
-                    case (s1,a) => f(a) match {
-                        case StateT(ssb) => ssb(s1)
-                        }
-                    }
-                )
-            ) 
-        }
-    
-    def map[B](f: A => B): StateT[S, M, B] = this match {
-        case StateT(ssa) =>
-            StateT(s => m.bind(ssa(s))
-                (sa => sa match {
-                    case (s1, a) => m.pure((s1, f(a)))
-                })
-            )
-    }
-}
+```hs
+-- mtl definition, please don't execute it.
+data StateT s m a = StateT {run :: s -> m (a, s)}
+
+instance Monad m => Functor (StateT s m) where 
+    -- fmap :: (a -> b) -> StateT s m a -> StateT s m b
+    fmap f sma = StateT (\s -> do 
+        (a,s1) <- run sma s
+        return (f a, s1))
+
+instance Monad m => Applicative (StateT s m) where  
+    -- pure :: a -> StateT s m a
+    pure a = StateT (\s -> return (a, s))
+    -- (<*>) :: StateT s m (a -> b) -> StateT s m a -> StateT s m b
+    smf <*> sma = StateT (\s -> do 
+        (f, s1) <- run smf s
+        (a, s2) <- run sma s1  
+        return (f a, s2))
+
+instance Monad m => Monad (StateT s m) where 
+    -- (>>=) :: StateT s m a -> (a -> StateT s m b) -> StateT s m b
+    sma >>= f = StateT (\s -> do 
+        (a, s1) <- run sma s 
+        run (f a) s1)
+
+instance Monad m => MonadState s (StateT s m) where
+    -- get :: StateT s m s
+    get = StateT (\s -> return (s,s)) 
+    -- put :: s -> StateT s m ()
+    put s = StateT (\_ -> return ((), s))
 ```
 
-In the above it is largely similar to `MyState` class, except that we parameterize `Option` by a type parameter `M`. `M[_]` indicates that it is of kind `*=>*`. `(using m:Monad[M])` further contraints `M` must be an instance of Monad, so that we could make use of the `bind` and `pure` from `M`'s Monad instance.
+In the above it is largely similar to `MyState` datatype, except that we parameterize `Maybe` by a type parameter `m`. As we observe from the type class instances that follow, `m` must be an instance of `Monad`, (which means `m` could be `Maybe`, `Either String`, and etc.)
 
-Naturally, we can define a derived type class called `StateTMonad`.
+Let `m` be `Maybe`, which is a Monad instance, we can replace `MonadState s (MyState s)` in terms of `MonadState s (StateT s m) ` and `Monad Maybe`.
 
-```haskell
-type StateTM = [S] =>> [M[_]] =>> [A] =>> StateT[S, M, A]
-
-trait StateTMonad[S,M[_]] extends Monad[StateTM[S][M]]  {
-    implicit def M0:Monad[M]
-    override def pure[A](v: A): StateT[S, M, A] = StateT(s => M0.pure((s, v)))
-    override def bind[A, B](
-        fa: StateT[S, M, A]
-    )(
-        ff: A => StateT[S, M, B]
-    ): StateT[S, M, B] = fa.flatMap(ff)
-    def get: StateT[S, M, S] = StateT(s => M0.pure((s, s)))
-    def set(v: S): StateT[S, M, Unit] = StateT(s => M0.pure(v, ()))
-}
+```hs
+type MyState s a = StateT s Maybe a
 ```
 
-Given that `Option` is a Monad, we can redefine `MyStateMonad`  in terms of `StateTMonad` and `optMonad`.
+If we want to have a version with `Either String`, we could define
 
-```haskell
-trait StateOptMonad[S] extends StateTMonad[S, Option] { 
-    override def M0 = optMonad
-}
+```hs
+type MyState2 s a = StateT s (Either String) a
 ```
 
-What about the original *vanilla* `State` Monad? We could introduce an Identity Monad.
+What about the original *vanilla* `State` Monad? Can we redefine it interms of `StateT`? 
 
-```haskell
-case class Identity[A](run:A) {
-    def flatMap[B](f:A=>Identity[B]):Identity[B] = this match {
-        case Identity(a) => f(a)
-    }
-    def map[B](f:A=>B):Identity[B] = this match {
-        case Identity(a) => Identity(f(a))
-    }
-}
+We could introduce the `Identity` Monad.
 
-given identityMonad:Monad[Identity] = new Monad[Identity] {
-    override def pure[A](v:A):Identity[A] = Identity(v)
-    override def bind[A,B](fa:Identity[A])(f: A => Identity[B]):Identity[B] = fa.flatMap(f)
-}
-```
+```hs
+-- mtl definition, please don't execute it.
+data Identity a = Identity a 
 
-Then we can re-define the vanilla `State` Monad as follows, (in fact like many existing Monad libraries out there.)
+instance Functor Identity where 
+    -- fmap :: (a -> b) -> Identity a -> Identity b 
+    fmap f (Identity a) = Identity (f a) 
 
-```haskell
-trait StateIdentMonad[S] extends StateTMonad[S, Identity] { // same as StateMonad
-    override def M0 = identityMonad
-}
+instance Applicative Identity where 
+    -- pure :: a -> Identity a
+    pure a = Identity a
+    -- (<*>) :: Identity (a -> b) -> Identity a -> Identity b
+    (Identity f) <*> (Identity a) = Identity (f a)
+
+instance Monad Identity where 
+    -- (>>=) :: Identity a -> (a -> Identity b) -> Identity b
+    (Identity a) >>= f = f a
+
+type State s a = StateT s Identity a
 ```
 
 One advantage of having Monad Transformer is that now we can create new Monad by composition of existing Monad Transformers. We are able to segregate and interweave methods from different Monad serving different purposes.
@@ -925,54 +943,47 @@ One advantage of having Monad Transformer is that now we can create new Monad by
 Similarly we could generalize the `Reader` Monad  to its transformer variant.
 
 ```haskell
-case class ReaderT[R, M[_], A](run: R => M[A])(using m:Monad[M]) {
-    def flatMap[B](f: A => ReaderT[R, M, B]):ReaderT[R, M, B] = this match {
-        case ReaderT(ra) => ReaderT( r => m.bind(ra(r))
-            ( a => f(a) match {
-            case ReaderT(rb) => rb(r)
-            }))
-    }
-    def map[B](f: A => B):ReaderT[R, M, B] = this match {
-        case ReaderT(ra) => ReaderT( r => m.bind(ra(r))
-            ( a => m.pure(f(a))))
-    }
-}
+-- mtl definition, please don't execute it.
+data ReaderT r m a = ReaderT { run' :: r -> m a }
+
+instance Monad m => Functor (ReaderT r m) where 
+    -- fmap :: (a -> b) -> ReaderT r m a -> ReaderT r m b
+    fmap f rma = ReaderT (\r -> do 
+        a <- run' rma r
+        return (f a))
+
+instance Monad m => Applicative (ReaderT r m)  where  
+    -- pure :: a -> ReaderT r m a
+    pure a = ReaderT (\r -> return a)
+    -- (<*>) :: ReaderT r m (a -> b) -> ReaderT r m a -> ReaderT r m b
+    rmf <*> rma = ReaderT (\r -> do 
+        f <- run' rmf r
+        a <- run' rma r  
+        return (f a))
+
+instance Monad m => Monad (ReaderT r m) where 
+    -- (>>=) :: ReaderT r m a -> (a -> ReaderT r m b) -> ReaderT r m b
+    rma >>= f = ReaderT (\r -> do 
+        a <- run' rma r 
+        run' (f a) r)
 
 
-type ReaderTM = [R] =>>[M[_]] =>> [A] =>> ReaderT[R, M, A]
+instance Monad m => MonadReader r (ReaderT r m) where
+    -- ask :: ReaderT r m r
+    ask = ReaderT (\r -> return r)
+    -- local :: (r -> r) -> ReaderT r m a -> ReaderT r m a
+    local f rma = ReaderT (\r -> 
+        let t = f r
+        in run' rma t)
 
-trait ReaderTMonad[R,M[_]] extends Monad[ReaderTM[R][M]] {
-    implicit def M0:Monad[M]
-    override def pure[A](v: A): ReaderT[R, M, A] = ReaderT(r => M0.pure(v))
-    override def bind[A, B](
-        fa: ReaderT[R, M, A]
-    )(f: A => ReaderT[R, M, B]): ReaderT[R, M, B] = fa.flatMap(f)
-    def ask: ReaderT[R, M, R] = ReaderT(r => M0.pure(r))
-    def local[A](f: R => R)(r: ReaderT[R, M, A]): ReaderT[R, M, A] = r match {
-        case ReaderT(ra) =>
-            ReaderT(r => {
-                val localR = f(r)
-                ra(localR)
-            })
-    }
-}
-
-trait ReaderIdentMonad[R] extends ReaderTMonad[R, Identity] { // same as ReaderMonad
-    override def M0 = identityMonad
-}
+type Reader r a = ReaderT r Identity a
 ```
 
 Note that the order of how Monad Transfomers being stacked up makes a difference,
 
-For instance, can you explain what is the difference between the following two?
+For instance, can you explain what the difference between the following two monad object types is?
 
-```haskell
-trait ReaderStateIdentMonad[R, S] extends ReaderTMonad[R, StateTM[S][Identity]] {
-    override def M0:StateIdentMonad[S] = new StateIdentMonad[S]{}
-}
-
-trait StateReaderIdentMonad[S, R] extends StateTMonad[S, ReaderTM[R][Identity]] {
-    override def M0:ReaderIdentMonad[R] = new ReaderIdentMonad[R]{}
-}
-
+```hs
+type ReaderState r s a = ReaderT r (StateT s Identity) a  
+type StateReader r s a = StateT s (ReaderT r Identity) a
 ```
