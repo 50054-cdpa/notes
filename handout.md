@@ -56,6 +56,7 @@ The main resources are lecture slides, tutorial sessions, and online documentati
 1. Modern Compiler Implementation in ML by Andrew W. Appel
 1. Types and Programming Languages by Benjamin C. Pierce
 1. Static Program Analysis by Anders Møller and Michael I. Schwartzbach
+1. Learn you a Haskell for Great Good! - `https://learnyouahaskell.com/`
 
 
 
