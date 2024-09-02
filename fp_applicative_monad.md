@@ -164,7 +164,7 @@ In the above Applicative instance, the `<*>` function takes a optional operation
 Like Functor laws, every Applicative instance must follow the Applicative laws to remain computationally predictable.
 
 1. Identity: `(<*>) (pure \x->x)` $\equiv$ `\x->x`
-2. Homomorphism: `(pure f) <*> (pure x))` $\equiv$ `pure (f x)`
+2. Homomorphism: `(pure f) <*> (pure x)` $\equiv$ `pure (f x)`
 3. Interchange: `u <*> (pure y)` $\equiv$ `(pure (\f->f y)) <*> u`
 4. Composition: `(((pure (.))) <*> u) <*> v) <*> w` $\equiv$ `u <*> (v <*> w)`
 

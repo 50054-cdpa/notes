@@ -119,11 +119,11 @@ You may work as a team (up to max 3 members). Please register your team [here](h
 | 1 | Intro | [FP: Expression, Function, Conditional, Recursion](./fp_intro.md) | Cohort Problem 1, Homework 1 | Homework 1 no submission required | 
 | 2 | [FP: List, Pattern Matching](./fp_haskell.md) | [FP: Algebraic Data Type](./fp_haskell.md) | [Cohort Problem 2](), [Homework 2]() |  |
 | 3 | [FP: Generics, GADT](./fp_haskell_poly.md) | [FP: Type Classes, Functor](./fp_haskell_poly.md) | [Cohort Problem 3](), Homework 2 (Cont'd) | Homework 2 5% |
-| 4 | [FP: Applicative](./fp_applicative_monad.md) | [FP: Monad](./fp_applicative_monad.md) |  [Cohort Problem 4](https://github.com/50054-2023-fall/cohort_probs/tree/main/fp_applicative_monad), [Homework 3]() |  |
+| 4 | [FP: Applicative](./fp_applicative_monad.md) | [FP: Monad](./fp_applicative_monad.md) |  [Cohort Problem 4](), [Homework 3]() |  |
 | 5 | [Syntax Analysis: Lexing, Parsing](./syntax_analysis.md) | [Top-down Parsing](./syntax_analysis.md) | [Cohort Problem 5](), Homework 3 (Cont'd) | Homework 3 5% |
-| 6 | [Parser-Combinator Parsing](./syntax_analysis_2.md) | [IR: Pseudo-Assembly](./ir_pseudo_assembly.md) | [Cohort Problem 6](), [Homework 4]()  |  | 
-| 7 |  |  |  | Homework 4 5% | 
-| 8 | [Bottom-up Parsing](./syntax_analysis_2.md)| **Mid-term**, [Semantic Analysis](./semantic_analysis.md) [Dynamic Semantics](./dynamic_semantics.md) | [Cohort Problem 7]() | Mid-term 10%  |
+| 6 | [Parser-Combinator](./syntax_analysis_parser_combinator.md) | [IR: Pseudo-Assembly](./ir_pseudo_assembly.md) | [Cohort Problem 6](), [Homework 4]()  |  | 
+| 7 | Self study [Bottom-up Parsing](./syntax_analysis_2.md) |  |  | Homework 4 5% | 
+| 8 | [Semantic Analysis](./semantic_analysis.md) [Dynamic Semantics](./dynamic_semantics.md) | **Mid-term** | [Cohort Problem 7]() | Mid-term 10%  |
 | 9 | [Static Semantics for SIMP](./static_semantics.md) | [Static Semantics for Lambda Calculus](./static_semantics_2.md) | [Cohort Problem 8](), [Homework 5]()  | Project Lab 1 10% |
 | 10 | *Public Holiday. No Class Scheduled* | [Name Analysis, SSA](./name_analysis.md) |  [Cohort Problem 9]() | | 
 | 11 | [Lattice, Sign Analysis](./sign_analysis_lattice.md)  | [Liveness Analysis](./liveness_analysis.md) | [Cohort Problem 10]() | Project Lab 2 10%,  Homework 5 5%  |  
