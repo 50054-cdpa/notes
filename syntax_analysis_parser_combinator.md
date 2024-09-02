@@ -326,19 +326,21 @@ F::= i
 ```
 
 
-```scala
-def parseExp:Parser[LToken, Exp] = 
-    choice(parsePlusExp)(parseTermExp)
+```hs
+parseExp :: Parser PEnv Exp 
+parseExp = choice parsePlusExp parseTermExp
 
-def parsePlusExp:Parser[LToken, Exp] = for {
-    t <- parseTerm
+parsePlusExp :: Parser PEnv Exp
+parsePlusExp = do
+    t    <- parseTerm 
     plus <- parsePlusTok
-    e <- parseExp
-} yield PlusExp(t, e)
+    e    <- parseExp 
+    return (PlusExp t e)
 
-def parseTermExp:Parser[LToken, Exp] = for {
-    t <- parseTerm
-} yield TermExp(t)
+parseTermExp :: Parser PEnv Exp 
+parseTermExp = do 
+    t <- parseTerm 
+    return (TermExp t)
 ```
 
 Up to this point we are ok as production rules with `E` on the LHS are not left recursive.
@@ -351,7 +353,7 @@ T' ::= *FT'
 T' ::= epsilon
 ```
 
-In terms of Scala enum type, we refer to them as `TermLE` and `TermLEP`.
+In terms of Haskell data type, we refer to them as `TermLE` and `TermLEP`.
 Hence the parser `parserTerm` has to be defined in terms of `parseTermLE`, then 
 convert the result of `TermLE` back to `Term`
 
