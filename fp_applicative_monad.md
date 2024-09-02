@@ -140,7 +140,7 @@ intOps <*> ints -- ^ yields [2,3,4,2,4,6]
 
 Let's consider another example. Recall that `Maybe a` algebraic datatype which captures a value of type `a` could be potentially empty.
 
-We find that `Functor Maybe` `Applicative Maybe` are in the prelude  the `Applicative[Option]` instance as follows
+We find that `Functor Maybe` `Applicative Maybe` instances are in the prelude  as follows
 
 ```hs
 -- prelude definitions, please don't execute it.
