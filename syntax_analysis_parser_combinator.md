@@ -463,3 +463,133 @@ it "test parse 1+2*3" $
         expected = Ok (PlusExp (FactorTerm (Factor 1)) (TermExp (MultTerm (FactorTerm (Factor 2)) (Factor 3))), PEnv [])
     in result `shouldBe` expected
 ```
+
+
+## Parser Combinator without backtracking (In spirit of LL(1))
+
+Let's extend our parser combinator to support `LL(1)` parsing without backtracking.
+
+We introduce the following algebraic datatype to label an (intermediate) parsing result 
+```hs
+data Progress a = Consumed a
+    | Empty a
+    deriving Show
+```
+
+The partial is is `Consumed` when there has been input tokens consumed, otherwise, `Empty`.
+
+We adjust the definition of the `Parser` case class as follows
+
+
+```hs
+newtype Parser env a =
+    Parser { run :: env -> Progress (Result (a, env)) }
+```
+
+Next we update the type class instances accordingly. 
+
+```hs
+instance Functor (Parser env) where
+    fmap f (Parser ea) = Parser ( \env -> case ea env of
+    { Empty (Failed err) -> Empty (Failed err)
+    ; Empty (Ok (a, env1)) -> Empty (Ok (f a, env1))
+    ; Consumed (Failed err) -> Consumed (Failed err)
+    ; Consumed (Ok (a, env1)) -> Consumed (Ok (f a, env1))
+    })
+
+
+
+instance Applicative (Parser env) where
+    pure a = Parser (\env -> Empty (Ok (a, env)))
+    (Parser eab) <*> (Parser ea) = Parser (\env -> case eab env of
+        { Consumed v ->
+            let cont = case v of
+                { Failed msg -> Failed msg
+                ; Ok (f, env1) -> case ea env1 of
+                    { Consumed (Failed msg) -> Failed msg
+                    ; Consumed (Ok (a, env2)) -> Ok (f a, env2)
+                    ; Empty (Failed msg) -> Failed msg
+                    ; Empty (Ok (a, env2)) -> Ok (f a, env2)
+                    }
+                }
+            in Consumed cont
+        ; Empty (Failed msg) -> Empty (Failed msg)
+        ; Empty (Ok (f, env1)) -> case ea env1  of
+            { Consumed (Failed msg) -> Consumed (Failed msg)
+            ; Consumed (Ok (a, env2)) -> Consumed (Ok (f a, env2))
+            ; Empty (Failed msg) -> Empty (Failed msg)
+            ; Empty (Ok (a, env2)) -> Empty (Ok (f a, env2))
+            }
+        })
+
+
+instance Monad (Parser env) where
+    (Parser ea) >>= f = Parser (\env -> case ea env of
+            { Consumed v ->
+                let cont = case v of
+                    { Failed msg -> Failed msg
+                    ; Ok (a, env1)  -> case f a of
+                        { Parser eb -> case eb env1 of
+                            { Consumed x -> x
+                            ; Empty x    -> x
+                            }
+                        }
+                    }
+                in Consumed cont
+            ; Empty v -> case v of
+                { Failed err   -> Empty (Failed err)
+                ; Ok (a, env1) -> case f a of
+                    { Parser eb -> eb env1 }
+                }
+            })
+```
+
+Let's look at the `>>=`, the Monadic bind. It takes the first parser (`Parser ea`) and pattern-matches it against `Parser(p)`. In the output parser, we first apply `ea` to the input environment `env`. 
+
+* If the result's progress is `Empty v`, we check whether `v` is an error or `Ok`. When it is an error, it will be propogated, otherwise, we apply `f` to the output of `a`. That will give us the second parser to continue with, `Parser eb`. We then apply `eb` to `env1` which should be the same as `env` since nothing has been consumed. 
+* If the result's progress is `Consumed v`, some part of input tokens in the environment `env` has been parsed. The parser's behaviour here should be similar to the previous case, except that `eb env1` progress result will always be updated as `Consumed` regardless whether `eb` has consumed anything. Thanks Haskell lazy evaluation, the result held by variable `cont` is delayed until it is actually needed. Such an optimization allows us to return the progress information `Consumed` without actually executing `eb  env1` when its result is not needed.
+
+Similar observation applies to `<*>` function in the applicative instance.
+
+The defintion of the `MonadError` type class instance is adjusted to recognize 
+the `Consumed` and `Empty` data. 
+
+
+```hs
+instance MonadError Error (Parser env) where
+    throwError msg = Parser (\env -> Empty (Failed msg))
+    catchError (Parser ea) handle = Parser (\env -> case ea env of
+        { Consumed v -> Consumed v -- we don't backtrack when something is already consumed.
+        ; Empty (Failed msg) -> case handle msg of
+            { Parser ea2 -> ea2 env
+            }
+        ; Empty (Ok v) -> -- LL(1) parser will also attempt to look at f if fa does not consume anything 
+            case handle "faked error" of
+                {  Parser ea2 -> case ea2 env of
+                    { Empty _ -> Empty (Ok v) -- if handle also fails, we report the same error.
+                    ; consumed -> consumed
+                    }
+                }
+        })
+```
+
+The highlight is in the `catchError` function,  we do not backtrack when the 
+the first parser `(Parser ea)` has consumed some input. 
+The error recovery method `handle` is applied only when the progress of the parsing so far is `Empty`. In other words, given a choice of two parsers `choice p1 p2`, it will not backtrack to `p2` if `p1` has consumed some token. This is in-sync with predictive parsing.
+
+All other combinators such as `choice`, `item`, `sat`, `optional` can be adjusted in the same fashion. We refer to the cohort exercise template code `Parsec.hs` for details. 
+
+We know that not all languages are in `LL(1)`.  It is undecidable to find out which `k` of `LL(k)` that a language is in. Thus, the above parser might not be very useful since it only works if the given language is in `LL(1)`. 
+
+Thanks to the Monadic design, it is very easy to extend the parser to accept non `LL(1)` language by supporting backtracking on-demand. That is, the parser by default is not backtracking, however, it could if we want it to backtrack explicitly.
+
+```hs
+-- | The `attempt` combinator explicitly tries a parser and backtracks if it fails.
+attempt :: Parser env a -> Parser env a
+attempt (Parser ea) = Parser (\env -> case ea env of
+    { Consumed (Failed err) -> Empty (Failed err) -- undo the consumed effect if it fails. 
+    ; other -> other
+    })
+
+```
+The `attempt` combinator takes a parser `Parser ea` and runs it. If its result is `Consumed` but `Failed`, it will *reset* the progress as `Empty`.  
