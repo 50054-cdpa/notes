@@ -92,7 +92,7 @@ We first consider the simplest parsing table where we ignore the leading token f
 
 The main idea is that the actions (which define the change and update of the state and stack) are output based on the current state and the current stack. If we recall that this is a form of state machine.
 
-From this point onwards, we use pseudo Scala syntax illustrate the algorithm behind the parsing table construction.
+From this point onwards, we use pseudo Haskell syntax illustrate the algorithm behind the parsing table construction.
 
 Let `.` denote a meta symbol which indicate the current parsing context in a production rule.
 
@@ -108,41 +108,44 @@ We call each of these possible contexts an `Item`.
 We define `Items` to be a set of `Item`s, `Grammar` to be a set of production rules (whose definition is omitted, we use the syntax
 `LHS::=RHS` directly in the pseudo-code.)
 
-```scala
-type Items = Set[Item]
-type Grammar = Set[Prod]
+```hs
+type Items = Set Item
+type Grammar = Set Prod
 ```
 
 We consider the following operations.
 
-```scala
-def closure(I:Items)(G:Grammar):Items = { 
-  val newItems = for {
-    (N ::= alpha . X beta) <- I
-    (X ::= gamma)          <- G
-  } yield ( X::= . gamma ).union(
-    for {
-      (N ::= . epsilon ) <- I
-    } yield ( N::= epsilon .)
-  )
-  if (newItems.forall(newItem => I.contains(newItem)))
-  { I }
-  else { closure(I.union(newItems))(G)}
+```hs
+closure :: Items -> Grammar -> Items 
+closure items grammar = 
+  let set1 = do 
+      { (N ::= alpha . X beta) <- items
+      ; (X ::= gamma)          <- gramma
+      ; return (X ::= . gamma) 
+      }
+      set2 = do 
+      { (N ::= . epsilon) <- items
+      ; return (N ::= epsilon .)
+      }
+      newItems = set1 `union` set 2
+  in if newItems `isSubsetOf` items
+     then items
+     else closure (items `union` newItems) grammar
 
-def goto(I:Items)(G:Grammar)(sym:Symbol):Items = {
-  val J = for {
-    (N ::= alpha . X beta) <- I
-  } yield (N ::= alpha X . beta)
-  closure(J)(G)
-}
+goto :: Items -> Grammar -> Symbol -> Items 
+goto items grammar sym = 
+   let j = do 
+      (M ::= alpha . X beta) <- items
+      return (N ::= alpha X . beta)
+   in closure j grammar
 ```
 
-Function `closure` takes an item set `I` and a grammar then returns the closure of `I`. For each item of shape `N::=alpha . X beta` in `I`, we look for the correspondent production rule `X ::= gamma` in `G` if `X` is a non-terminal, add `X::= . gamma` to the new item sets if it is not yet included in `I`.
+Function `closure` takes an item set `items` and a grammar then returns the closure of `items`. For each item of shape `N::=alpha . X beta` in `items`, we look for the correspondent production rule `X ::= gamma` in `grammar` if `X` is a non-terminal, add `X::= . gamma` to the new item sets if it is not yet included in `items`.
 
-Noe that Scala by default does not support pattern such as `(N ::= alpha . X beta)` and `(X::= gamma)`. In this section, let's pretend that these patterns are allowed in Scala so that we can explain the algorithm in Scala style pseudo-code.
+Note that Haskell by default does not support pattern such as `(N ::= alpha . X beta)` and `(X::= gamma)`. In this section, let's pretend that these patterns are allowed in Haskell so that we can explain the algorithm in Haskell style pseudo-code.
 
-Function `goto` takes an item set `I` and searches for item inside of shape
-`N::= alpha . X beta` then add `N::=alpha X. beta` as the next set `J`. We compute the closure of `J` and return it as result.
+Function `goto` takes an item set `items` and searches for item inside of shape
+`N::= alpha . X beta` then add `N::=alpha X. beta` as the next set `j`. We compute the closure of `j` and return it as result.
 
 ```scala
 type State = Items
