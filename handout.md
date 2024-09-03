@@ -103,7 +103,7 @@ You may work as a team (up to max 3 members). Please register your team [here](h
 
 * Lab 1 (10%, Deadline - 17 Nov 2024 23:59)
 * Lab 2 (10%, Deadline - 1  Dec 2024 23:59)
-* Lab 3 (15%, Deadline - 19 Dec 2024 23:59)
+* Lab 3 (15%, Deadline - 15 Dec 2024 23:59)
 
 
 ## Submission Policy and Plagiarism
@@ -116,10 +116,10 @@ You may work as a team (up to max 3 members). Please register your team [here](h
 ## Schedule
 | Week | Session 1 | Session 2 | Session 3 | Assessment |
 |---|---|---|---|---|
-| 1 | Intro | [FP: Expression, Function, Conditional, Recursion](./fp_intro.md) | Cohort Problem 1, Homework 1 | Homework 1 no submission required | 
-| 2 | [FP: List, Pattern Matching](./fp_haskell.md) | [FP: Algebraic Data Type](./fp_haskell.md) | [Cohort Problem 2](), [Homework 2]() |  |
-| 3 | [FP: Generics, GADT](./fp_haskell_poly.md) | [FP: Type Classes, Functor](./fp_haskell_poly.md) | [Cohort Problem 3](), Homework 2 (Cont'd) | Homework 2 5% |
-| 4 | [FP: Applicative](./fp_applicative_monad.md) | [FP: Monad](./fp_applicative_monad.md) |  [Cohort Problem 4](), [Homework 3]() |  |
+| 1 | Intro | [FP: Expression, Function, Conditional, Recursion](./fp_intro.md) | [Cohort Problem 1](https://github.com/50054-cdpa/cohort_probs/tree/main/fp_intro), Homework 1 | Homework 1 no submission required | 
+| 2 | [FP: List, Pattern Matching](./fp_haskell.md) | [FP: Algebraic Data Type](./fp_haskell.md) | [Cohort Problem 2](https://github.com/50054-cdpa/cohort_probs/tree/main/fp_haskell), [Homework 2]() |  |
+| 3 | [FP: Generics, GADT](./fp_haskell_poly.md) | [FP: Type Classes, Functor](./fp_haskell_poly.md) | [Cohort Problem 3](https://github.com/50054-cdpa/cohort_probs/tree/main/fp_haskell_poly), Homework 2 (Cont'd) | Homework 2 5% |
+| 4 | [FP: Applicative](./fp_applicative_monad.md) | [FP: Monad](./fp_applicative_monad.md) |  [Cohort Problem 4](https://github.com/50054-cdpa/cohort_probs/tree/main/fp_applicative_monad), [Homework 3]() |  |
 | 5 | [Syntax Analysis: Lexing, Parsing](./syntax_analysis.md) | [Top-down Parsing](./syntax_analysis.md) | [Cohort Problem 5](), Homework 3 (Cont'd) | Homework 3 5% |
 | 6 | [Parser-Combinator](./syntax_analysis_parser_combinator.md) | [IR: Pseudo-Assembly](./ir_pseudo_assembly.md) | [Cohort Problem 6](), [Homework 4]()  | [Bottom-up Parsing](./syntax_analysis_2.md) for self-study. it won't show up in test and exam. | 
 | 7 |  |  |  | Homework 4 5% | 
