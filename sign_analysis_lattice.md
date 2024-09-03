@@ -316,7 +316,7 @@ $$
 
 Then $A \rightarrow L$ is a complete lattice. 
 
-Note that the term "function" used in this definition refers a math function. We could interpret it as a hash table or a Scala `Map[A,L]` object where elements of $A$ are keys and elements of $L$ are the values associated with the keys. 
+Note that the term "function" used in this definition refers a math function. We could interpret it as a hash table or a Haskell `Data.Map.Map a l` object where elements of $a$ are keys and elements of $l$ are the values associated with the keys. 
 
 Map lattice offers a compact alternative to lattices for sign analysis of variables in program like `PA3` when there are many variables. 
 
@@ -421,10 +421,10 @@ In the above, we analyse `SIMP2` program's sign by "packaging" the variable to s
 
 > Note that we could also model the state variables as a tuple of lattice as a produce lattice.
 
-Next we would like to model the change of variable signs based on the previous instructions. We write `s[x -> v]` to denote a new state `s'` which is nearly the same as `s` except that the mapping of variable `x` is changed to `v.` (In Scala style syntax, assuming `s` is a `Map[Var, Sign]` object, then `s[x->v]` is actually `s + (x -> v)` in Scala.)
+Next we would like to model the change of variable signs based on the previous instructions. We write `s[x -> v]` to denote a new state `s'` which is nearly the same as `s` except that the mapping of variable `x` is changed to `v.` (In Haskell style syntax, assuming `s` is a `Data.Map.Map Var Sign` object, then `s[x->v]` is actually `Data.Map.insert x v s` in Haskell.)
 
 We write `s(x)` to denote a query of variable `x`'s value in state `s`.
-(In Scala style syntax, it is `s.get(x) match { case Some(v) => v }`)
+(In Haskell style syntax, it is `case Data.Map.lookup x s of { Just v -> v }`)
 
 In the above example, we define `s2` based on `s1` by "updating" variable `x`'s sign to `0`. We update `x`'s sign in `s3` based on `s2` by querying `x`'s sign in `s2` and modifying it by increasing by `1`.
 We define the `++` abstract operator for abstract values $\{\top, \bot, +, -, 0\}$ as follows
@@ -630,11 +630,13 @@ Let $f : L_1 \rightarrow (A \rightarrow L_2)$ be a monotonic function from a lat
 Let $g: L_1 \rightarrow L_2$ be another monotonic function.
 Then $h(x) = f(x)[a \mapsto g(x)]$ is a monotonic function of $L_1 \rightarrow (A \rightarrow L_2)$.
 
-To gain some intuition of this lemma, let's try to think in terms of Scala. Recall that the map lattice is $A \rightarrow L_2$ can be treated as  `Map[A, L2]` in Scala style, and `L2` is a lattice. `f : L1 => Map[A, L2]` is a Scala function that's monotonic, `g: L1=>L2` is another Scala function which is monotonic. Then we can conclude that 
+To gain some intuition of this lemma, let's try to think in terms of Haskell. Recall that the map lattice is $A \rightarrow L_2$ can be treated as  `Map a l2` in Haskell style, and `l2` is a lattice. `f :: l1 -> Map a l2` is a Haskell function that's monotonic, `g:: l1 -> l2` is another Haskell function which is monotonic. Then we can conclude that 
 
-```scala
-val a:A = ... // a is an element of A, where A is a ground type.
-def h[L1,L2](x:L1):Map[A,L2] = f(x) + (a -> g(x))
+```hs
+a :: A
+a = ... --  a is an element of A, where A is a ground type.
+h :: l1 -> Map a l2 
+h x = insert a (g x) (f x)
 ```
 `h` is also monotonic. 
 
