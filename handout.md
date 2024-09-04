@@ -64,7 +64,7 @@ The main resources are lecture slides, tutorial sessions, and online documentati
 
 
 * Kenny Lu (kenny_lu@sutd.edu.sg) 
-  * Office Hour: Wednesday 3:00-4:30pm (please send email to arrange)
+    * Office Hour: Wednesday 3:00-4:30pm (please send email to arrange)
 
 
 ## Communication
@@ -87,12 +87,13 @@ If you have course/assignment/project related questions, please post it on the d
 * If you are using Linux, it should be perfect.
 * If you are using Mac, please install homebrew.
 * Install Haskell tools
-  1. Install ghcup >= 0.1.30.0 `https://www.haskell.org/ghcup/`
-  1. Install ghc >= 9.6.6 (via the `ghcup tui` command)
-  1. Install cabal >= 3.10.3.0 (via the `ghcup tui` command)
-  1. (Optional) install hls >= 2.7.0.0 (via the `ghcup tui` command)
-  1. Install stack >= 2.15.5 (via the `ghcup tui` command)
+    1. Install ghcup >= 0.1.30.0 `https://www.haskell.org/ghcup/`
+    1. Install ghc >= 9.6.6 (via the `ghcup tui` command)
+    1. Install cabal >= 3.10.3.0 (via the `ghcup tui` command)
+    1. (Optional) install hls >= 2.7.0.0 (via the `ghcup tui` command)
+    1. Install stack >= 2.15.5 (via the `ghcup tui` command)
 * IDE: It's your choice, but VSCode works fine.
+* You should try test your setup by attempting Homework 1 on your own. 
 
 
 ## Project
