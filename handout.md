@@ -93,6 +93,7 @@ If you have course/assignment/project related questions, please post it on the d
     1. (Optional) install hls >= 2.7.0.0 (via the `ghcup tui` command)
     1. Install stack >= 2.15.5 (via the `ghcup tui` command)
 * IDE: It's your choice, but VSCode works fine.
+    1. if you are using VSCode, it is recommended to install the "Haskell for Visual Studio Code" extension (by Haskell).
 * You should try test your setup by attempting Homework 1 on your own. 
 
 
