@@ -126,9 +126,9 @@ You may work as a team (up to max 3 members). Please register your team [here](h
 | 7 |  |  |  | Homework 4 5% | 
 | 8 | [Semantic Analysis](./semantic_analysis.md) <br/> [Dynamic Semantics](./dynamic_semantics.md) | **Mid-term exam** | [Cohort Problem 7](https://github.com/50054-cdpa/cohort_probs/tree/main/dynamic_semantics) | Mid-term 10%  |
 | 9 | [Static Semantics for SIMP](./static_semantics.md) | [Static Semantics for Lambda Calculus](./static_semantics_2.md) | [Cohort Problem 8](https://github.com/50054-cdpa/cohort_probs/tree/main/static_semantics), [Homework 5]()  | Project Lab 1 10% |
-| 10 | [Name Analysis, SSA](./name_analysis.md) | [Lattice, Sign Analysis](./sign_analysis_lattice.md) | [Cohort Problem 9: Name Analysis]() | | 
-| 11 | [Liveness Analysis](./liveness_analysis.md) | [Code Generation](./code_generation.md) | [Cohort Problem 10: Sign Analysis]() | Project Lab 2 10%,  Homework 5 5%  |  
-| 12 |  [Information Flow Analysis](./advanced_static_analysis.md) | Memory Management  | [Cohort Problem 11]()  |  |
+| 10 | [Name Analysis, SSA](./name_analysis.md) | [Lattice, Sign Analysis](./sign_analysis_lattice.md) | [Cohort Problem 9: Name Analysis](https://github.com/50054-cdpa/cohort_probs/tree/main/name_analysis) | | 
+| 11 | [Liveness Analysis](./liveness_analysis.md) | [Code Generation](./code_generation.md) | Cohort Problem 10: Sign Analysis | Project Lab 2 10%,  Homework 5 5%  |  
+| 12 |  [Information Flow Analysis](./advanced_static_analysis.md) | Memory Management  | Cohort Problem 11  |  |
 | 13 | Guest Lecture | | Revision | Project Lab 3 15% |  |
 | 14 | |  |  |Final Exam (19 Dec Thu 3:00PM-5:00PM) 30%|
 
