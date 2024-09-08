@@ -10,36 +10,36 @@ site_description:   "Notes for SUTD's CDPA 50.054"
 use_directory_urls: true
 
 nav:
-  - Handout:                                   "notes/handout.md"
-  - Schedule:                                  "notes/schedule.md"
+  - Handout:                                   "handout.md"
+  - Schedule:                                  "schedule.md"
   - W1:
-    - Intro:                                   "notes/introduction.md"
-    - "FP Intro":                              "notes/fp_intro.md"
+    - Intro:                                   "introduction.md"
+    - "FP Intro":                              "fp_intro.md"
   - W2:
-    - "FP Haskell":                            "notes/fp_haskell.md"
+    - "FP Haskell":                            "fp_haskell.md"
   - W3:
-    - "FP Haskell Polymorphic":                "notes/fp_haskell_poly.md"
+    - "FP Haskell Polymorphic":                "fp_haskell_poly.md"
   - W4:
-    - "FP Applicative Monads":                 "notes/fp_applicative_monad.md"
+    - "FP Applicative Monads":                 "fp_applicative_monad.md"
   - W5:
-    - "Syntax Analysis":                       "notes/syntax_analysis.md"
+    - "Syntax Analysis":                       "syntax_analysis.md"
   - W6:
-    - "Syntax Analysis Parser Combinator":     "notes/syntax_analysis_parser_combinator.md"
-    - "IR & Pseudo Assembly":                  "notes/ir_pseudo_assembly.md"
+    - "Syntax Analysis Parser Combinator":     "syntax_analysis_parser_combinator.md"
+    - "IR & Pseudo Assembly":                  "ir_pseudo_assembly.md"
   - W8:
-    - "Semantic Analysis":                     "notes/semantic_analysis.md"
-    - "Dynamic Semantics":                     "notes/dynamic_semantics.md"
+    - "Semantic Analysis":                     "semantic_analysis.md"
+    - "Dynamic Semantics":                     "dynamic_semantics.md"
   - W9:
-    - "Static Semantics":                      "notes/static_semantics.md"
-    - "Static Semantics for Lambda Calculus":  "notes/static_semantics_2.md"
+    - "Static Semantics":                      "static_semantics.md"
+    - "Static Semantics for Lambda Calculus":  "static_semantics_2.md"
   - W10:
-    - "Name Analysis":                         "notes/name_analysis.md"
-    - "Lattices & Sign Analysis":              "notes/sign_analysis_lattice.md"
+    - "Name Analysis":                         "name_analysis.md"
+    - "Lattices & Sign Analysis":              "sign_analysis_lattice.md"
   - W11:
-    - "Liveness Analysis":                     "notes/liveness_analysis.md"
-    - "Code Generation":                       "notes/code_generation.md"
+    - "Liveness Analysis":                     "liveness_analysis.md"
+    - "Code Generation":                       "code_generation.md"
   - W12:
-    - "Information Flow Analysis":             "notes/advanced_static_analysis.md"
+    - "Information Flow Analysis":             "advanced_static_analysis.md"
 
 theme:
   # favicon:
