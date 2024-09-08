@@ -388,16 +388,21 @@ Note that Haskell supports list comprehension via the `[ ... | ... ] ... yield` 
 listProd2 :: [a] -> [b] -> [(a,b)]
 listProd2 la lb = [ (a,b) | a <- la, b <- lb] 
 ```
+
 The Haskell compiler desugars list comprehension expressions:
+
 
 ```hs
 [ e | x1 <- e1,  x2 <- e2, ..., xn <- en ] 
 ````
+
 into:
+
 
 ```hs
 concatMap (\x1 -> concatMap (\x2 -> ... map (\xn -> e) ... ) e2) e1
 ```
+
 
 The above syntactic sugar not only works for the list data type but any data type with `concatMap` and `map` defined (as we will see in the upcoming lessons).
 
