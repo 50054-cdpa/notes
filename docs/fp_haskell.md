@@ -125,7 +125,7 @@ In this expression, we pattern match the input list `l` against two list pattern
 
 > Note that here `[]` and `hd:tl` are not list values, because they are appearing after a `case ... of` keyword and on the left of an arrow `->`.
 
-When there is no confusion, we could dopr the `{ }` and the `;` in the case patterns, e.g. 
+When there is no confusion, we could drop the `{ }` and the `;` in the case patterns, e.g. 
 
 ```hs
 sum :: [Int] -> Int 
