@@ -1,7 +1,7 @@
 
 | Week | Session 1 | Session 2 | Session 3 | Assessment |
 |---|---|---|---|---|
-| 1 | Intro | [FP: Expression, Function, Conditional, Recursion](./fp_intro.md) | [Cohort Problem 1](https://github.com/50054-cdpa/cohort_probs/tree/main/fp_intro), <br/> [Homework 1](https://github.com/50054-cdpa/homework/tree/main/fp_intro) | Homework 1 no submission required. Please refer to the markdown file for instructions. | 
+| 1 | [Introduction](./introduction.md) | [FP: Expression, Function, Conditional, Recursion](./fp_intro.md) | [Cohort Problem 1](https://github.com/50054-cdpa/cohort_probs/tree/main/fp_intro), <br/> [Homework 1](https://github.com/50054-cdpa/homework/tree/main/fp_intro) | Homework 1 no submission required. Please refer to the markdown file for instructions. | 
 | 2 | [FP: List, Pattern Matching](./fp_haskell.md) | [FP: Algebraic Data Type](./fp_haskell.md) | [Cohort Problem 2](https://github.com/50054-cdpa/cohort_probs/tree/main/fp_haskell), <br/> [Homework 2](https://github.com/50054-cdpa/homework/tree/main/fp_haskell) |  |
 | 3 | [FP: Generics, GADT](./fp_haskell_poly.md) | [FP: Type Classes, Functor](./fp_haskell_poly.md) | [Cohort Problem 3](https://github.com/50054-cdpa/cohort_probs/tree/main/fp_haskell_poly), <br/> Homework 2 (Cont'd) | Homework 2 5% |
 | 4 | [FP: Applicative](./fp_applicative_monad.md) | [FP: Monad](./fp_applicative_monad.md) |  [Cohort Problem 4](https://github.com/50054-cdpa/cohort_probs/tree/main/fp_applicative_monad), <br/> [Homework 3](https://github.com/50054-cdpa/homework/tree/main/fp_haskell_poly) |  |
