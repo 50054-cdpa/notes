@@ -1,0 +1,148 @@
+docs_dir:           "docs/"
+
+repo_name:          "50054-cdpa"
+repo_url:           "https://github.com/50054-cdpa/notes"
+
+site_author:        "Kenny Lu"
+site_name:          "Compiler Design and Program Analysis 50.054"
+site_description:   "Notes for SUTD's CDPA 50.054"
+
+use_directory_urls: true
+
+nav:
+  - Handout:                                   "notes/handout.md"
+  - Schedule:                                  "notes/schedule.md"
+  - W1:
+    - Intro:                                   "notes/introduction.md"
+    - "FP Intro":                              "notes/fp_intro.md"
+  - W2:
+    - "FP Haskell":                            "notes/fp_haskell.md"
+  - W3:
+    - "FP Haskell Polymorphic":                "notes/fp_haskell_poly.md"
+  - W4:
+    - "FP Applicative Monads":                 "notes/fp_applicative_monad.md"
+  - W5:
+    - "Syntax Analysis":                       "notes/syntax_analysis.md"
+  - W6:
+    - "Syntax Analysis Parser Combinator":     "notes/syntax_analysis_parser_combinator.md"
+    - "IR & Pseudo Assembly":                  "notes/ir_pseudo_assembly.md"
+  - W8:
+    - "Semantic Analysis":                     "notes/semantic_analysis.md"
+    - "Dynamic Semantics":                     "notes/dynamic_semantics.md"
+  - W9:
+    - "Static Semantics":                      "notes/static_semantics.md"
+    - "Static Semantics for Lambda Calculus":  "notes/static_semantics_2.md"
+  - W10:
+    - "Name Analysis":                         "notes/name_analysis.md"
+    - "Lattices & Sign Analysis":              "notes/sign_analysis_lattice.md"
+  - W11:
+    - "Liveness Analysis":                     "notes/liveness_analysis.md"
+    - "Code Generation":                       "notes/code_generation.md"
+  - W12:
+    - "Information Flow Analysis":             "notes/advanced_static_analysis.md"
+
+theme:
+  # favicon:
+  language: en
+  name: material
+  features:
+    - content.code.annotate
+    - content.code.copy
+    - navigation.expand
+    - navigation.indexes
+    # - navigation.instant
+    # - navigation.sections
+    - navigation.tabs
+    - navigation.top
+    - navigation.tracking
+    - search.highlight
+    - search.share
+    - search.suggest
+    # - toc.integrate
+  font:
+    text: Roboto
+    code: Spline Sans Mono
+  icon:
+    logo: octicons/file-code-24
+    admonition:
+      abstract: octicons/checklist-16
+      bug:      octicons/bug-16
+      danger:   octicons/zap-16
+      example:  octicons/beaker-16
+      failure:  octicons/x-circle-16
+      info:     octicons/info-16
+      note:     octicons/tag-16
+      success:  octicons/check-16
+      tip:      octicons/squirrel-16
+      question: octicons/question-16
+      quote:    octicons/quote-16
+      warning:  octicons/alert-16
+  palette:
+    # Palette toggle for light mode
+    - media: "(prefers-color-scheme: light)"
+#      primary: red
+#      accent: red
+      scheme: default
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+
+    # Palette toggle for dark mode
+    - media: "(prefers-color-scheme: dark)"
+#      primary: red
+#      accent:  red
+      scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+
+markdown_extensions:
+  - attr_list                 # Add inline CSS attributes           https://python-markdown.github.io/extensions/attr_list/
+  - admonition                # Create not and warning boxes        https://squidfunk.github.io/mkdocs-material/reference/admonitions/#admonition
+  - md_in_html                # Use md syntax in HTML blocks        https://python-markdown.github.io/extensions/md_in_html/
+  - pymdownx.caret            # Handling sub- and superscripts      https://facelessuser.github.io/pymdown-extensions/extensions/caret/
+  - pymdownx.critic           #                                     https://facelessuser.github.io/pymdown-extensions/extensions/critic/
+  - pymdownx.details          # Collapsable elements                https://facelessuser.github.io/pymdown-extensions/extensions/details/
+  - pymdownx.inlinehilite     # Inline code highlighting            https://facelessuser.github.io/pymdown-extensions/extensions/inlinehilite/
+  - pymdownx.keys             # Add styling keyboard keys           https://facelessuser.github.io/pymdown-extensions/extensions/keys/
+  - pymdownx.mark             # Highlighting of text                https://facelessuser.github.io/pymdown-extensions/extensions/mark/
+  - pymdownx.smartsymbols     # Creating special characters         https://facelessuser.github.io/pymdown-extensions/extensions/smartsymbols/
+  - pymdownx.snippets         #                                     https://facelessuser.github.io/pymdown-extensions/extensions/snippets/
+  - pymdownx.tabbed           # Tabs                                https://facelessuser.github.io/pymdown-extensions/extensions/tabbed/
+  - pymdownx.tasklist         #                                     https://facelessuser.github.io/pymdown-extensions/extensions/tasklist/
+  - pymdownx.tilde            # Strikethrough of text               https://facelessuser.github.io/pymdown-extensions/extensions/tilde/
+  - pymdownx.superfences:     #                                     https://facelessuser.github.io/pymdown-extensions/extensions/superfences/
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.arithmatex:      # Preserve LaTeX math equations       https://facelessuser.github.io/pymdown-extensions/extensions/arithmatex/
+      generic: true
+  - pymdownx.emoji:           # Emojis                              https://facelessuser.github.io/pymdown-extensions/extensions/emoji/
+      emoji_index:     !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:materialx.emoji.to_svg
+  - pymdownx.highlight:       # Highlighting code blocks            https://facelessuser.github.io/pymdown-extensions/extensions/highlight/
+      linenums:     true
+      use_pygments: true
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.superfences:     # Complicated code fences             https://facelessuser.github.io/pymdown-extensions/extensions/superfences/
+      custom_fences:
+        - name:   mermaid
+          class:  mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tasklist:        # Creating Check-able tasklist        https://facelessuser.github.io/pymdown-extensions/extensions/tasklist/
+      custom_checkbox:    true
+      clickable_checkbox: true
+  - toc:
+      permalink: true
+
+plugins:
+  - search:
+      lang: en
+      separator: '[\s\-\.\_]+'
+  - mermaid2
+
+extra_javascript:
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
