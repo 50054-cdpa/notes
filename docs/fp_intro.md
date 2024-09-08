@@ -117,7 +117,7 @@ Where:
 * The RHS of the `::=` is a set of alternatives, separated by `|`. Each alternative denote a possible outcome of expanding the LHS non-terminal. In this case $t$ has three possibilities, i.e. $x$, $\lambda x.t$ or $t\ t$.
 * $x$ denotes a variable,
 * $\lambda x.t$ denotes a lambda abstraction.
-  * Within a lambda abstraction,  $x$ is the bound variable (c.f. formal argument of the function)
+      * Within a lambda abstraction,  $x$ is the bound variable (c.f. formal argument of the function)
 and $t$ is the body.
 * $t\ t$ denotes a function application.
 
@@ -327,15 +327,14 @@ $$
 #### Interesting Notes
 
 1. Some connection with real world languages:
-   * Call By Value semantics (CBV, found in C, C++, etc.) is like AOR except that we do not evaluate under lambda abstractions.
-   * Call By Name semantics (CBN, found in Haskell, etc.) is like NOR except that we do not evaluate under lambda abstractions.
+
+      * Call By Value semantics (CBV, found in C, C++, etc.) is like AOR except that we do not evaluate under lambda abstractions.
+      * Call By Name semantics (CBN, found in Haskell, etc.) is like NOR except that we do not evaluate under lambda abstractions.
 
 2. AOR or NOR, which one is better?
-   * By Church-Rosser Theorem, if a lambda term can be evaluated in
-  two different ways and both ways terminate, both will yield the same
-  result.
-   * Recall our earlier example.
-   * So how can it be non-terminating? Consider:
+      * By Church-Rosser Theorem, if a lambda term can be evaluated in two different ways and both ways terminate, both will yield the same result.
+      * Recall our earlier example.
+      * So how can it be non-terminating? Consider:
 
     $$
     \begin{array}{rl}
@@ -350,7 +349,7 @@ $$
     $$
 
 3. NOR seems computationally more expensive, but is also more likely to terminate than AOR. Consider how
-    $((\lambda x.\lambda y.x)\ x)\  ((\lambda x.x\ x)\ (\lambda x.x\ x))$ terminates in NOR with $x$, but diverges in AOR.
+      $((\lambda x.\lambda y.x)\ x)\  ((\lambda x.x\ x)\ (\lambda x.x\ x))$ terminates in NOR with $x$, but diverges in AOR.
 4. NOR can be used to evaluate terms that deals with infinite data.
 
 ### Let Binding
@@ -560,12 +559,15 @@ $$
 Note that we include the  ${\tt (NOR)} $ rule into our evaluation rules to fix the evaluation strategy, and we only reduce the redexes that are *not* inside a lambda abstraction, otherwise the program does not terminate.
 
 We include the following cases for the free variable function $fv()$ and the substitution
+
 $$
 \begin{array}{rcl}
 fv(\mu f.t) & = & fv(t) - \{f\}
 \end{array}
 $$
+
 and 
+
 $$
 \begin{array}{rcl}
  \lbrack t_1 / x \rbrack \mu f.t_2 & = & \mu f.\lbrack t_1 / x \rbrack t_2 & {\tt if}\  f\neq x\  {\tt and}\  f \not \in fv(t_1)
@@ -656,5 +658,5 @@ We have covered
 * Syntax (lambda terms) and Semantics ($\beta$ reduction, substitution, $\alpha$ renaming).
 * Evaluation strategies, their properties and connection to real world programming
 * Extending lambda calculus to support conditional and loop
-  * Via language extension (we will use)
-  * Via Church encoding (fun but not very pragmatic in our context)
+   * Via language extension (we will use)
+   * Via Church encoding (fun but not very pragmatic in our context)
