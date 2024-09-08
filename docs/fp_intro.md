@@ -376,17 +376,17 @@ $$
 
 and the substitution rule and the free variable function $fv()$:
 
-```math
+$$
 \begin{array}{rcl}
 \lbrack t_1 / x \rbrack let\ y = t_2\ in\ t_3 & = & let\ y = \lbrack t_1 / x \rbrack t_2\ in\ \lbrack t_1 / x \rbrack t_3 & {\tt if}\  y\neq x\  {\tt and}\  y \not \in fv(t_1) \\
 \end{array} 
-```
+$$
 
-```math
+$$
 \begin{array}{rcl}
 fv(let\ x=t_1\ in\ t_2) & = & (fv(t_1) - \{x\}) \cup fv(t_2) \\
 \end{array}
-```
+$$
 
 Note that the alpha renaming should be applied when name clash arises.
 
