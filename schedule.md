@@ -1,4 +1,4 @@
-## Schedule
+
 | Week | Session 1 | Session 2 | Session 3 | Assessment |
 |---|---|---|---|---|
 | 1 | Intro | [FP: Expression, Function, Conditional, Recursion](./fp_intro.md) | [Cohort Problem 1](https://github.com/50054-cdpa/cohort_probs/tree/main/fp_intro), <br/> [Homework 1](https://github.com/50054-cdpa/homework/tree/main/fp_intro) | Homework 1 no submission required. Please refer to the markdown file for instructions. | 
