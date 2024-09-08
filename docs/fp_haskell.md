@@ -394,7 +394,7 @@ The Haskell compiler desugars list comprehension expressions:
 
 ```hs
 [ e | x1 <- e1,  x2 <- e2, ..., xn <- en ] 
-````
+```
 
 into:
 
