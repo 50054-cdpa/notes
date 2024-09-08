@@ -377,16 +377,17 @@ $$
 
 and the substitution rule and the free variable function $fv()$:
 
-$$
+```math
 \begin{array}{rcl}
 \lbrack t_1 / x \rbrack let\ y = t_2\ in\ t_3 & = & let\ y = \lbrack t_1 / x \rbrack t_2\ in\ \lbrack t_1 / x \rbrack t_3 & {\tt if}\  y\neq x\  {\tt and}\  y \not \in fv(t_1) \\
 \end{array} 
-$$
-$$
+```
+
+```math
 \begin{array}{rcl}
 fv(let\ x=t_1\ in\ t_2) & = & (fv(t_1) - \{x\}) \cup fv(t_2) \\
 \end{array}
-$$
+```
 
 Note that the alpha renaming should be applied when name clash arises.
 
@@ -468,20 +469,24 @@ In the above we use a horizontal line to separate complex deduction rules that h
 * The rule  ${\tt (OpC)}$ invokes the built-in low level call to apply the binary operation to the two operands  $c_1$ and  $c_2$.  
 
 The substitution rules and free variable function $fv()$ also extended too
-$$
+
+```math
 \begin{array}{rcll}
  \lbrack t_1 / x \rbrack c & = & c \\ 
    \lbrack t_1 / x \rbrack t_2\ op\ t_3 & = & (\lbrack t_1 / x \rbrack t_2)\ op\ (\lbrack t_1 / x \rbrack t_3) \\ 
   \lbrack t_1 / x \rbrack if\ t_2\ then\ t_3\ else\ t_4 & = & if\ \lbrack t_1 / x \rbrack t_2\ then\ \lbrack t_1 / x \rbrack t_3\ else\ \lbrack t_1 / x \rbrack t_4 \\ 
 \end{array}
-$$
-$$
+```
+
+```math
 \begin{array}{rcl}
 fv(t_1\ op\ t_2) & = & fv(t_1) \cup fv(t_2) \\ 
 fv(if\ t_1\ then\ t_2\ else\ t_3) & = & fv(t_1) \cup fv(t_2) \cup fv(t_3) \\
 fv(c) & = & \{\} \\
 \end{array}
-$$
+```
+
+
 Let's consider an example:
 
 $$
