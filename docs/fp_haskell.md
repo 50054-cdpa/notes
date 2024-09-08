@@ -404,8 +404,6 @@ concatMap (\x1 -> concatMap (\x2 -> ... map (\xn -> e) ... ) e2) e1
 ```
 
 
-The above syntactic sugar not only works for the list data type but any data type with `concatMap` and `map` defined (as we will see in the upcoming lessons).
-
 > **A forward reference note**. Some of you probably have read about monad operation may find that the above can be rewritten using a do-notation syntax, e.g.  
 >```hs
 > listProd3 :: [a] -> [b] -> [(a,b)]
