@@ -709,6 +709,76 @@ app = do
 
 In the above we define the state environment as an integer counter. Monadic function `incr` increase the counter in the state. The `deriving` keyword generate the type class instance `Show Counter` automatically. Running `run app (Counter 0)` yields `(2, Counter {c = 2})`.
 
+### IO Monad
+
+Haskell is a pure functional programming language, i.e. computation should not depend on external states. Determinism in the program semantics is guaranteed.
+
+In many software applications, we need to manage the change of external states.  Haskell is a useless programming language without the support of external state management. In Haskell, we manage the external states  by abstracting them with the `IO` monad. 
+
+Unlike all the other monads introduced earlier, the `IO` monad is a built-in monad, which has no definition in Prelude or other libraries. The `IO` monad and its instances are defined in terms of compiler primitives, e.g. within GHC. 
+
+#### Console input/output actions with IO Monad
+
+Printing a message to the console is considered an action that manipulate the external state, i.e. the terminal display. Hence in Haskell, to put a string in the console output, we use the following
+
+```hs
+main :: IO ()
+main = do 
+    putStrLn "hello world!"
+```
+
+where `putStrLn` has type `String -> IO ()`, which says, `putStrLn` takes a string and performs an IO computation and returns `()` (it reads as unit). The reason why `()` is returned is because the computation after the `putStrLn` expression should not depend on the result of `putStrLn`. 
+
+Similar to `putStrLn`, we could use `print :: Show a => a -> IO ()`. 
+
+
+To read a line from the console, we use `getLine :: IO String`. 
+
+```hs
+main :: IO ()
+main = do 
+    putStrLn "enter a message:"
+    txt <- getLine
+    putStrLn ("You said: " ++ txt)
+```
+
+To read the command line arguments (i.e. arguments we pass to the main function), we use `getArgs :: IO [String]` 
+
+```hs
+import System.Environment
+
+main = do 
+    args <- getArgs
+    case args of 
+        []    -> print "no argument is given."
+        (_:_) -> print args
+```
+
+### File IO with IO Monad
+
+The `IO` monad allows us to interact with files using Haskell. 
+
+The following program reads the content from the input file, 
+converts it to uppercase then writes the result into the output file.
+```hs
+import System.Environment (getArgs)
+import Data.Char (toUpper)
+main = do 
+    args <- getArgs
+    case args of 
+        []           -> print "Usage: main <input_file> <output_file>"
+        [_]          -> print "Usage: main <input_file> <output_file>"
+        (inf:outf:_) -> do
+            contents <- readFile inf
+            writeFile outf (map toUpper contents)
+```
+
+The `readFile` function has type `FilePath -> IO String` where `FilePath` is a type alias to `String`. 
+Similarly `writeFile` function has type `FilePath -> String -> IO ()`. 
+
+> For details of other file IO APIs, you may refer to this document.
+> `https://hackage.haskell.org/package/base-4.20.0.1/docs/Prelude.html#v:readFile`
+
 
 ## Monad Laws
 
