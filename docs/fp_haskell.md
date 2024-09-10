@@ -1,4 +1,4 @@
-# 50.054 - Instroduction to Haskell
+# 50.054 - Introduction to Haskell
 
 ## Learning Outcomes
 
