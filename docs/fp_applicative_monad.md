@@ -754,7 +754,7 @@ main = do
         (_:_) -> print args
 ```
 
-### File IO with IO Monad
+#### File IO with IO Monad
 
 The `IO` monad allows us to interact with files using Haskell. 
 
