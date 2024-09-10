@@ -194,9 +194,6 @@ $$
 
 The Composition Law says that the above equation remains valid when $u$, $v$ and $w$ are lifted, as long as we also lift $\lambda f.(\lambda g.(f \circ g))$.
 
-#### Cohort Exercise
-
-show that any applicative functor satisfying the above laws also satisfies the Functor Laws
 
 ## Monad
 
