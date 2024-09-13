@@ -31,5 +31,5 @@ An ideal compiler should be:
 Some optional properties,
 
 1. User friendly. The error report should be comprehensive.
-1. Intelligent. Helps to automate some of the repeatitive tasks.
+1. Intelligent. Helps to automate some of the repetitive tasks.
 1. ...
