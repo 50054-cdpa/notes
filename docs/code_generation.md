@@ -885,7 +885,7 @@ Let $L$ be a mapping from PA labels (which are used as the targets in some jump 
 
 We have three types of rules.
 
-* $M, L \vdash lis \Rightarrow jis$, convert a sequence of PA labeled isntructions to a sequence of JVM bytecode instructions.
+* $M, L \vdash lis \Rightarrow jis$, convert a sequence of PA labeled instructions to a sequence of JVM bytecode instructions.
 * $M \vdash s \Rightarrow jis$, convert a PA operand into a sequence of JVM bytecode instructions.
 * $L \vdash l \Rightarrow jis$, convert a PA label into a JVM bytecode instructions, usually it is either empty or singleton.
 
