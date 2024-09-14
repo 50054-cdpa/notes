@@ -230,11 +230,10 @@ fv((\lambda x. \lambda y.x\ y)\ ({\tt y}\ w)) =  \{ {\tt y}, w \}
 $$
 
 Thus:
-
 $$
 \begin{array}{rl}
-(\lambda x. \lambda y.x\ y)\ ({\tt y}\ w) & \longrightarrow \\
-\lbrack({\tt y}\ w)/x\rbrack \lambda y.x\ y & \longrightarrow  \\
+(\lambda x. \lambda y.x\ y)\ ({\tt y}\ w) & \longrightarrow_{\scriptsize {\tt (\beta\ reduction)}} \\
+\lbrack({\tt y}\ w)/x\rbrack \lambda y.x\ y & \longrightarrow_{\scriptsize {\tt (substitution)}} \\
 \lambda y. ({\tt y}\ w)\ y
 \end{array}
 $$
@@ -276,12 +275,12 @@ $$
 (\lambda x. \lambda z.x\ z)\ ({\tt y}\ w)
 $$
 
-to avoid clashing, prior applying the $\beta$ reduction.
+to avoid clashing, prior to applying the $\beta$ reduction.
 The renaming operation is also known as the $\alpha$ renaming.
 
 ### Evaluation strategies
 
-So far we have three rules (roughly)  $\beta $ reduction, substitution, and  $\alpha $ renaming.
+So far we have three rules (roughly)  $\beta$ reduction, substitution, and  $\alpha$ renaming.
 
 Given a lambda term, in order to evaluate it, we need to identify places that we can apply these rules.
 
