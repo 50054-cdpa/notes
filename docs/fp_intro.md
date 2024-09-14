@@ -230,11 +230,10 @@ fv((\lambda x. \lambda y.x\ y)\ ({\tt y}\ w)) =  \{ {\tt y}, w \}
 $$
 
 Thus:
-
 $$
 \begin{array}{rl}
-(\lambda x. \lambda y.x\ y)\ ({\tt y}\ w) & \longrightarrow \\
-\lbrack({\tt y}\ w)/x\rbrack \lambda y.x\ y & \longrightarrow  \\
+(\lambda x. \lambda y.x\ y)\ ({\tt y}\ w) & \longrightarrow_{\scriptsize {\tt (\beta\ reduction)}} \\
+\lbrack({\tt y}\ w)/x\rbrack \lambda y.x\ y & \longrightarrow_{\scriptsize {\tt (substitution)}} \\
 \lambda y. ({\tt y}\ w)\ y
 \end{array}
 $$
@@ -276,12 +275,12 @@ $$
 (\lambda x. \lambda z.x\ z)\ ({\tt y}\ w)
 $$
 
-to avoid clashing, prior applying the $\beta$ reduction.
+to avoid clashing, prior to applying the $\beta$ reduction.
 The renaming operation is also known as the $\alpha$ renaming.
 
 ### Evaluation strategies
 
-So far we have three rules (roughly)  $\beta $ reduction, substitution, and  $\alpha $ renaming.
+So far we have three rules (roughly)  $\beta$ reduction, substitution, and  $\alpha$ renaming.
 
 Given a lambda term, in order to evaluate it, we need to identify places that we can apply these rules.
 
@@ -464,7 +463,8 @@ In the above we use a horizontal line to separate complex deduction rules that h
 
 * The rule ${\tt (ifI)}$ states that if we can evaluate  $t_1$ to  $t_1'$, then  $if\ t_1\ then\ t_2\ else\ t_3$ can be evaluated to  $if\ t_1' \ then\ t_2\ else\ t_3$. In otherwords, for us to reduce $if\ t_1\ then\ t_2\ else\ t_3$ to $if\ t_1' \ then\ t_2\ else\ t_3$, a pre-condition is to reduce $t_1$ to $t_1'$. 
 * The rule  ${\tt (ifT)}$ states that if the conditional expression is $true$, the entire term is evaluated to the then-branch.
-* The rule  ${\tt (ifF)}$ is similar. Rules  ${\tt (OpI1)}$ and ${\tt (OpI2)} $ are similar to rule ${\tt (IfI)}$.
+* The rule  ${\tt (ifF)}$ is similar.
+* Rules  ${\tt (OpI1)}$ and ${\tt (OpI2)}$ are similar to rule ${\tt (IfI)}$.
 * The rule  ${\tt (OpC)}$ invokes the built-in low level call to apply the binary operation to the two operands  $c_1$ and  $c_2$.  
 
 The substitution rules and free variable function $fv()$ are also extended too
@@ -556,7 +556,7 @@ $$
 \end{array}
 $$
 
-Note that we include the  ${\tt (NOR)} $ rule into our evaluation rules to fix the evaluation strategy, and we only reduce the redexes that are *not* inside a lambda abstraction, otherwise the program does not terminate.
+Note that we include the  ${\tt (NOR)}$ rule into our evaluation rules to fix the evaluation strategy, and we only reduce the redexes that are *not* inside a lambda abstraction, otherwise the program does not terminate.
 
 We include the following cases for the free variable function $fv()$ and the substitution
 
