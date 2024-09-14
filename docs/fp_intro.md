@@ -595,7 +595,7 @@ Another important point to note is that the set of rewriting rules we have gathe
 #### Approach 2 - Church Encoding
 
 Alternatively,
-recursion can be encoded using the fix-pointer combinator (AKA  $Y $-combinator). Let $Y $ be
+recursion can be encoded using the fix-pointer combinator (AKA  $Y$-combinator). Let $Y$ be
 
 $$
 \lambda f.((\lambda y. (f\ (y\ y)))~(\lambda x.(f\ (x\ x))))
