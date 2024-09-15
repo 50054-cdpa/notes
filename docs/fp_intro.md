@@ -580,11 +580,11 @@ $$
 \begin{array}{rl}
 (\mu f.\lambda x.if\ x==1\ then\ 1\ else\ x*(f\ (x-1)))\ 3 & \longrightarrow_{\scriptsize {\tt(NOR)+(unfold)}} \\
 (\lbrack (\mu f.\lambda x.if\ x==1\ then\ 1\ else\ x*(f\ (x-1)))/f \rbrack \lambda x.if\ x==1\ then\ 1\ else\ x*(f\ (x-1)))\ 3 & \longrightarrow_{\scriptsize {\tt (substitution) + (\alpha)}} \\
-(\lambda x.if\ x==1\ then\ 1\ else\ x*((\mu f.\lambda y.if\ y==1\ then\ 1\ else\ f\ (y-1))\ (x-1)))\ 3 & \longrightarrow_{\scriptsize {\tt (\beta)}} \\
-\lbrack 3/x \rbrack if\ x==1\ then\ 1\ else\ x*((\mu f.\lambda y.if\ y==1\ then\ 1\ else\ f\ (y-1))\ (x-1)) & \longrightarrow_{\scriptsize {\tt (substitution)}} \\
-if\ 3==1\ then\ 1\ else\ 3*((\mu f.\lambda y.if\ y==1\ then\ 1\ else\ f\ (y-1))\ (3-1)) & \longrightarrow_{\scriptsize {\tt (ifI)+(OpC)}} \\
-if\ false\ then\ 1\ else\ 3*((\mu f.\lambda y.if\ y==1\ then\ 1\ else\ f\ (y-1))\ (3-1)) & \longrightarrow_{\scriptsize {\tt (ifF)}} \\
-3*((\mu f.\lambda y.if\ y==1\ then\ 1\ else\ f\ (y-1))\ (3-1)) & \longrightarrow_{\scriptsize {\tt (OpI2)}} \\
+(\lambda x.if\ x==1\ then\ 1\ else\ x*((\mu f.\lambda y.if\ y==1\ then\ 1\ else\ y*f\ (y-1))\ (x-1)))\ 3 & \longrightarrow_{\scriptsize {\tt (\beta)}} \\
+\lbrack 3/x \rbrack if\ x==1\ then\ 1\ else\ x*((\mu f.\lambda y.if\ y==1\ then\ 1\ else\ y*f\ (y-1))\ (x-1)) & \longrightarrow_{\scriptsize {\tt (substitution)}} \\
+if\ 3==1\ then\ 1\ else\ 3*((\mu f.\lambda y.if\ y==1\ then\ 1\ else\ y*f\ (y-1))\ (3-1)) & \longrightarrow_{\scriptsize {\tt (ifI)+(OpC)}} \\
+if\ false\ then\ 1\ else\ 3*((\mu f.\lambda y.if\ y==1\ then\ 1\ else\ y*f\ (y-1))\ (3-1)) & \longrightarrow_{\scriptsize {\tt (ifF)}} \\
+3*((\mu f.\lambda y.if\ y==1\ then\ 1\ else\ y*f\ (y-1))\ (3-1)) & \longrightarrow_{\scriptsize {\tt (OpI2)}} \\
 ... \\
 3*(2*1)
 \end{array}
@@ -595,7 +595,7 @@ Another important point to note is that the set of rewriting rules we have gathe
 #### Approach 2 - Church Encoding
 
 Alternatively,
-recursion can be encoded using the fix-pointer combinator (AKA  $Y $-combinator). Let $Y $ be
+recursion can be encoded using the fix-pointer combinator (AKA  $Y$-combinator). Let $Y$ be
 
 $$
 \lambda f.((\lambda y. (f\ (y\ y)))~(\lambda x.(f\ (x\ x))))
