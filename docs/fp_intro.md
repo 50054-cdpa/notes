@@ -658,5 +658,5 @@ We have covered
 * Syntax (lambda terms) and Semantics ($\beta$ reduction, substitution, $\alpha$ renaming).
 * Evaluation strategies, their properties and connection to real world programming
 * Extending lambda calculus to support conditional and loop
-   * Via language extension (we will use)
-   * Via Church encoding (fun but not very pragmatic in our context)
+      * Via language extension (we will use)
+      * Via Church encoding (fun but not very pragmatic in our context)
