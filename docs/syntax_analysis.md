@@ -904,9 +904,11 @@ $$
 | E | E::= iE' | |
 | E' |  | E'::= +EE', E'::= epsilon |
 
-As shown from the above, the grammar contains a first-follow conflict, therefore it is not a `LL(1)`.
-It is not possible to perform substitution to eliminate the first-follow conflict because it will lead to
-infinite expansion.
+As shown from the above, at a glance, we argue that one of the 
+cell contains two production rules. We might argue that the grammar contains a first-follow conflict. 
+However, this grammar is LL(1), because when we are checking for 
+first-follow conflicts, with `E'::= epsilon` rule, we need to look up what is the $Follow$ set of `E'`. In this case, it is `+`, and there is only one production rule in the grammar starting with `+`, which is 
+`E' :: +EE'`. Hence there is no conflict in this grammar. 
 
 #### A short summary so far for top-down recursive parsing
 
