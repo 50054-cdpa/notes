@@ -718,7 +718,8 @@ We fill up the table
 |---|---|---|
 | E | E ::= TE' |   |
 | E'|   | E' ::= + TE' |
-| T | T ::= i  |   |  
+| T | T ::= i  |   |
+  
 We conclude that a grammar is in `LL(1)` if it contains no conflicts. A conflict arises when there are more than one production rule to be applied given a non-terminal and a leading symbol. Given a `LL(1)` grammar, we can perform predictive top-down parsing by selecting the right production rule by examining the leading input symbol.
 
 In general, there are two kinds of conflicts found in grammar that violates the `LL(1)` grammar requirements.
