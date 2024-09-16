@@ -10,9 +10,9 @@ By the end of this class, you should be able to
 
 ## What is Haskell?
 
-Haskell is a hybrid programming language which combines Object Oriented Paradigm and Functional Programming Paradigm. Haskell has many backends, including JVM, node.js and native.
+Haskell is one of the only purely and lazy function programming languages. 
 
-Haskell is widely used in the industry and the research communities. There many industry projects and open source projects were implemented mainly in Haskell, e.g. Apache Spark, Kafka, Akka, Play! and etc.
+Haskell is widely used in the industry and the research communities. There many industry projects and open source projects were implemented mainly in Haskell, e.g. Pandoc, Mu, Idris, Elm and etc. There are many other languages are strongly influenced by Haskell, e.g. Scala, Rust and even Python.
 For more details in how Haskell is used in the real-world business, you may refer to the following for further readings.
 
 * [Haskell in Production: Standard Chartered](https://serokell.io/blog/haskell-in-production-standard-chartered)
