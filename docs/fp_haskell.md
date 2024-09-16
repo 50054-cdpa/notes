@@ -558,6 +558,6 @@ yields the same output as above.
 
 In this lesson, we have discussed
 
-* Haskell's FP vs Lambda Calculus
+* Haskell vs Lambda Calculus
 * How to use the list datatype to model and manipulate collections of multiple values.
 * How to use algebraic data type to define user customized data type to solve complex problems.
