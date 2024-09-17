@@ -89,7 +89,7 @@ If you have course/assignment/project related questions, please post it on the d
 * Install Haskell tools
     1. (For Windows WSL2 and Ubuntu only) `sudo apt install build-essential libgmp-dev`
     1. Install ghcup >= 0.1.30.0 `https://www.haskell.org/ghcup/`
-    1. Install ghc >= 9.6.6 (via the `ghcup tui` command)
+    1. Install ghc == 9.6.6 (via the `ghcup tui` command)
     1. Install cabal >= 3.10.3.0 (via the `ghcup tui` command)
     1. install hls >= 2.7.0.0 (via the `ghcup tui` command)
     1. Install stack >= 2.15.5 (via the `ghcup tui` command)
