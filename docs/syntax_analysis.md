@@ -718,7 +718,8 @@ We fill up the table
 |---|---|---|
 | E | E ::= TE' |   |
 | E'|   | E' ::= + TE' |
-| T | T ::= i  |   |  
+| T | T ::= i  |   |
+  
 We conclude that a grammar is in `LL(1)` if it contains no conflicts. A conflict arises when there are more than one production rule to be applied given a non-terminal and a leading symbol. Given a `LL(1)` grammar, we can perform predictive top-down parsing by selecting the right production rule by examining the leading input symbol.
 
 In general, there are two kinds of conflicts found in grammar that violates the `LL(1)` grammar requirements.
@@ -904,9 +905,11 @@ $$
 | E | E::= iE' | |
 | E' |  | E'::= +EE', E'::= epsilon |
 
-As shown from the above, the grammar contains a first-follow conflict, therefore it is not a `LL(1)`.
-It is not possible to perform substitution to eliminate the first-follow conflict because it will lead to
-infinite expansion.
+As shown from the above, at a glance, we argue that one of the 
+cell contains two production rules. We might argue that the grammar contains a first-follow conflict. 
+However, this grammar is LL(1), because when we are checking for 
+first-follow conflicts, with `E'::= epsilon` rule, we need to look up what is the $Follow$ set of `E'`. In this case, it is `+`, and there is only one production rule in the grammar starting with `+`, which is 
+`E' ::= +EE'`. Hence there is no conflict in this grammar. 
 
 #### A short summary so far for top-down recursive parsing
 
