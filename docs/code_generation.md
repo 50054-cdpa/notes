@@ -1004,7 +1004,7 @@ $$
 
 ## Optimizing JVM bytecode 
 
-Though it is limited, there is room to opimize the JVM bytecode. For example, 
+Though it is limited, there is room to optimize the JVM bytecode. For example, 
 
 From the following SIMP program 
 
