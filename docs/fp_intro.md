@@ -590,7 +590,7 @@ if\ false\ then\ 1\ else\ 3*((\mu f.\lambda y.if\ y==1\ then\ 1\ else\ y*(f\ (y-
 \end{array}
 $$
 
-The {\tt (unfold)} rule, (just like alpha-renaming), is not contributing to the progress in the evaluation directly. If we keep applying {\tt (unfold)} repeatedly without applying other rules, we are just expanding the lambda term infinitely without making progress. Hence we apply {\tt (unfold)} rule only when there is no other applicable rule. (Just like alpha renaming, we only rename when we foresee a name clashing in substitution.)
+The ${\tt (unfold)}$ rule, (just like alpha-renaming), is not contributing to the progress in the evaluation directly. If we keep applying ${\tt (unfold)}$ repeatedly without applying other rules, we are just expanding the lambda term infinitely without making progress. Hence we apply the ${\tt (unfold)}$ rule only when there is no other applicable rule. (Just like alpha renaming, we only rename when we foresee a name clashing in substitution.)
 
 Another important point to note is that the set of rewriting rules we have gathered so far ${\tt (\beta-reduction)}$, ${\tt (NOR)}$, ${\tt (unfold)}$, ${\tt (IfT)}$, ${\tt (IfF)}$, ${\tt (IfI)}$, ${\tt (OpC)}$, ${\tt (OpI2)}$ and ${\tt (OpI1)}$ are syntax-directed, i.e. the LHS of the $\longrightarrow$ in the conclusion, which is AKA the head of the rule is unique if we try applying the rules in this specific order. A clear advantage of this is that we can view this deduction rule system as an algorithm, i.e. an implementation that resembles this specification exists. We will see this in the later part of this course. 
 
