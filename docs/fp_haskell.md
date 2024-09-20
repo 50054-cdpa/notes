@@ -382,7 +382,7 @@ which produces:
 [(1,'a'),(1,'b'),(1,'c'),(2,'a'),(2,'b'),(2,'c'),(3,'a'),(3,'b'),(3,'c'),(4,'a'),(4,'b'),(4,'c')]
 ```
 
-Note that Haskell supports list comprehension via the `[ ... | ... ] ... yield` construct. We could re-express `listProd` as follows:
+Note that Haskell supports list comprehension via the `[ ... | ... ]` construct. We could re-express `listProd` as follows:
 
 ```hs
 listProd2 :: [a] -> [b] -> [(a,b)]
