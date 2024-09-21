@@ -240,9 +240,16 @@ The above can rewritten by using a generic library function shipped with Haskell
 addToEach x l = map (\y -> y + x) l
 ```
 
-The method `map` is a method of the list class that takes a function as input argument and applies it to all elements in the list object.
+The method `map` is a function that takes a function as input argument and applies it to all elements in the list.
 
-We can observe that the input list and the output list of the `map` method must be of the same type and have the same length.
+```hs
+-- built-in function please do not execute
+map :: (a -> b) -> [a] -> [b]
+map f [] = []
+map f (a:as) = (f a):(map f as) 
+```
+
+We can observe that the input list and the output list of the `map` function must be of the same type and have the same length.
 
 Recall in the `sum` function introduced in the earlier section. It takes a list of integers and "collapses" them into one number by summation. We can rewrite it using a fold function.
 
@@ -262,6 +269,15 @@ foldl f acc (b:bs) = foldl f (f acc b) bs
 
 
 Besides `foldl`, there exists a `foldr` function, in which the binary aggregation function expects the second argument is the accumulator.
+
+```hs
+-- built-in function please do not execute
+foldr :: (a -> b -> b) -> b -> [a] -> b
+foldr f acc [] = acc
+foldr f acc (a:as) = f a (foldr f acc as) 
+```
+
+Hence we can also define `sum` in terms of `foldr`
 
 ```hs
 sum l = foldr (\x acc -> x + acc) 0 l 
