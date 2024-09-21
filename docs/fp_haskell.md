@@ -251,9 +251,17 @@ sum :: [Int] -> Int
 sum l = foldl (\acc x -> acc + x) 0 l 
 ```
 
-The `foldl` method takes a binary function and a base accumulator as inputs, and aggregates the elements from the list using the binary function.  In particular, the binary aggreation function assumes the first argument is the accumulator.
+The `foldl` function takes a binary function and a base accumulator as inputs, and aggregates the elements from the list using the binary function.  In particular, the binary aggreation function assumes the first argument is the accumulator.
 
-Besides `foldl`, there exists a `foldr` method, in which the binary aggregation function expects the second argument is the accumulator.
+```hs
+-- built-in function please do not execute
+foldl :: (a -> b -> a) -> a -> [b] -> a
+foldl f acc [] = acc
+foldl f acc (b:bs) = foldl f (f acc b) bs 
+```
+
+
+Besides `foldl`, there exists a `foldr` function, in which the binary aggregation function expects the second argument is the accumulator.
 
 ```hs
 sum l = foldr (\x acc -> x + acc) 0 l 
