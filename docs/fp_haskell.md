@@ -189,9 +189,11 @@ Note that the optional type annotation contains a type parameter (type variable)
 
 #### A Note on Recursion
 
-Note that recursive calls to `reverse` will incur additional memory space in the machine in form of additional function call frames on the call stack.
+Note that recursive calls to `reverse` will incur additional memory space in the machine in form of additional function call frames on the call stack if a function call-stack is used in a run-time system. 
 
 A call stack frame has to created to "save" the state of function execution such as local variables. As nested recursive calls are being built up, the machine might run out of memory. This is also known as Stack Overflow Error.
+
+Haskell follows closely to lambda calculus and tries to avoid using call stack whenever it is possible. However non-tail recursive call will still impact the performance.
 
 While simple recursions that make a few tens of or hundreds of nested calls won't harm a lot, we need to rethink when we note that a recursion is going to be executed for a large number of iterations. One way to address this issue is to rewrite non-tail recursion into tail-recursion.
 
