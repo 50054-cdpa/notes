@@ -306,7 +306,7 @@ where `foldr (\x acc -> x ++ " " ++ acc) "" l` aggregates the list of words by n
 "a" ++ " " ++ ( "better" ++ " " ++ ("world" ++ " " ++ ("by" ++ " " ++ ("design" ++ " " ++""))))
 ```
 
-The method `filter` takes a boolean test function and applies it to the elements in the list, keeping those whose test result is true and dropping those whose result is false.
+The function `filter` takes a boolean test function and applies it to the elements in the list, keeping those whose test result is true and dropping those whose result is false.
 
 ```hs
 l = [1,2,3,4]
