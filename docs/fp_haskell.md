@@ -205,7 +205,9 @@ reverse l = go l []
           go (hd:tl) acc = go tl (hd:acc)
 ```
 
-In the above definition, we rely on an inner function `go` which is recursively defined. In `go`, the recursion take places at the last instruction in the `(hd:tl)` case. The trick is to
+In the above definition, we use a `where` keyword to introduce an inner function `go`. 
+`where` binding can be regarded as a let binding that exists at the top level. 
+We rely on the inner function `go` which is recursively defined. In `go`, the recursion take places at the last instruction in the `(hd:tl)` case. The trick is to
 pass around an accumulated output `acc` in each recursive call.
 
 
