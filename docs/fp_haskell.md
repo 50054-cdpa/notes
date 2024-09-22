@@ -470,7 +470,7 @@ It turns out that using Abstract Datatypes to model the above result in some eng
 
 The algebraic datatype is an answer to these issues. In essence, it is a type of data structure that consists of products and sums.
 
-In Haskell, we use `data` to define Algebraic datatypes.
+In Haskell, we use `data` to define algebraic datatypes.
 
 ```hs
 data MathExp = 
