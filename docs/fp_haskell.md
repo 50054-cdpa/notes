@@ -330,7 +330,7 @@ returns `['1','0']`.
 
 Note that `isDigit` is a function defined in the module `Data.Char`.
 
-With `map`, `foldLeft` and `filter`, we can express the implementation of algorithms in a concise and elegant way. For instance, the following function implements the quicksort algorithm:
+With `map`, `foldl` and `filter`, we can express the implementation of algorithms in a concise and elegant way. For instance, the following function implements the quicksort algorithm:
 
 ```hs
 qsort :: [Int] -> [Int] 
