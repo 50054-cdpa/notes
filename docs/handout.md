@@ -104,6 +104,8 @@ If you have course/assignment/project related questions, please post it on the d
 
 ## Project
 
+[Project Template](https://github.com/50054-cdpa/project/)
+
 The aim of the project is to apply the techniques and concepts taught in this module to develop a simple compiler for the SIMP language. 
 
 You may work as a team (up to max 3 members). Please register your team [here](https://docs.google.com/spreadsheets/d/1oH51zYVGD6ieXwr2Nc8UZxK9q4qMxBMRp-pQxgJCXL8/edit?usp=sharing).  
