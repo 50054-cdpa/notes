@@ -335,7 +335,7 @@ In the above type class definition, `t` denotes a type parameter of kind `* -> *
 The following is a prelude type class instance for `Functor List` (or as short-hand `Functor []`) 
 ```hs
 -- prelude definitions, please don't execute it.
-instance Functor List where 
+instance Functor [] where 
     fmap f l = map f l
 ```
 
