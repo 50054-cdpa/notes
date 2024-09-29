@@ -817,7 +817,7 @@ first(B) = \{d\} \\
 follow(S) = \{\} \\
 follow(X) = \{d\} \\
 follow(C) = follow(X) = \{d\} \\
-follow(B) = \{d\}
+follow(B) = \{a\}
 \end{array}
 $$
 
