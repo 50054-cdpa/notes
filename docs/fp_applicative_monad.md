@@ -168,6 +168,7 @@ Like Functor laws, every Applicative instance must follow the Applicative laws t
 3. Interchange: `u <*> (pure y)` $\equiv$ `(pure (\f->f y)) <*> u`
 4. Composition: `(((pure (.))) <*> u) <*> v) <*> w` $\equiv$ `u <*> (v <*> w)`
 
+Note that:
 
 * Identity law states that applying a lifted identity function of type `a->a` is same as an identity function of type `t a -> t a` where `t` is an applicative functor.
 * Homomorphism says that applying a lifted function (which has type `a->a` before being lifted) to a lifted value, is equivalent to applying the unlifted function to the unlifted value directly and then lift the result.
