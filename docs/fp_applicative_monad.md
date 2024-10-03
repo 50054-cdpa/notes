@@ -80,7 +80,7 @@ Recall from the last lesson, we make use of the `Functor` type class to define g
 class Functor t where 
     fmap :: (a -> b) -> t a -> t b
 
-instance Functor List where 
+instance Functor [] where 
     fmap f l = map f l
 ```
 
@@ -108,14 +108,14 @@ class Functor t => Applicative t where
 We will come to the member functions `pure` and `(<*>)` shortly. Since `Applicative` is a derived type class of 
 `Eq`, type instance of `Applicative a` must be also an instance of `Ord a`. 
 
-For example, we consider the predefined instance of `Applicative List` instance from the prelude. 
+For example, we consider the predefined instance of `Applicative []` instance from the prelude. 
 
 ```hs
 -- prelude definitions, please don't execute it.
-instance Applicative List where 
+instance Applicative [] where 
     -- pure :: a -> [a]
     pure x = [x]
-    -- (<*>) :: List (a -> b) -> [a] -> [b]
+    -- (<*>) :: [(a -> b)] -> [a] -> [b]
     (<*>) fs as = [ f a | f <- fs, a <- as ]
 ```
 
@@ -127,9 +127,9 @@ If we were to consider the alternative implementation of `<*>` for list, we coul
 
 > Can you try to translate the above list comprehension into an equivalent Haskell expression using `concatMap` and `map`?
 
-Note that since we have defined `Functor List` in the earlier section, we don't need to repeat.
+Note that since we have defined `Functor []` in the earlier section, we don't need to repeat.
 
-Let's consider some example that uses `Applicative List`. Imagine we have a set of different operations and a set of data. The operation in the set should operate independently. We want to apply all the operations to all the data. We can use the `<*>` operation.
+Let's consider some example that uses `Applicative []`. Imagine we have a set of different operations and a set of data. The operation in the set should operate independently. We want to apply all the operations to all the data. We can use the `<*>` operation.
 
 ```hs
 intOps = [\x -> x + 1, \y -> y * 2]
@@ -422,8 +422,8 @@ We have seen the option Monad and the either Monad. Let's consider a few commonl
 
 ### List Monad
 
-We know that `List` is a Functor and an Applicative.
-It is not surprising that `List` is also a Monad.
+We know that `[]` is a Functor and an Applicative.
+It is not surprising that `[]` is also a Monad.
 
 ```hs
 -- prelude definitions, please don't execute it.
@@ -431,7 +431,7 @@ It is not surprising that `List` is also a Monad.
 flip :: (a -> b -> c) -> b -> a -> c
 flip f b a = f a b
 
-instance Monad List where 
+instance Monad [] where 
     -- (>>=) :: [a] -> (a -> [b]) -> [b]
     (>>=) as f = flip concatMap as f
 ```
