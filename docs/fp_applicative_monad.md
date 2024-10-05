@@ -327,7 +327,34 @@ Now the readability is restored.
 
 Another advantage of coding with `Monad` is that its abstraction allows us to switch underlying data structure without major code change.
 
-Suppose we would like to use `Either String a` or some other equivalent as return type of `eval` function to support better error message. But before that, let's consider some subclasses of the `Monad` type classes provided in the Haskell standard library `mtl`.
+
+For instance, we find the following `Functor`, `Applicative` and `Monad` instances for `Either String`
+
+```hs
+-- prelude definition
+instance Functor (Either String) where 
+    -- fmap :: (a -> b) -> Either String a -> Either String b 
+    fmap _ (Left msg) = Left msg
+    fmap f (Right a)  = Right (f a)
+
+-- prelude definition
+instance Applicative (Either String) where 
+    -- pure :: a -> Either String a 
+    pure = Right
+    -- (<*>) :: Either String (a -> b) -> Either String a -> Either String b
+    (<*>) (Left msg) _        = Left msg 
+    (<*>) _ (Left msg)        = Left msg
+    (<*>) (Right f) (Right a) = Right (f a)
+
+-- prelude definition
+instance Monad (Either String) where 
+    -- (>>=) :: Either String a -> (a -> Either String b) -> Either String b 
+    (>>=) (Left msg) _ = Left msg 
+    (>>=) (Right a) f = f a
+```
+
+Suppose we would like to use `Either String a` or some other equivalent as return type of `eval` function to support better error message. 
+But before that, let's consider some subclasses of the `Monad` type classes provided in the Haskell standard library `mtl`.
 
 ```hs
 -- mtl definition, please don't execute it.
