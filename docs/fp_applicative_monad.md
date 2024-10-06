@@ -542,8 +542,6 @@ It denotes a computation that takes the reference (shared) environment `r` and p
 Then we provide the necessarily implementation to qualify `Reader r` as a `Monad` instance.
 
 ```hs
--- mtl definition with monomorphication, please don't execute it.
-data Reader r a = Reader {run :: r -> a}
 instance Functor (Reader r) where 
     -- fmap :: (a -> b) -> Reader r a -> Reader r b
     fmap f ra = Reader ( \r ->
