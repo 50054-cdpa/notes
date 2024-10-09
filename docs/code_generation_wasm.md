@@ -708,7 +708,7 @@ In this section, we consider the generated Web Assembly (WASM) codes from PA.
 
 $$
 \begin{array}{rccl}
-(\tt WASM\ Instructions) & wis & ::= & [] \mid wi\ wis\\ 
+(\tt WASM\ Instructions) & wis & ::= & [] \mid wi;wis\\ 
 (\tt WASM\ Instruction) & wi & ::= & pi \mid bi \\ 
 (\tt Plain\ Instruction) & pi & ::= & nop \mid br\ L \mid brIf\ L \mid return \mid get\ n \mid set\ n \mid \\ 
 & & & const\ c \mid add \mid sub \mid mul \mid eq \mid lt \\
@@ -786,7 +786,7 @@ $$
 \begin{array}{rccl}
 (\tt WASM\ Environment) & \Delta & \subseteq & n \times c \\ 
 (\tt Value\ Stack) & S & = & \_,\_ \mid c,\_ \mid c,c  \\ 
-(\tt Block\ Stack) & B & = & [] \mid (bi,wis)\ B
+(\tt Block\ Stack) & B & = & [] \mid (bi,wis);B
 \end{array}
 $$
 
@@ -804,61 +804,64 @@ $B$ and $B'$ are the current and the next states of the block stack.
 
 $$
 \begin{array}{rc}
-(\tt set1) & (\Delta, \_, \_, set\ n;jis) \longrightarrow (\Delta, \Delta(n), \_, jis) \\ \\ 
-(\tt sjLoad2) & J \vdash (\Delta, c, \_, iload\ n;jis) \longrightarrow (\Delta, c, \Delta(n), jis) \\ \\ 
-(\tt sjPush1) & J \vdash (\Delta, \_, \_, sipush\ c;jis) \longrightarrow (\Delta, c, \_, jis) \\ \\ 
-(\tt sjPush2) & J \vdash (\Delta, c_0, \_, sipush\ c_1;jis) \longrightarrow (\Delta, c_0, c_1, jis)
+(\tt set1) & (\Delta, \_, \_, set\ n; wis, B) \longrightarrow (\Delta, \Delta(n), \_, wis, B) \\ \\ 
+(\tt set2) & (\Delta, c, \_, set\ n; wis, B) \longrightarrow (\Delta, c, \Delta(n), wis, B) \\ \\ 
+(\tt const1) & (\Delta, \_, \_, const\ c;wis, B) \longrightarrow (\Delta, c, \_, wis, B) \\ \\ 
+(\tt const2) & (\Delta, c_0, \_, cosnt\ c_1;wis, B) \longrightarrow (\Delta, c_0, c_1, wis, B)
 \end{array}
 $$
 
-The rules $(\tt sjLoad1)$ and  $(\tt sjLoad2)$ handles the loading variable's content to the stack registers. 
-The rules $(\tt sjPush1)$ and  $(\tt sjPush2)$ handles the loading constant to the stack registers. 
+The rules $(\tt set1)$ and  $(\tt set2)$ handles the loading variable's content to the stack registers. 
+The rules $(\tt const1)$ and  $(\tt const2)$ handles the loading constant to the stack registers. 
 
 
 $$
 \begin{array}{rc}
-(\tt sjLabel) & J \vdash (\Delta, r_0, r_1, ilabel\ l;jis) \longrightarrow (\Delta, r_0, r_1, jis) \\ \\ 
+(\tt get) & (\Delta, c, \_, get\ n;wis, B) \longrightarrow (\Delta \oplus(n,c), \_, \_, wis, B) \\ \\ 
 \end{array}
 $$
 
-The rule $(\tt sjLabel)$ processes the $ilabel\ l$ instruction. It is being skipped, because it serves as a syntactical marking (refer to the $codeAfterLabel()$ function below), has no impact to the semantic operation.
+The rule $(\tt get)$ processes the $get\ n$ instruction by popping the register $r_0$ from the stack and store its content with variable $n$ in $\Delta$.
 
 $$
 \begin{array}{rc}
-(\tt sjStore) & J \vdash (\Delta, c, \_, istore\ n;jis) \longrightarrow (\Delta \oplus(n,c), \_, \_, jis) \\ \\ 
+(\tt add) & (\Delta, c_0, c_1, add;wis, B) \longrightarrow (\Delta, c_0+c_1, \_, wis, B) \\ \\ 
+(\tt sub) & (\Delta, c_0, c_1, sub;wis, B) \longrightarrow (\Delta, c_0-c_1, \_, wis, B) \\ \\ 
+(\tt mul) & (\Delta, c_0, c_1, mul;wis, B) \longrightarrow (\Delta, c_0*c_1, \_, wis, B)  
 \end{array}
 $$
 
-The rule $(\tt sjStore)$ processes the $istore\ n$ instruction by popping the register $r_0$ from the stack and store its content with variable $n$ in $\Delta$.
+The rules $(\tt add)$, $(\tt sub)$ and $(\tt mul)$ process the binary operation assuming both registers in the stack holding some constants. The result of the computation is stored in $r_0$ while $r_1$ becomes empty.
 
 $$
 \begin{array}{rc}
-(\tt sjAdd) & J \vdash (\Delta, c_0, c_1, iadd;jis) \longrightarrow (\Delta, c_0+c_1, \_, jis) \\ \\ 
-(\tt sjSub) & J \vdash (\Delta, c_0, c_1, isub;jis) \longrightarrow (\Delta, c_0-c_1, \_, jis) \\ \\ 
-(\tt sjMul) & J \vdash (\Delta, c_0, c_1, imul;jis) \longrightarrow (\Delta, c_0*c_1, \_, jis)  
-\end{array}
-$$
-
-The rules $(\tt sjAdd)$, $(\tt sjSub)$ and $(\tt sjMul)$ process the binary operation assuming both registers in the stack holding some constants. The result of the computation is held by $r_0$ while $r_1$ becomes empty.
-
-$$
-\begin{array}{rc}
-(\tt sjGoto) & J \vdash (\Delta, r_0, r_1, igoto\ l';jis) \longrightarrow (\Delta, r_0, r_1, codeAfterLabel(J, l')) \\ \\ 
-(\tt sjCmpNE1) & \begin{array}{c} 
-                c_0 \neq c_1 \ \ \ \ jis' = codeAfterLabel(J, l')
+(\tt eq1) & \begin{array}{c} 
+                c_0 == c_1 
                 \\ \hline
-                J \vdash  (\Delta, c_0, c_1, if\_icmpne\ l';jis) \longrightarrow (\Delta, \_, \_, jis') 
+                (\Delta, c_0, c_1, eq;wis, B) \longrightarrow (\Delta, 1, \_, wis, B) 
                 \end{array} \\ \\
-(\tt sjCmpNE2) & \begin{array}{c} 
-                c_0 = c_1 
+(\tt eq2) & \begin{array}{c} 
+                c_0 \neq c_1 
                 \\ \hline
-                J \vdash  (\Delta, c_0, c_1, if\_icmpne\ l';jis) \longrightarrow (\Delta , \_, \_, jis) 
+                (\Delta, c_0, c_1, eq;wis, B) \longrightarrow (\Delta , 0, \_, wis, B) 
                 \end{array} \\ \\ 
-(\tt sjCmpGE1) & \begin{array}{c} 
-                c_0 \ge c_1 \ \ \ \ jis' = codeAfterLabel(J, l')
+(\tt lt1) & \begin{array}{c} 
+                c_0 < c_1 
                 \\ \hline
-                J \vdash  (\Delta, c_0, c_1, if\_icmpge\ l';jis) \longrightarrow (\Delta, \_, \_, jis') 
+                (\Delta, c_0, c_1, lt;wis, B) \longrightarrow (\Delta, 1, \_, wis, B) 
                 \end{array} \\ \\
+(\tt lt2) & \begin{array}{c} 
+                c_0 >= c_1 
+                \\ \hline
+                (\Delta, c_0, c_1, lt;wis, B) \longrightarrow (\Delta , 0, \_, wis, B) 
+                \end{array} \\ \\ 
+$$
+
+
+$$
+(\tt ifT) &   (\Delta, 1, \_, if\{wis\} else\{wis'\};wis'', B) \longrightarrow (\Delta, \_, \_, jis') 
+\\ \\ 
+
 (\tt sjCmpGE2) & \begin{array}{c} 
                 c_0 \lt c_1 
                 \\ \hline

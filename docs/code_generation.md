@@ -779,7 +779,7 @@ $$
 \end{array}
 $$
 
-An JVM program is a sequence of JVM instructions. $\Delta$ is local environment maps JVM variables to constants. $S$ is a 2 slots stack where the left slot is the bottom ($r_0$) and the right slot is the top ($r_1$). $\_$ denotes that a slot is vacant.
+An JVM program is a sequence of JVM instructions. $\Delta$ is local environment that maps JVM variables to constants. $S$ is a 2 slots stack where the left slot is the bottom ($r_0$) and the right slot is the top ($r_1$). $\_$ denotes that a slot is vacant.
 
 We can decribe the operational semantics of JVM byte codes using the follow rule form
 
@@ -788,7 +788,7 @@ $$
 J \vdash (\Delta, S, jis) \longrightarrow (\Delta', S', jis')
 $$
 
-$J$ is the entire program, it is required when we process jumps and conditional jump, the rule rewrites a configuration $(\Delta, S, jis)$ to the next configuration $(\Delta', S', jis')$, where $\Delta$ and $\Delta'$ are the local environments, $S$ and $S'$ are the stacks, $jis$ and $jis'$ are the currrent and next set of instructions to be processed. 
+$J$ is the entire program, it is required when we process jumps and conditional jump. The rule rewrites a configuration $(\Delta, S, jis)$ to the next configuration $(\Delta', S', jis')$, where $\Delta$ and $\Delta'$ are the current and the next states of the local environment, $S$ and $S'$ are the current and the next states of the value stack, $jis$ and $jis'$ are the currrent and next sets of instructions to be processed. 
 
 $$
 \begin{array}{rc}
