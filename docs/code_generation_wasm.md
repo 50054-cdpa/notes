@@ -786,7 +786,7 @@ $$
 \begin{array}{rccl}
 (\tt WASM\ Environment) & \Delta & \subseteq & n \times c \\ 
 (\tt Value\ Stack) & S & = & \_,\_ \mid c,\_ \mid c,c  \\ 
-(\tt Block\ Stack) & B & = & [] \mid (bi,wis);B
+(\tt Block\ Instruction\ Stack) & B & = & [] \mid (bi,wis);B
 \end{array}
 $$
 
@@ -855,42 +855,85 @@ $$
                 \\ \hline
                 (\Delta, c_0, c_1, lt;wis, B) \longrightarrow (\Delta , 0, \_, wis, B) 
                 \end{array} \\ \\ 
+\end{array}
 $$
 
+The rules $(\tt eq1)$, $(\tt eq2)$, ${\tt lt1}$ and $(\tt lt2)$ process the boolean operation assuming both registers in the stack holding some constants. The result of the computation is stored in $r_0$ while $r_1$ becomes empty.
+
+The next set of rules evaluate by pushing block instructions to the block instruction statck. 
 
 $$
-(\tt ifT) &   (\Delta, 1, \_, if\{wis\} else\{wis'\};wis'', B) \longrightarrow (\Delta, \_, \_, jis') 
+\begin{array}{cc}
+(\tt block) & (\Delta, r_0, r_1, block \{wis\};wis', B) \longrightarrow (\Delta, r_0, r_1, wis, (block\{wis\}, wis');B) \\ \\ 
+(\tt loop) & (\Delta, r_0, r_1, loop \{wis\};wis', B) \longrightarrow (\Delta, r_0, r_1, wis, (loop\{wis\}, wis');B) \\ \\ 
+
+(\tt ifT) &   (\Delta, 1, \_, if\{wis\} else\{wis'\};wis'', B) \longrightarrow (\Delta, \_, \_, wis, (block \{wis\}, wis''); B) 
 \\ \\ 
-
-(\tt sjCmpGE2) & \begin{array}{c} 
-                c_0 \lt c_1 
-                \\ \hline
-                J \vdash  (\Delta, c_0, c_1, if\_icmpge\ l';jis) \longrightarrow (\Delta , \_, \_, jis) 
-                \end{array} \\ \\ 
+(\tt ifF) &   (\Delta, 0, \_, if\{wis\} else\{wis'\};wis'', B) \longrightarrow (\Delta, \_, \_, wis', (block \{wis'\}, wis''); B) 
 \end{array}
 $$
 
-The last set of rules handle the jump and conditional jumps. The rule $(\tt sjGoto)$ processes a goto instruction by replacing the instructions to be processed $jis$ by $codeAfterLabel(J, l')$. Recall that $J$ is storing the entire sequence of JVM instructions, $codeAfterLabel(J, l')$ extracts the suffix of $J$ starting from the point where $ilabel\ l'$ is found. 
+
+* The rule $(\tt block)$ processes a sequence of instructions starting with a block instruction. It proceeds by evaluating the body of the block instruction and pushing the block instruction and its following instructions into the block instruction stack. 
+* The rule ${\tt loop}$ works in a similar manner. 
+* The rules $(\tt ifT)$ and $(\tt ifF)$ handle the if-instruction. Depending on the value residing in register `0` in the value stack, it proceeds with evaluating the then-instructions or the else-instructions, by pushing the to-be-evaluated instruction and the following instructions into the block instruction stack as a "block instruction".  
+
+
+The next set of rules evaluate by popping the top of the block instruction stack.
+
+(brIfTn)        (\Delta, 1, _, brIf n;wis, (bi, wsi');B ) --> (\Delta, 1, _, brIf (n-1);wis, B)
+
+(brIfT0Block)   (\Delta, 1, _, brIf 0;wis, (block {wis'}, wis'');B ) --> (\Delta, _, _, wis'', B)
+
+(brIfT0Loop)    (\Delta, 1, _, brIf 0;wis, (loop {wis'}, wis'');B ) --> (\Delta, _, _, wis', (loop {wis'}, wis'');B)
+
+(brIfF)         (\Delta, 0, _, brIf n;wis, B) --> (\Delta, _, _, wis, B)
+
 
 $$
-\begin{array}{rcl}
-codeAfterLabel(ireturn, l) & = & error \\ 
-codeAfterLabel(ilabel\ l;jis, l') & = & 
-            \left \{ \begin{array}{lc}
-                      jis & l == l'  \\
-                      codeAfterLabel(jis, l') & {\tt otherwise}
-                     \end{array}
-            \right . \\ 
-codeAfterLabel(ji; jis, l) & = & codeAfterLabel(jis, l)
+\begin{array}{cc}
+(\tt br0Block) &  (\Delta, r_0, r_1, br\ 0,(block \{wis'\}, wis'');B) \longrightarrow (\Delta, r_0, r_1, wis'', B) 
+\\ \\ 
+(\tt br0Loop) &  (\Delta, r_0, r_1, br\ 0,(loop \{wis'\}, wis'');B) \longrightarrow (\Delta, r_0, r_1, wis', (loop \{wis'\}, wis'');B) 
+\\ \\ 
+(\tt brN) &  (\Delta, r_0, r_1, br\ n,(bi, wis);B) \longrightarrow (\Delta, r_0, r_1, br\ (n-1), B) \\ \\ 
+
+(\tt brIfT0Block) &  (\Delta, 1, \_, brIf\ 0;wis,(block \{wis'\}, wis'');B) \longrightarrow (\Delta, \_, \_, wis'', B) \\ \\ 
+
+(\tt brIfT0Loop) &  (\Delta, 1, \_, brIf\ 0;wis,(loop \{wis'\}, wis'');B) \longrightarrow (\Delta, \_, \_, wis', (loop \{wis'\}, wis'');B) 
+\\ \\ 
+(\tt brIfTN) &  (\Delta, 1, \_, brIf\ n;wis,(bi, wis');B) \longrightarrow (\Delta, 1, \_, brIf\ (n-1), B) \\ \\ 
+
+(\tt brIfF) & (\Delta, 0, \_, brIf\ _;wis, B) \longrightarrow (\Delta, \_, \_, wis, B)
 \end{array}
 $$
 
-The rule $(\tt sjCmpNE1)$ performs the jump when the values held by the stacks are not equal.
-The rule $(\tt sjCmpNE2)$ moves onto the next instruction (skpping the jump) when the values held by the stacks are equal.
-The rule $(\tt sjCmpGE1)$ performs the jump when the values in the stack $c_0 \geq c_1$.
-The rule $(\tt sjCmpGE2)$ moves onto the next instruction (skpping the jump) when the $c_0 \lt c_1$.
+* The rules $(\tt br0Block)$ and $(\tt br0Loop)$ handle the case in which a branch instruction is applied with `0`. 
+
+    1. When the top of the block instruction stack is a block instruction, the computation proceeds with the "continuation" of the block instruction, namely $wis''$. 
+    1. When the top of hte stack is a loop instruction, the computation proceeds by going through another iteration of the loop. 
+
+* The rule $(\tt brN)$ handle the case in which the branch instruction's operaand is a positive integer $n$, the computation proceeds by evaluating the branch operation with $n-1$ with the top of the block instruction stack removed.  
+
+* The rules $(\tt brIfT0Block)$ and $(\tt brIfT0Loop)$ process the conditional branch instructions in the similar with as $(\tt br0Block)$ and $(\tt br0Loop)$, except that they are applicable only when the register 0 is storing the value `1`. 
+* The rule $(\tt brIfTN)$ is similar to $(\tt brN)$, excep that it is applicable when the register 0 is having value `1`.
+* The rule $(\tt brIfF)$ is applied when the register `0` is having value `0` and skips the the conditional branch.
 
 
+
+The last set of rules handle the no-op and empty instruction sequence. 
+
+$$
+\begin{array}{cc}
+(\tt Nop) &  (\Delta, r_0, r_1, nop;wis,B) \longrightarrow (\Delta, r_0, r_1, wis, B) \\ \\ 
+(\tt empty) & (\Delta, r_0, r_1, [], (bi, wis');B ) \longrightarrow (\Delta, r_0, r_1, wis', B)
+\end{array}
+$$
+
+The $(\tt Nop)$ rule skip the $nop$ instruction. The $(\tt empty)$ rule denotes the end of the current sequence and proceeds with the "following" instructions in the block instruction stack. 
+
+
+## FRONTIER
 ## Conversion from PA to JVM bytecodes
 
 A simple conversion from PA to JVM bytecodes can be described using the following deduction system.
