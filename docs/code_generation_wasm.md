@@ -860,13 +860,12 @@ $$
 
 The rules $(\tt eq1)$, $(\tt eq2)$, ${\tt lt1}$ and $(\tt lt2)$ process the boolean operation assuming both registers in the stack holding some constants. The result of the computation is stored in $r_0$ while $r_1$ becomes empty.
 
-The next set of rules evaluate by pushing block instructions to the block instruction statck. 
+The next set of rules evaluate by pushing block instructions to the block instruction stack. 
 
 $$
 \begin{array}{cc}
 (\tt block) & (\Delta, r_0, r_1, block \{wis\};wis', B) \longrightarrow (\Delta, r_0, r_1, wis, (block\{wis\}, wis');B) \\ \\ 
 (\tt loop) & (\Delta, r_0, r_1, loop \{wis\};wis', B) \longrightarrow (\Delta, r_0, r_1, wis, (loop\{wis\}, wis');B) \\ \\ 
-
 (\tt ifT) &   (\Delta, 1, \_, if\{wis\} else\{wis'\};wis'', B) \longrightarrow (\Delta, \_, \_, wis, (block \{wis\}, wis''); B) 
 \\ \\ 
 (\tt ifF) &   (\Delta, 0, \_, if\{wis\} else\{wis'\};wis'', B) \longrightarrow (\Delta, \_, \_, wis', (block \{wis'\}, wis''); B) 
