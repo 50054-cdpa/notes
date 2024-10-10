@@ -1003,6 +1003,7 @@ $$
                 \end{array} 
 \end{array}
 $$
+
 The rule $(\tt wEq)$ handles a normal equality test which is not followed by a conditional jump.
 
 
