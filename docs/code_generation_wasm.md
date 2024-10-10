@@ -996,7 +996,7 @@ $$
 \begin{array}{rc}
      {\tt (wEq)} & \begin{array}{c}
                     M \vdash_{src} s_1 \Rightarrow wis_1 \ \ \ M \vdash_{src} s_2 \Rightarrow wis_2 \\
-                    M \vdash lis' \Rightarrow wis_3 \ \ \ head(lis')  \texttt{is not an } ifn\ \texttt{instruction}\\ 
+                    M \vdash lis' \Rightarrow wis_3 \ \ \ head(lis')  \texttt{is not an } ifn\ \texttt{instruction} \\ 
                     \hline
                     M, L \vdash l_1:t \leftarrow s_1 == s_2; lis' \Rightarrow \\ 
                      wis_1 + wis_2 + [eq] + wis_3
@@ -1041,7 +1041,7 @@ $$
 The above rules ${\tt (wLtLoop)}$, ${\tt (wLtIf)}$ and ${\tt (wLt)}$ handle the less than test. They are similar to their equality test counter-parts described earlier. 
 
 $$
-\begin{array}{rl}
+\begin{array}{rc}
      {\tt (wPlus)} & \begin{array}{c}
                     M \vdash_{src} s_1 \Rightarrow wis_1 \ \ \ M \vdash_{src} s_2 \Rightarrow wis_2 \ \ \ M \vdash lis' \Rightarrow wis_3 \\
                     \hline
