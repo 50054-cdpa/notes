@@ -888,13 +888,10 @@ $$
 (\tt br0Loop) &  (\Delta, r_0, r_1, br\ 0,(loop \{wis'\}, wis'');B) \longrightarrow (\Delta, r_0, r_1, wis', (loop \{wis'\}, wis'');B) 
 \\ \\ 
 (\tt brN) &  (\Delta, r_0, r_1, br\ n,(bi, wis);B) \longrightarrow (\Delta, r_0, r_1, br\ (n-1), B) \\ \\ 
-
 (\tt brIfT0Block) &  (\Delta, 1, \_, brIf\ 0;wis,(block \{wis'\}, wis'');B) \longrightarrow (\Delta, \_, \_, wis'', B) \\ \\ 
-
 (\tt brIfT0Loop) &  (\Delta, 1, \_, brIf\ 0;wis,(loop \{wis'\}, wis'');B) \longrightarrow (\Delta, \_, \_, wis', (loop \{wis'\}, wis'');B) 
 \\ \\ 
 (\tt brIfTN) &  (\Delta, 1, \_, brIf\ n;wis,(bi, wis');B) \longrightarrow (\Delta, 1, \_, brIf\ (n-1), B) \\ \\ 
-
 (\tt brIfF) & (\Delta, 0, \_, brIf\ _;wis, B) \longrightarrow (\Delta, \_, \_, wis, B)
 \end{array}
 $$
@@ -998,7 +995,6 @@ The rules ${\tt (wEqLoop)}$ and ${\tt (wEqIf)}$ deal with the scenarios in which
 $$
 \begin{array}{rc}
      {\tt (wEq)} & \begin{array}{c}
-                     
                     M \vdash_{src} s_1 \Rightarrow wis_1 \ \ \ M \vdash_{src} s_2 \Rightarrow wis_2 \\
                     M \vdash lis' \Rightarrow wis_3 \ \ \ head(lis')  \texttt{is not an } ifn\ \texttt{instruction}\\ 
                     \hline
@@ -1032,8 +1028,7 @@ $$
                      wis_1 + wis_2 + [lt, if \{ wis_3 \} else \{ wis_4 \}] + wis_5
                 \end{array} 
 \\ \\ 
-     {\tt (wLt)} & \begin{array}{c}
-                     
+     {\tt (wLt)} & \begin{array}{c}                     
                     M \vdash_{src} s_1 \Rightarrow wis_1 \ \ \ M \vdash_{src} s_2 \Rightarrow wis_2 \\
                     M \vdash lis' \Rightarrow wis_3 \ \ \ head(lis')  \texttt{is not an } ifn\ \texttt{instruction}\\ 
                     \hline
