@@ -1165,7 +1165,7 @@ return (get s)
 ```
 which is closer to source program. 
 
-In the project, we see the PA to WASM conversion rules being re-phrased into the folded expression form.
+In the project, we'll find the PA to WASM conversion rules being re-phrased into the folded expression form.
 
 #### Further Reading for WASM bytecode generation
 
