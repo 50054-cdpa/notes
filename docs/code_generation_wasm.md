@@ -804,24 +804,24 @@ $B$ and $B'$ are the current and the next states of the block stack.
 
 $$
 \begin{array}{rc}
-(\tt set1) & (\Delta, \_, \_, set\ n; wis, B) \longrightarrow (\Delta, \Delta(n), \_, wis, B) \\ \\ 
-(\tt set2) & (\Delta, c, \_, set\ n; wis, B) \longrightarrow (\Delta, c, \Delta(n), wis, B) \\ \\ 
+(\tt get1) & (\Delta, \_, \_, get\ n; wis, B) \longrightarrow (\Delta, \Delta(n), \_, wis, B) \\ \\ 
+(\tt get2) & (\Delta, c, \_, get\ n; wis, B) \longrightarrow (\Delta, c, \Delta(n), wis, B) \\ \\ 
 (\tt const1) & (\Delta, \_, \_, const\ c;wis, B) \longrightarrow (\Delta, c, \_, wis, B) \\ \\ 
 (\tt const2) & (\Delta, c_0, \_, cosnt\ c_1;wis, B) \longrightarrow (\Delta, c_0, c_1, wis, B)
 \end{array}
 $$
 
-The rules $(\tt set1)$ and  $(\tt set2)$ handles the loading variable's content to the stack registers. 
+The rules $(\tt get1)$ and  $(\tt get2)$ handles the loading variable's content to the stack registers. 
 The rules $(\tt const1)$ and  $(\tt const2)$ handles the loading constant to the stack registers. 
 
 
 $$
 \begin{array}{rc}
-(\tt get) & (\Delta, c, \_, get\ n;wis, B) \longrightarrow (\Delta \oplus(n,c), \_, \_, wis, B) \\ \\ 
+(\tt set) & (\Delta, c, \_, set\ n;wis, B) \longrightarrow (\Delta \oplus(n,c), \_, \_, wis, B) \\ \\ 
 \end{array}
 $$
 
-The rule $(\tt get)$ processes the $get\ n$ instruction by popping the register $r_0$ from the stack and store its content with variable $n$ in $\Delta$.
+The rule $(\tt set)$ processes the $set\ n$ instruction by popping the register $r_0$ from the stack and store its content with variable $n$ in $\Delta$.
 
 $$
 \begin{array}{rc}
@@ -881,14 +881,6 @@ $$
 
 The next set of rules evaluate by popping the top of the block instruction stack.
 
-(brIfTn)        (\Delta, 1, _, brIf n;wis, (bi, wsi');B ) --> (\Delta, 1, _, brIf (n-1);wis, B)
-
-(brIfT0Block)   (\Delta, 1, _, brIf 0;wis, (block {wis'}, wis'');B ) --> (\Delta, _, _, wis'', B)
-
-(brIfT0Loop)    (\Delta, 1, _, brIf 0;wis, (loop {wis'}, wis'');B ) --> (\Delta, _, _, wis', (loop {wis'}, wis'');B)
-
-(brIfF)         (\Delta, 0, _, brIf n;wis, B) --> (\Delta, _, _, wis, B)
-
 
 $$
 \begin{array}{cc}
@@ -933,136 +925,171 @@ $$
 The $(\tt Nop)$ rule skip the $nop$ instruction. The $(\tt empty)$ rule denotes the end of the current sequence and proceeds with the "following" instructions in the block instruction stack. 
 
 
-## FRONTIER
-## Conversion from PA to JVM bytecodes
+## Conversion from PA to WASM bytecodes
 
-A simple conversion from PA to JVM bytecodes can be described using the following deduction system.
+A simple conversion from PA to WASM bytecodes can be described using the following deduction system.
 
-Let $M$ be a mapping from PA temporary variables to JVM local variables.
-Let $L$ be a mapping from PA labels (which are used as the targets in some jump instructions) to JVM labels.
+Let $M$ be a mapping from PA temporary variables to WASM local variables.
 
 We have three types of rules.
 
-* $M, L \vdash lis \Rightarrow jis$, convert a sequence of PA labeled instructions to a sequence of JVM bytecode instructions.
-* $M \vdash s \Rightarrow jis$, convert a PA operand into a sequence of JVM bytecode instructions.
-* $L \vdash l \Rightarrow jis$, convert a PA label into a JVM bytecode instructions, usually it is either empty or singleton.
+* $M \vdash lis \Rightarrow wis$, converts a sequence of PA labeled instructions to a sequence of WASM bytecode instructions.
+* $M \vdash_{src} s \Rightarrow wis$, converts a PA (source) operand into a sequence of WASM bytecode instructions.
+* $M(t)$, converts a PA variable into a WASM variable. 
 
 ### Converting PA labeled instructions
 
 $$
 \begin{array}{rl}
-     {\tt (jMove)} & \begin{array}{c}
-                    L \vdash l \Rightarrow jis_0 \ \ \ M \vdash s \Rightarrow jis_1 \ \ \ M,L\vdash lis \Rightarrow jis_2 \\
-                    \hline
-                    M, L \vdash l:t \leftarrow s; lis \Rightarrow jis_0 + jis_1 + [istore\ M(t)] + jis_2
-                \end{array} \\  
+    {\tt (wReturn)} & \begin{array}{c}
+                M \vdash_{src} s \Rightarrow wis_1 \\
+                \hline
+                M \vdash l_1:rret \leftarrow s;  l_2: ret \Rightarrow wis_1 + [return] 
+            \end{array} \\   
 \end{array}
 $$
 
-The rule ${\tt (jMove)}$ handles the case of a move instruction. In this case we make use of the auxiliary rule $L \vdash l_1 \Rightarrow jis_0$ to generate the label, in case the label is used as the target in some jump instructions. The auxiliary rule $M \vdash s \Rightarrow jis_1$ converts a PA operand into a loading instruction in JVM bytecodes. Details fo these auxiliary functions can be found in the next subsection.
-
-$$
-\begin{array}{rl}
-     {\tt (jEq)} & \begin{array}{c}
-                    L \vdash l_1 \Rightarrow jis_0 \ \ \ M \vdash s_1 \Rightarrow jis_1 \ \ \ M \vdash s_2 \Rightarrow jis_2 \ \ \ M,L \vdash lis \Rightarrow jis_3 \\
-                    \hline
-                    M, L \vdash l_1:t \leftarrow s_1 == s_2; l_2:ifn\ t\ goto\ l_3 ; lis \Rightarrow jis_0 + jis_1 + jis_2 + [if\_icmpne\ L(l_3)] + jis_3
-                \end{array} \\  \\
-     {\tt (jLThan)} & \begin{array}{c}
-                    L \vdash l_1 \Rightarrow jis_0 \ \ \ M \vdash s_1 \Rightarrow jis_1 \ \ \ M \vdash s_2 \Rightarrow jis_2 \ \ \ M,L \vdash lis \Rightarrow jis_3 \\
-                    \hline
-                    M, L \vdash l_1:t \leftarrow s_1 < s_2; l_2:ifn\ t\ goto\ l_3 ; lis \Rightarrow jis_0 + jis_1 + jis_2 + [if\_icmpge\ L(l_3)] + jis_3
-                \end{array} \\  
-\end{array}
-$$
-
-The rules $(\tt jEq)$ and $(\tt jLThan)$ translate the conditional jump instruction from PA to JVM. In these cases, we have to look at the first two instructions in the sequence. This is because in PA the conditional jump is performed in 2 instructions; while in JVM, it is done in a single step with two different instructions.
-
-$$
-\begin{array}{rl}
-     {\tt (jAdd)} & \begin{array}{c}
-                    L \vdash l \Rightarrow jis_0 \ \ \ M \vdash s_1 \Rightarrow jis_1 \ \ \ M \vdash s_2 \Rightarrow jis_2 \ \ \ M,L \vdash lis \Rightarrow jis_3 \\
-                    \hline
-                    M, L \vdash l:t \leftarrow s_1 + s_2; lis \Rightarrow jis_0 + jis_1 + jis_2 + [iadd, istore\ M(t)] + jis_3
-                \end{array} \\  
-\end{array}
-$$
-
-$$
-\begin{array}{rl}
-     {\tt (jSub)} & \begin{array}{c}
-                    L \vdash l \Rightarrow jis_0 \ \ \ M \vdash s_1 \Rightarrow jis_1 \ \ \ M \vdash s_2 \Rightarrow jis_2 \ \ \ M,L \vdash lis \Rightarrow jis_3 \\
-                    \hline
-                    M, L \vdash l:t \leftarrow s_1 - s_2; lis \Rightarrow jis_0 + jis_1 + jis_2 + [isub, istore\ M(t)] + jis_3
-                \end{array} \\  
-\end{array}
-$$
+The rule ${\tt (wReturn)}$ convers the PA return instructions. It first converts the operand $s$ into a sequence of WASM instructions $wis_1$. At this stage, the content of $s$ must have been loaded to the register 0. Next we invoke the WASM $return$.
 
 
 $$
 \begin{array}{rl}
-     {\tt (jMul)} & \begin{array}{c}
-                    L \vdash l \Rightarrow jis_0 \ \ \ M \vdash s_1 \Rightarrow jis_1 \ \ \ M \vdash s_2 \Rightarrow jis_2 \ \ \ M,L \vdash lis \Rightarrow jis_3 \\
+    {\tt (wMove)} & \begin{array}{c}
+                M \vdash_{src} s \Rightarrow wis_1\ M \vdash lis \Rightarrow wis_2\\
+                \hline
+                M \vdash l: t \leftarrow s;  lis \Rightarrow wis_1 + [set\ M(t) ] +wis_2 
+            \end{array} \\   
+\end{array}
+$$
+
+
+The rule ${\tt (wMove)}$ handles the case of a move instruction. In this case we make use of the auxiliary rule $M \vdash s \Rightarrow wis_1$ to convert the operand $s$ into a loading instruction in WASM bytecodes. The content of $s$ should be now in the regstier. We make use of $get\ M(t)$ to transfer the value into the WASM variable $M(t)$. Details fo these auxiliary functions can be found in the next subsection. Using recursion, we convert the instructions sequence $lis$ into $wis_2$. 
+                        
+
+$$
+\begin{array}{rc}
+     {\tt (wEqLoop)} & \begin{array}{c}
+                    (l_3-1):goto\ l_4 \in lis' \\ l_4 == l_1 \\ lis_1, lis_2 = split(l_3, lis') \\  
+                    M \vdash_{src} s_1 \Rightarrow wis_1 \ \ \ M \vdash_{src} s_2 \Rightarrow wis_2 \\
+                    M \vdash lis_1 \Rightarrow wis_3 \ \ \ M \vdash lis_2 \Rightarrow wis_4 \\ 
                     \hline
-                    M, L \vdash l:t \leftarrow s_1 * s_2; lis \Rightarrow jis_0 + jis_1 + jis_2 + [imul, istore\ M(t)] + jis_3
-                \end{array} \\  
-\end{array}
-$$
-
-The rules $(\tt jAdd)$,  $(\tt jSub)$ and  $(\tt jMul)$ handle the binary operation instruction in PA to JVM.
-
-$$
-\begin{array}{rl}
-     {\tt (jGoto)} & \begin{array}{c}
-                    L \vdash l_1 \Rightarrow jis_0\ \ \  M,L \vdash lis \Rightarrow jis_1 \\
+                    M, L \vdash l_1:t \leftarrow s_1 == s_2; l_2:ifn\ t\ goto\ l_3 ; lis \Rightarrow \\ 
+                     wis_1 + wis_2 + [eq, if \{ loop \{ wis_3 + wis_1 + wis_2 + [ eq, brIf\ 0 ] \} \} else \{ nop \}] + wis_4
+                \end{array} 
+\\ \\
+     {\tt (wEqIf)} & \begin{array}{c}
+                    (l_3-1):goto\ l_4 \in lis' \\ l_4 \neq l_1 \\ 
+                    lis_1, lis_2 = split(l_3, lis') \\ 
+                    lis_3, lis_4 = split(l_4, lis_2) \\  
+                    M \vdash_{src} s_1 \Rightarrow wis_1 \ \ \ M \vdash_{src} s_2 \Rightarrow wis_2 \\
+                    M \vdash lis_1 \Rightarrow wis_3 \ \ \ M \vdash lis_2 \Rightarrow wis_4 \ \ \ M \vdash lis_4 \Rightarrow wis_5 \\ 
                     \hline
-                    M, L \vdash l_1:goto\ l_2; lis \Rightarrow jis_0 + [igoto\ l_2] + jis_1
-                \end{array} \\  
+                    M, L \vdash l_1:t \leftarrow s_1 == s_2; l_2:ifn\ t\ goto\ l_3 ; lis' \Rightarrow \\ 
+                     wis_1 + wis_2 + [eq, if \{ wis_3 \} else \{ wis_4 \}] + wis_5
+                \end{array} 
 \end{array}
-$$
+$$                            
+
+The rules ${\tt (wEqLoop)}$ and ${\tt (wEqIf)}$ deal with the scenarios in which the leading PA instructions are an equality test followed by a conditional jump. There are two sub cases. 
+
+1. When the target of the condional jump, $l_3$ has an preceding instruction is a $goto\ l_4$ where $l_4$ is the label of the equality test. We conclude that this PA sequence is translated from a loop in the source SIMP program.  We apply an auxilary function $split(l_3, lis')$ to split $lis'$ into two sub sequences $lis_1$ and $lis_2$ by $l_3$, $lis_1$ must be the body of the loop. and $lis_2$ are the following instructions after the loop. We compile operands of the equality test into $wis_1$ and $wis_2$. We concatenate an $eq$ instruction with a $if$ nested $loop$ block. $wis_3$ is the compiled WASM codes of the loop body, and $wis_4$ is the compiled codes of the instructions following the loop.
+2. When the target of the condition jump, $l_3$ has a preceding instruction is a $goto\ l_4$ where the l_4$ is not the label of the equality test. We conclude that this PA sequence is translated from a if-else statement from the source SIMP program and $l_4$ should be the end of loop. This is because our maximal munch algorithm is structure-preserving, i.e. we insert jumping labels at the end of the then and else branches. 
+
 
 $$
-\begin{array}{rl}
-     {\tt (jReturn)} & \begin{array}{c}
-                    L \vdash l_1 \Rightarrow jis_0\ \ \ M \vdash s \Rightarrow jis_1\ \ \ \\
+\begin{array}{rc}
+     {\tt (wEq)} & \begin{array}{c}
+                     
+                    M \vdash_{src} s_1 \Rightarrow wis_1 \ \ \ M \vdash_{src} s_2 \Rightarrow wis_2 \\
+                    M \vdash lis' \Rightarrow wis_3 \ \ \ head(lis')  \texttt{is not an } ifn\ \texttt{instruction}\\ 
                     \hline
-                    M, L \vdash l_1:rret \leftarrow s;  l_2: ret \Rightarrow jis_0 + jis_1 + [ireturn] 
-                \end{array} \\  
+                    M, L \vdash l_1:t \leftarrow s_1 == s_2; lis' \Rightarrow \\ 
+                     wis_1 + wis_2 + [eq] + wis_3
+                \end{array} 
+\end{array}
+$$
+The rule $(\tt wEq)$ handles a normal equality test which is not followed by a conditional jump.
+
+
+$$
+\begin{array}{rc}
+     {\tt (wLtLoop)} & \begin{array}{c}
+                    (l_3-1):goto\ l_4 \in lis' \\ l_4 == l_1 \\ lis_1, lis_2 = split(l_3, lis') \\  
+                    M \vdash_{src} s_1 \Rightarrow wis_1 \ \ \ M \vdash_{src} s_2 \Rightarrow wis_2 \\
+                    M \vdash lis_1 \Rightarrow wis_3 \ \ \ M \vdash lis_2 \Rightarrow wis_4 \\ 
+                    \hline
+                    M, L \vdash l_1:t \leftarrow s_1 < s_2; l_2:ifn\ t\ goto\ l_3 ; lis \Rightarrow \\ 
+                     wis_1 + wis_2 + [lt, if \{ loop \{ wis_3 + wis_1 + wis_2 + [ eq, brIf\ 0 ] \} \} else \{ nop \}] + wis_4
+                \end{array} 
+\\ \\
+     {\tt (wLtIf)} & \begin{array}{c}
+                    (l_3-1):goto\ l_4 \in lis' \\ l_4 \neq l_1 \\ 
+                    lis_1, lis_2 = split(l_3, lis') \\ 
+                    lis_3, lis_4 = split(l_4, lis_2) \\  
+                    M \vdash_{src} s_1 \Rightarrow wis_1 \ \ \ M \vdash_{src} s_2 \Rightarrow wis_2 \\
+                    M \vdash lis_1 \Rightarrow wis_3 \ \ \ M \vdash lis_2 \Rightarrow wis_4 \ \ \ M \vdash lis_4 \Rightarrow wis_5 \\ 
+                    \hline
+                    M, L \vdash l_1:t \leftarrow s_1 < s_2; l_2:ifn\ t\ goto\ l_3 ; lis' \Rightarrow \\ 
+                     wis_1 + wis_2 + [lt, if \{ wis_3 \} else \{ wis_4 \}] + wis_5
+                \end{array} 
+\\ \\ 
+     {\tt (wLt)} & \begin{array}{c}
+                     
+                    M \vdash_{src} s_1 \Rightarrow wis_1 \ \ \ M \vdash_{src} s_2 \Rightarrow wis_2 \\
+                    M \vdash lis' \Rightarrow wis_3 \ \ \ head(lis')  \texttt{is not an } ifn\ \texttt{instruction}\\ 
+                    \hline
+                    M, L \vdash l_1:t \leftarrow s_1 < s_2; lis' \Rightarrow \\ 
+                     wis_1 + wis_2 + [lt] + wis_3
+                \end{array} 
 \end{array}
 $$
 
-The last two rules $(\tt jGoto)$ and $(\tt jReturn)$ are trivial.
-
-
-### Converting PA Operands
+The above rules ${\tt (wLtLoop)}$, ${\tt (wLtIf)}$ and ${\tt (wLt)}$ handle the less than test. They are similar to their equality test counter-parts described earlier. 
 
 $$
 \begin{array}{rl}
-{\tt (jConst)} & M \vdash c \Rightarrow [sipush\ c] \\ \\ 
-{\tt (jVar)} & M \vdash t \Rightarrow [iload\ M(t)] \\ \\ 
+     {\tt (wPlus)} & \begin{array}{c}
+                    M \vdash_{src} s_1 \Rightarrow wis_1 \ \ \ M \vdash_{src} s_2 \Rightarrow wis_2 \ \ \ M \vdash lis' \Rightarrow wis_3 \\
+                    \hline
+                    M \vdash l:t \leftarrow s_1 + s_2; lis' \Rightarrow wis_1 + wis_2 + [add, set\ M(t)] + wis_3
+                \end{array} \\ \\  
+     {\tt (wMinus)} & \begin{array}{c}
+                    M \vdash_{src} s_1 \Rightarrow wis_1 \ \ \ M \vdash_{src} s_2 \Rightarrow wis_2 \ \ \ M \vdash lis' \Rightarrow wis_3 \\
+                    \hline
+                    M \vdash l:t \leftarrow s_1 - s_2; lis' \Rightarrow wis_1 + wis_2 + [sub, set\ M(t)] + wis_3
+                \end{array} \\ \\  
+     {\tt (wMult)} & \begin{array}{c}
+                    M \vdash_{src} s_1 \Rightarrow wis_1 \ \ \ M \vdash_{src} s_2 \Rightarrow wis_2 \ \ \ M \vdash lis' \Rightarrow wis_3 \\
+                    \hline
+                    M \vdash l:t \leftarrow s_1 * s_2; lis' \Rightarrow wis_1 + wis_2 + [mul, set\ M(t)] + wis_3
+                \end{array} \\ \\  
+    {\tt (wGoto)} & \begin{array}{c}
+                     M \vdash lis' \Rightarrow wis \\
+                    \hline
+                    M \vdash l: goto\ l'; lis' \Rightarrow wis
+                \end{array} \\ \\  
 \end{array}
 $$
 
-### Converting PA Labels 
+Lastly, the rules ${\tt (wPlus)}$, ${\tt (wMinus)}$ and  ${\tt (wMult)}$ convert the binary arithmetic operations. ${\tt (wGoto)}$ skips the goto instruction, which should be handled by the other rules. 
+
+
+
+
+
+### Converting PA Source Operands
 
 $$
 \begin{array}{rl}
-{\tt (jLabel1)} & \begin{array}{c} 
-                    l \not \in L
-                    \\ \hline
-                    L \vdash l \Rightarrow [] 
-                   \end{array} \\ \\ 
-{\tt (jLabel2)} & \begin{array}{c} 
-                    l  \in L
-                    \\ \hline
-                    L \vdash l \Rightarrow [ilabel\ l] 
-                   \end{array}  
+{\tt (Const)} & M \vdash_{src} c \Rightarrow [const\ c] \\ \\ 
+{\tt (Var)} & M \vdash_{src} t \Rightarrow [get\ M(t)] \\ \\ 
 \end{array}
 $$
 
-## Optimizing JVM bytecode 
 
-Though it is limited, there is room to optimize the JVM bytecode. For example, 
+## Optimizing WASM bytecode 
+
+Though it is limited, there is room to optimize the WASM bytecode. For example, 
 
 From the following SIMP program 
 
@@ -1081,39 +1108,76 @@ we generate the following PA code via the Maximal Munch
 In turn if we apply the above PA to JVM bytecode conversion
 
 ```js
-sipush 1
-sipush 2
-iadd
-istore 2 // 2 is t
-iload 2
-sipush 3
-imul
-istore 3 // 3 is r
+const 1
+const 2
+add
+get t 
+set t
+const 3
+mul
+get r 
 ```
-As observe, the `istore 2` followed by `iload 2` are rundandant, because `t` is not needed later (dead).
+As observe, the `get t` followed by `set t` are rundandant, because `t` is not needed later (dead).
 
 ```js
-sipush 1
-sipush 2
-iadd
-sipush 3
-imul
-istore 3 // 3 is r
+const 1
+const 2
+add
+const 3
+mul
+get r 
 ```
 
 This can either be done via 
 
 1. Liveness analysis on PA level or 
-2. Generate JVM byte code directly from SIMP.
+2. Generate WASM byte code directly from SIMP.
     * This requires the expression of SIMP assignment to be left nested. 
     * The conversion is beyond the scope of this module.
 
 
-#### Further Reading for JVM bytecode generation
+### Prettier WASM syntax - Folded Expression
 
-* https://ssw.jku.at/Research/Papers/Wimmer04Master/Wimmer04Master.pdf
+WASM supports a prettier syntax, known as folded expression. 
 
-### Summary for JVM bytecode generation
 
-* To generate JVM bytecode w/o optimization can be done via deduction system
-* To optimize JVM bytecode, we could apply liveness analysis to eliminate redundant store-then-load sequence.
+$$
+\begin{array}{rccl}
+(\tt Plain\ Instruction (Folded)) & pi & ::= & nop \mid br\ L \mid brIf\ L \mid return\ oi \mid set\ n\ oi \mid oi \\ 
+(\tt Operand\ Instruction) & oi & ::= & get\ n \mid const\ c \mid add\ oi\ oi \mid sub\ oi\ oi  \mid mul\ oi\ oi  \mid eq\ oi\ oi  \mid lt\ oi\ oi  \\ 
+(\tt Block\ Instruction (Folded)) & bi & ::= & block \{ wis \} \mid loop \{ wis \} \mid if\ oi \{wis\} else \{wis\} \\ 
+\end{array}
+$$
+
+The earlier WASM example can be rewritten as the following in folded expression form.
+
+```wasm
+set x (get input)
+set s (const 0)
+set c (const 0)
+if (lt (get c) (get x)) {
+    loop {
+        block {            
+            set s (add (get s) (get c))
+            set c (add (get c) (const 1))
+        }
+        if (lt (get c) (get x)) {
+            br 1
+        } else { }
+    }
+} else { }
+return (get s)
+```
+which is closer to source program. 
+
+In the project, we see the PA to WASM conversion rules being re-phrased into the folded expression form.
+
+#### Further Reading for WASM bytecode generation
+
+* https://webassembly.org/
+* https://developer.mozilla.org/en-US/docs/WebAssembly/Reference
+
+### Summary for WASM bytecode generation
+
+* To generate WASM bytecode w/o optimization can be done via deduction system
+* To optimize WASM bytecode, we could apply liveness analysis to eliminate redundant store-then-load sequence.
