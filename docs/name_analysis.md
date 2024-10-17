@@ -272,13 +272,13 @@ $$
 {\tt (pIfn0)} & \begin{array}{c}
      L(s) = 0
      \\ \hline
-     P \vdash (L, l: ifn\ s\ goto\ l', p) \longrightarrow (L, P(l+1), l)
+     P \vdash (L, l: ifn\ s\ goto\ l', p) \longrightarrow (L, P(l'), l)
      \end{array}
 \\
 {\tt (pIfnNot0)} & \begin{array}{c}
      L(s) \neq  0
      \\ \hline
-     P \vdash (L, l: ifn\ s\ goto\ l', p) \longrightarrow (L, P(l'), l)
+     P \vdash (L, l: ifn\ s\ goto\ l', p) \longrightarrow (L, P(l+1), l)
      \end{array}
 \end{array}
 $$
@@ -321,7 +321,7 @@ P |- {(input,1), (x0,1), (s0,0), (c0,0), (s1,0), (c1,0) }, 4: [] t0 <- c1 < x0, 
 P |- {(input,1), (x0,1), (s0,0), (c0,0), (s1,0), (c1,0) }, 4: t0 <- c1 < x0, 3 ---> # (pOp)
 P |- {(input,1), (x0,1), (s0,0), (c0,0), (s1,0), (c1,0), (t0, 1)}, 5: ifn t0 goto 9, 4 ---> # (pIfn0)
 P |- {(input,1), (x0,1), (s0,0), (c0,0), (s1,0), (c1,0), (t0, 1)}, 6: s2 <- c1 + s1, 5  ---> # (pOp)
-P |- {(input,1), (x0,1), (s0,0), (c0,0), (s1,0), (c1,0), (t0, 1), (s2, 0)}, 7: c2 <- c1 + 1, 8  ---> # (pOp)
+P |- {(input,1), (x0,1), (s0,0), (c0,0), (s1,0), (c1,0), (t0, 1), (s2, 0)}, 7: c2 <- c1 + 1, 6  ---> # (pOp)
 P |- {(input,1), (x0,1), (s0,0), (c0,0), (s1,0), (c1,0), (t0, 1), (s2, 0), (c2, 1)}, 8: goto 4, 7  ---> # (pGoto)
 P |- {(input,1), (x0,1), (s0,0), (c0,0), (s1,0), (c1,0), (t0, 1), (s2, 0), (c2, 1)}, 4: s1 <- phi(3:s0, 9:s2); c1 <- phi(3:c0, 9:c2) t0 <- c1 < x0, 8 ---> # (pPhi2)
 P |- {(input,1), (x0,1), (s0,0), (c0,0), (s1,0), (c1,0), (t0, 1), (s2, 0), (c2, 1)}, 4: c1 <- phi(3:c0, 9:c2) t0 <- c1 < x0, 8 ---> # (pPhi2)
