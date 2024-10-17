@@ -272,13 +272,13 @@ $$
 {\tt (pIfn0)} & \begin{array}{c}
      L(s) = 0
      \\ \hline
-     P \vdash (L, l: ifn\ s\ goto\ l', p) \longrightarrow (L, P(l+1), l)
+     P \vdash (L, l: ifn\ s\ goto\ l', p) \longrightarrow (L, P(l'), l)
      \end{array}
 \\
 {\tt (pIfnNot0)} & \begin{array}{c}
      L(s) \neq  0
      \\ \hline
-     P \vdash (L, l: ifn\ s\ goto\ l', p) \longrightarrow (L, P(l'), l)
+     P \vdash (L, l: ifn\ s\ goto\ l', p) \longrightarrow (L, P(l+1), l)
      \end{array}
 \end{array}
 $$
