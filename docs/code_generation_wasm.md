@@ -390,7 +390,7 @@ At any point, (any column), the number of `*` denotes the number of live variabl
 
 #### Register Spilling
 
-However register spilling is avoidable due to program complexity and limit of hardware. 
+However register spilling is unavoidable due to program complexity and limit of hardware. 
 
 Let's consider another example 
 
@@ -464,7 +464,7 @@ where the comments indicate what happens after the label instruction is excuted.
 There are two option here
 
 1. `??` is `r1`. It implies that we need to spill `r1` to `y` first after instruction `2` and then spill `r1` to `z` after instruction `3`, and load `y` back to `r1` after instruction `3` before instruction `4.`
-1. `??` is `r0`. It implies that we need to spill `r0` to `z` first after instruction `2` and then spill `r0` to `z` after instruction `3`, and load `x` back to `r0` after instruction `3` before instruction `4.`
+1. `??` is `r0`. It implies that we need to spill `r0` to `x` first after instruction `2` and then spill `r0` to `z` after instruction `3`, and load `x` back to `r0` after instruction `3` before instruction `4.`
 
 In this particular example, both options are equally good (or equally bad). In general, we can apply the heuristic of choosing the conflicting variable whose live range ends earlier, hopefully the main subject of spilling (`z` in this example) is not needed until then. 
 
