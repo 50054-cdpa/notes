@@ -526,9 +526,11 @@ Cytron et al proposed a more efficient algorithm to compute the dominance fronti
 The main idea is to give a recursive definition to Dominance Frontier by making use of the dominator tree. 
 
 Let $G$ be a CFG, and $T$ be the dominator tree of $G$. We define 
+
 $$
 df(v, G) = df_{local}(v, G) \cup \bigcup_{u \in child(v,T)} df_{up}(u, G)  ~~~(E1)
 $$
+
 where 
 
 $$
