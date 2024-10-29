@@ -348,7 +348,7 @@ N,NS }
 </tr>
 
 <tr>
-<td colspan="4"> ... (for the steps skipped, please refer to <a href="/syntax_analysis_annex/">syntax_analysis_annex</a>) </td>
+<td colspan="4"> ... (for the steps skipped, please refer to <a href="/notes/syntax_analysis_annex/">syntax_analysis_annex</a>) </td>
 </tr>
 <tr>
 <td>
