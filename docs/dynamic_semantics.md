@@ -29,10 +29,10 @@ Let's try to formalize the Operational Semantics of SIMP language,
 
 $$
 \begin{array}{rccl}
-(\tt SIMP\ Environment) & \Delta & \subseteq & (X \times c)
+(\tt SIMP\ Environment) & \Delta & \subseteq & (X \times C)
 \end{array}
 $$
-We model the memory environment of a SIMP program as pair of variable and values. We write $dom(\Delta)$ to denote the domain of $\Delta$, i.e. $\{ X \mid (X,c) \in \Delta \}$. We assume for all $X \in dom(\Delta)$, there exists only one entry of $(X,c) \in \Delta$.
+We model the memory environment of a SIMP program as pair of variable and values. We write $dom(\Delta)$ to denote the domain of $\Delta$, i.e. $\{ X \mid (X,C) \in \Delta \}$. We assume for all $X \in dom(\Delta)$, there exists only one entry of $(X,C) \in \Delta$.
 
 Given $S$ is a set of pairs, we write $S(x)$ to denote $a$ if $(x,a) \in S$, an error otherwise. We write $S \oplus (x,a)$ to denote $S - \{(x, S(x))\} \cup \{(x, a)\}$. 
 
@@ -94,7 +94,7 @@ $$
                  \Delta \vdash (E) \longrightarrow (E')
                  \end{array} \\ \\
 {\tt (sParen2)} & \begin{array}{c}
-                 \Delta \vdash (c) \longrightarrow c
+                 \Delta \vdash (C) \longrightarrow C
                  \end{array}
 \end{array}
 $$
@@ -502,6 +502,12 @@ $$
 $$
 
 In case that the statement is a `nop` statement, there is no change to the memory environment.
+
+
+$$
+{\tt (bReturn)} ~~~~ (\Delta, return\ X) \Downarrow \Delta
+$$
+
 
 $$
 \begin{array}{rc}
