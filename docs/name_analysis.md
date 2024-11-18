@@ -778,7 +778,7 @@ and `stem(x)` returns the original version of `x` before renaming, e.g. `stem(x)
 > * The phi-assignment is not fully initialized, in case of if-else where the variable is only introduced in one of the branch.
 
 
-We describe the application the algorithm to `PRE_SSA_PA1` (with the dominator tree `Tree2_PA1` and CFG `Graph1_PA1`) with the following table.
+We describe the application of the algorithm to `PRE_SSA_PA1` (with the dominator tree `Tree2_PA1` and CFG `Graph1_PA1`) with the following table.
 
 | label | P(l) | Q(l) | K | P(succ(l)) | Q(succ(l)) | vars |
 |---|---|---|---|---|---|---|
