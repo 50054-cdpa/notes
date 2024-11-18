@@ -230,8 +230,8 @@ In the above example, we inserted a set of phi assigments to label 4. Every vari
 
 There are two possible preceding instructions that lead us to the following instruction
 ```java
-4: s1 <- phi(3:s0, 9:s2)
-   c1 <- phi(3:c0, 9:c2)
+4: s1 <- phi(3:s0, 8:s2)
+   c1 <- phi(3:c0, 8:c2)
 ```
 namely, 3 and 9. When the preceding instruction is 3, the above phi assignments will assign `s0` to `s1` and `c0` to `c1`. Otherwise, `s2` is assigned to `s1` and `c2` is assigned to `c1`.
 
@@ -323,8 +323,8 @@ P |- {(input,1), (x0,1), (s0,0), (c0,0), (s1,0), (c1,0), (t0, 1)}, 5: ifn t0 got
 P |- {(input,1), (x0,1), (s0,0), (c0,0), (s1,0), (c1,0), (t0, 1)}, 6: s2 <- c1 + s1, 5  ---> # (pOp)
 P |- {(input,1), (x0,1), (s0,0), (c0,0), (s1,0), (c1,0), (t0, 1), (s2, 0)}, 7: c2 <- c1 + 1, 6  ---> # (pOp)
 P |- {(input,1), (x0,1), (s0,0), (c0,0), (s1,0), (c1,0), (t0, 1), (s2, 0), (c2, 1)}, 8: goto 4, 7  ---> # (pGoto)
-P |- {(input,1), (x0,1), (s0,0), (c0,0), (s1,0), (c1,0), (t0, 1), (s2, 0), (c2, 1)}, 4: s1 <- phi(3:s0, 9:s2); c1 <- phi(3:c0, 9:c2) t0 <- c1 < x0, 8 ---> # (pPhi2)
-P |- {(input,1), (x0,1), (s0,0), (c0,0), (s1,0), (c1,0), (t0, 1), (s2, 0), (c2, 1)}, 4: c1 <- phi(3:c0, 9:c2) t0 <- c1 < x0, 8 ---> # (pPhi2)
+P |- {(input,1), (x0,1), (s0,0), (c0,0), (s1,0), (c1,0), (t0, 1), (s2, 0), (c2, 1)}, 4: s1 <- phi(3:s0, 8:s2); c1 <- phi(3:c0, 8:c2) t0 <- c1 < x0, 8 ---> # (pPhi2)
+P |- {(input,1), (x0,1), (s0,0), (c0,0), (s1,0), (c1,0), (t0, 1), (s2, 0), (c2, 1)}, 4: c1 <- phi(3:c0, 8:c2) t0 <- c1 < x0, 8 ---> # (pPhi2)
 P |- {(input,1), (x0,1), (s0,0), (c0,0), (s1,0), (c1,1), (t0, 1), (s2, 0), (c2, 1)}, 4: [] t0 <- c1 < x0, 8 ---> # (pPhi1)
 P |- {(input,1), (x0,1), (s0,0), (c0,0), (s1,0), (c1,1), (t0, 1), (s2, 0), (c2, 1)}, 4: t0 <- c1 < x0, 8 ---> # (pOp)
 P |- {(input,1), (x0,1), (s0,0), (c0,0), (s1,0), (c1,1), (t0, 0), (s2, 0), (c2, 1)}, 5: ifn t0 goto 9, 4 ---> # (pIfn0)
