@@ -34,8 +34,8 @@ nav:
     - "Static Semantics for Lambda Calculus":  "static_semantics_2.md"
   - W10:
     - "Name Analysis":                         "name_analysis.md"
-    - "Lattices & Sign Analysis":              "sign_analysis_lattice.md"
   - W11:
+    - "Lattices & Sign Analysis":              "sign_analysis_lattice.md"
     - "Liveness Analysis":                     "liveness_analysis.md"
     - "Code Generation":                       "code_generation.md"
   - W12:
