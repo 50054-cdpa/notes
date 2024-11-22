@@ -587,7 +587,7 @@ From the above table, we conclude that variables that are updated in vertices `5
 
 ##### Definition 9 - Iterative Dominance Frontier
 
-As pointed out by Cytron's work, if a variable $x$ is updated in a program location (vertex) $v$, a phi-assignment for this variable must be inserted in the dominance frontier of $v$. However inserting a phi assignment at the dominance fronter of $v$ introduces a new location of modifying the variable $x$. This leads to some "cascading effect" in computing the phi-assignment locations. 
+As pointed out by Cytron's work, if a variable $x$ is updated in a program location (vertex) $v$, a phi-assignment for this variable must be inserted in the dominance frontier of $v$. However inserting a phi assignment at the dominance frontier of $v$ introduces a new location of modifying the variable $x$. This leads to some "cascading effect" in computing the phi-assignment locations. 
 
 We extend the dominance frontier to handle a set of vertices.
 
