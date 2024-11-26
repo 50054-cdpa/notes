@@ -754,6 +754,7 @@ f_4(s_0, s_1, s_2, s_3, s_4, s_5, s_6, s_7, s_8, s_9) & = & \left (
 $$
 
 1. $s_0 = s_1 = s_2 = s_3 = s_4 = s_5 = s_6 = s_7 = s_8 = [x \mapsto \bot, y \mapsto \bot, t \mapsto \bot]$, 
+
 $$
 \begin{array}{rcl}
 f_4(s_0, s_1, s_2, s_3, s_4, s_5, s_6, s_7, s_8, s_9) & = & \left (
@@ -840,7 +841,6 @@ f_4(s_0, s_1, s_2, s_3, s_4, s_5, s_6, s_7, s_8, s_9) & = & \left (
 $$
 
 4. 
-
 $$ 
 \begin{array}{l} 
 s_0 = [x \mapsto \top, y \mapsto \top, t \mapsto \top], \\  
@@ -875,7 +875,6 @@ f_4(s_0, s_1, s_2, s_3, s_4, s_5, s_6, s_7, s_8, s_9) & = & \left (
 $$
 
 5. 
-
 $$
 \begin{array}{c} 
 s_0 = [x \mapsto \top, y \mapsto \top, t \mapsto \top], \\  
@@ -923,6 +922,7 @@ s_7 = [x \mapsto \bot, y \mapsto +, t \mapsto \top], \\
 s_8 = [x \mapsto \bot, y \mapsto 0, t \mapsto \top]
 \end{array} 
 $$
+
 $$
 \begin{array}{rcl}
 f_4(s_0, s_1, s_2, s_3, s_4, s_5, s_6, s_7, s_8, s_9) & = & \left (
