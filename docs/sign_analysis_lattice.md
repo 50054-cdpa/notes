@@ -976,7 +976,8 @@ f_4(s_0, s_1, s_2, s_3, s_4, s_5, s_6, s_7, s_8, s_9) & = & \left (
 \end{array}
 $$
 
-8 . 
+8.
+ 
 $$
 \begin{array}{c} 
 s_0 = [x \mapsto \top, y \mapsto \top, t \mapsto \top], \\  
