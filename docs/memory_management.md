@@ -149,7 +149,7 @@ P |- exit()
 ```
 
 
-### (Optional Content) Call Stack Design in the target Platform 
+### (Optional Content) Call Stack Design in Target Platform 
 
 The call stack in the target platform are often implemented as a sequence of memory locations. The bottom of the stack has the lowest address of the entire stack and the top of the stack has the highest address (at a particular point in time.)
 
