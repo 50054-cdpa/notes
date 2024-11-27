@@ -4,10 +4,10 @@
 
 1. Extend PA to support function call and array operations
 1. Extend the dynamic semantics to model the run-time memory operations
-1. Describe activation records
+1. Define activation records
 1. Extend SIMP to support function call and array operations
 1. Describe the challenges of memory management
-1. Apply linear type system to static semantics
+1. Apply linear type system to ensure memory saftey in SIMP.
 
 
 ## Extending Pseudo Assembly
@@ -193,6 +193,98 @@ For example, if we have a `min(x,y)` function which has no local variable and we
 4: popframe 12
 ```
 
+### TODO another example PA2 with array 
+
+## Extending SIMP with function and array
 
 
-## Extending SIMP with functions and array
+We consider syntax of the [SIMP language](./ir_pseudo_assembly.md#the-simp-language) extended with function and array.
+
+$$
+\begin{array}{rccl}
+(\tt Statement) & S & ::= & ... \mid X[E] = E  \mid free\ X \\ 
+(\tt Expression) & E & ::= & ... \mid f(E) \mid T[E] \mid X[E] \\
+(\tt Function\ Declaration) & D & ::= & func\ f\ (x:T)\ T\ \{\overline{S}\} \\ 
+(\tt Constant) & C & ::= & 0 \mid 1 \mid 2 \mid ... \mid true \mid false \\ 
+(\tt Type) & T & ::= & ... \mid [T] \mid T \rightarrow T \mid unit \\ 
+(\tt Value) & V & ::= & C \mid D \mid (loc, loc) \mid unit \\
+(\tt Program) & P & ::= & \overline{D};\overline{S}
+\end{array}
+$$
+
+New statement syntax includes:
+
+* $X[E] = E$ - denotes an array element assignment statement
+* $free\ X$ - dellocate the array referenced by variable $X$. 
+
+New expression syntax includes
+
+* $f[E]$ - function application, where $f$ is a function name (a special variable)
+* $T[E]$ - array initialization, where $T$ is the element type of the array and $E$ denotes the size of the array.
+* $X[E]$ - array element dereference, where $X$ is an array and $E$ is the element index. 
+
+Function declaration syntax includes
+
+* $func\ f\ (x:T)\ T\ \{\overline{S}\}$ - $f$ is the function name; $(x:T)$ is the formal parameter and its type. The second $T$ is the return type. $\overline{S}$ is the body.
+
+New type sytanx includes
+
+* $[T]$ - array type
+* $T \rightarrow T$ - function type
+* $unit$ - the type has only one value $unit$ (its role is similar to the $void$ type in Java and C)
+
+Value syntax includes
+
+* $C$ - constant
+* $D$ - declaration
+* $(loc, loc)$ - memory segment, the first item is the starting address (inclusive) and the second item is the ending address (exclusive)
+* $unit$ - the only value for the $unit$ type.
+
+A SIMP program is a sequence of function declarations followed by a sequence of statements. 
+
+For example, the following SIMP program is equivalent to Pseudo Assembly program `PA1` introduced earlier.
+
+```java
+// SIMP1 
+func plus1 (x:int) int {
+    y = x + 1;
+    return y;
+}
+z = plus1(0);
+return z;
+```
+
+The following SIMP program is equivalent to Pseudo Assembly program `PA2`
+
+```java
+// SIMP2 array enumeration
+func range(x:int) [int] {
+    a = int[x];
+    i = 0;
+    while i < x {
+        a[i] = i;
+        i = i + 1;
+    }
+    return a;
+}
+r = range(3); 
+y = r[2];
+free r;
+return y;
+```
+
+
+
+
+
+## Operational Semantic of extended SIMP
+
+
+## Extened SIMP to PA conversion
+
+
+## Extend SIMP Type checking
+
+
+
+## Linear Type 
