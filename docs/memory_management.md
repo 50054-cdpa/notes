@@ -19,14 +19,13 @@ So far, we have been dealing with a toy language without function call nor compl
 
 $$
 \begin{array}{rccl}
-(\tt Instruction)   & i   & ::= & ... \mid begin\ f\ d \mid end \mid call\ f\ s \mid d \leftarrow alloc\ s \mid free\ s \mid  d \leftarrow deref\ s \\ 
+(\tt Instruction)   & i   & ::= & ... \mid begin\ f\ d \mid call\ f\ s \mid d \leftarrow alloc\ s \mid free\ s \mid  d \leftarrow deref\ s \\ 
 \end{array}
 $$
 
 Besides the existing instructions, we include
 
 * $begin\ f\ d$ - denotes the start of a function name $f$ ($f$ is a variable) and the formal argument (operand) $d$. 
-* $end$ - marks the end of a function.
 * $call\ f\ s$ - denotes a function invocation of $f$ with actual argument $s$.
 * $d \leftarrow alloc\ s$ - denotes the memory allocation. It allocates $s$ bytes of unoccupied memory and assigns the reference address to $d$. 
 * $free\ s$ - deallocates the allocated memory at address stored in $s$. 
@@ -92,27 +91,108 @@ $$
         l': begin\ f\ d \in P \ \ \ M = (L:\overline{L}, \overline{l}, H, R) \\ 
         M' = (\{(d, L(s))\}:L:\overline{L}, l:\overline{l}, H, R)
         \\ \hline
-        P \vdash (M, l: d \leftarrow call\ f\ s) \longrightarrow (M', P(l'))  
+        P \vdash (M, l: d \leftarrow call\ f\ s) \longrightarrow (M', P(l'+1))  
         \end{array} \\ \\ 
 
-{\tt (pBegin)} & P \vdash (M, l:begin\ f\ d) \longrightarrow (M, P(l+1)) \\ \\ 
-
-{\tt (pEnd)} &  \begin{array}{c}
+{\tt (pBegin)} & \begin{array}{c}
+        (l':ret) \in P \ \ \ \forall (l'':ret) \in P: l''>= l \implies l'' >= l'
+        \\ \hline
+        P \vdash (M, l:begin\ f\ d) \longrightarrow (M, P(l'+1)) 
+        \end{array} \\ \\ 
+{\tt (pRet1)} &  \begin{array}{c}
         M = (L':L:\overline{L}, l':\overline{l}, H, R)\ \ \ 
         l': d \leftarrow call\ f\ s \in P \\  
-        M' = (L\oplus(d,R(r_{ret})):\overline{L}, \overline{l}, H, R)
+        R' = R - {r_{ret}} \ \ \ 
+        M' = (L\oplus(d,R(r_{ret})):\overline{L}, \overline{l}, H, R')
         \\ \hline
-        P \vdash (M, l:end) \longrightarrow (M', P(l'+1))  
+        P \vdash (M, l:ret) \longrightarrow (M', P(l'+1))  
+        \end{array} \\ \\ 
+{\tt (pRet2)} &  \begin{array}{c}
+        M = (\overline{L}, [], H, R)\ \ \ 
+        \\ \hline
+        P \vdash (M, l:ret) \longrightarrow exit()
         \end{array} \\ \\ 
 \end{array}
 $$
 
-* The rule $(\tt pCall)$ handles the function call instruction. In this case, we search for the begin statement of the callee. We push the new stack frame into the stack with the binding of the input argument. We push the caller's label into the labels stack. The executation context is shifted to the begin instruction. 
-* The rule $(\tt pBegin)$ processes the begin instruction. We move to the following instruction. 
-* The rule $(\tt pEnd)$ manages the termination of a function call. We pop the stack frame and the top label $l'$ from the stack. We search for the caller instruction by the label $l'$. We update the caller's stack frame with the returned value of the function call. 
+* The rule $(\tt pCall)$ handles the function call instruction. In this case, we search for the begin statement of the callee. We push the new stack frame into the stack with the binding of the input argument. We push the caller's label into the labels stack. The executation context is shifted to the function body instruction. 
+* The rule $(\tt pBegin)$ processes the begin instruction. Since it is the defining the function, we skip the function body and move to the instruction that follows the return instruction. 
+* The rule $(\tt pRet1)$ manages the termination of a function call. We pop the stack frame and the top label $l'$ from the stack. We search for the caller instruction by the label $l'$. We update the caller's stack frame with the returned value of the function call. 
+* The rule ${\tt pRet2}$ defines the termination of the entire program.
+
+We omit the rest of rules as we need to change the $L$ to $M = (L:\overline{L}, \overline{l}, H, R)$.
+
+For example given a PA program 
+
+```java
+// PA1
+1: begin plus1 x
+2: y    <- x + 1
+3: rret <- y
+4: ret
+5: z    <- call plus1 0 
+6: rret <- z
+7: ret
+```
+
+We have the following derivation
+
+```java
+P |- ([[]], [], [], []), 1: begin plus1 x  ---> # (pBegin)
+P |- ([[]], [], [], []), 5: z <- call plus1 0 ---> # (pCall) 
+P |- ([[(x,0)],[]],[5], [], []), 2: y <- x + 1 ---> # (pOp)
+P |- ([[(x,0),(y,1)],[]],[5], [], []), 3: rret <- y ---> # (pTempVar)
+P |- ([[(x,0),(y,1)],[]],[5], [], [(rret,1]), 4: ret  ---> # (pRet1)
+P |- ([[(z,1)]],[], [], []), 6: rret <- z # (pTempVar) 
+P |- ([[(z,1)]],[], [], [(rret,1)]) 7: ret # (pRet2)
+P |- exit()
+```
 
 
-> TODO: talk about how multi param is handled, how the temp variables are reference in the actual target byte code.
+### (Optional Content) Call Stack Design in the target Platform 
+
+The call stack in the target platform are often implemented as a sequence of memory locations. The bottom of the stack has the lowest address of the entire stack and the top of the stack has the highest address (at a particular point in time.)
+
+|   |
+|---|
+|frame for `main()`|
+|frame for `plus1(x)`|
+| ... |
+
+If we zoom into the frame for `plus1(x)` 
+
+| address | content |
+|---|---|
+| fp-4 | param x | 
+| fp | caller label/return address | 
+| fp+4 | tempvar y |
+
+the frame pointer `fp` marks the memory address where ther caller's label/address is stored. If we subtract the parameter size offset from `fp`, say `fp-4`, we can access the paramter `x` and if we add the variable size offset to `fp`, we access the temp variables, in this case we can statically determine the size of the call frame, as 3 * 4 bytes. As a convention, the `begin` instruction in the target code is associated with the frame size required by this function.  When we make a function call in the target code, we have to push the parameter into the call stack one by one. 
+
+i.e. the instruction `5` in the above example `PA1` should be broken into 
+
+```java
+5.1 param 0
+5.2 call plus1
+5.3 popframe 12
+```
+
+* At 5.1, we push the actual argument as the parameter `x`. 
+* At 5.2, we call the function and shift the program counter to the starting label/address of the function body.
+* When the function terminates, we jump back to 5.2, then at 5.3, we pop the stack frame based on its size.
+
+In case a function has multiple parameters, the parameters are pushed from 
+right to left. 
+
+For example, if we have a `min(x,y)` function which has no local variable and we call `min(-10,9)`, we generate the following target code
+
+```java
+1: param 9
+2: param -10
+3: call min
+4: popframe 12
+```
+
 
 
 ## Extending SIMP with functions and array
