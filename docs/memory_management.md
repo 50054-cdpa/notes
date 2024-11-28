@@ -10,7 +10,7 @@
 1. Apply linear type system to ensure memory saftey in SIMP.
 
 
-## Extending Pseudo Assembly
+## Pseudo Assembly (Extended)
 
 So far, we have been dealing with a toy language without function call nor complex data structure. We consider extending the [Pseudo Assembly language syntax](./ir_pseudo_assembly.md#pseudo-assembly) as follows
 
@@ -19,7 +19,8 @@ So far, we have been dealing with a toy language without function call nor compl
 
 $$
 \begin{array}{rccl}
-(\tt Instruction)   & i   & ::= & ... \mid begin\ f\ d \mid call\ f\ s \mid d \leftarrow alloc\ s \mid free\ s \mid  d \leftarrow deref\ s \\ 
+(\tt Instruction)   & i   & ::= & ... \mid begin\ f\ d \mid call\ f\ s \mid d \leftarrow alloc\ s \mid free\ s  \\ 
+& &  & \mid  d \leftarrow ref\ s \mid deref\ s\ s\\ 
 \end{array}
 $$
 
@@ -29,10 +30,11 @@ Besides the existing instructions, we include
 * $call\ f\ s$ - denotes a function invocation of $f$ with actual argument $s$.
 * $d \leftarrow alloc\ s$ - denotes the memory allocation. It allocates $s$ bytes of unoccupied memory and assigns the reference address to $d$. 
 * $free\ s$ - deallocates the allocated memory at address stored in $s$. 
-* $d \leftarrow deref\ s$ - dereferences the value at the memory address stored in $s$ and copies it to $d$. 
+* $d \leftarrow ref\ s$ - references the value at the memory address stored in $s$ and copies it to $d$. 
+* $deref\ s_1\ s_2$ - dereferences the memory location stored in $s_1$ and update it with the value of $s_2$. 
 
 
-### Extending PA Operational Semantics
+### Operational Semantics for Extended PA
 
 We extend the operational semantics of Pseudo Assembly defined in [here](./dynamic_semantics.md#operational-semantics-of-pseudo-assembly). Instead of mixing the temp variable-to-constant mappings and register-to-constant mappings in $L$, we move the register-to-constant mappings in $R$. 
 
@@ -41,14 +43,16 @@ $$
 \begin{array}{rccl}
 (\tt PA\ Stack\ Frame) & L & \subseteq & (t \times c) \\ 
 (\tt PA\ Register\ Environment) & R & \subseteq & (r \times c) \\ 
-(\tt PA\ Heap\ Memory) & H & \subseteq & (loc \times loc) \\ 
+(\tt PA\ Heap\ Registry) & G & \subseteq & (loc \times loc ) \\ 
+(\tt PA\ Heap\ Memory) & H & \subseteq & (loc \times c) \\ 
 (\tt Heap\ Address) & loc & ::= & loc(1) \mid ... \mid loc(n) \\ 
-(\tt PA\ Memory\ Environment) & M & ::= & (\overline{L}, \overline{l}, H, R) 
+(\tt PA\ Memory\ Environment) & M & ::= & (\overline{L}, \overline{l}, H, G, R) 
 \end{array}
 $$
 
-* $H$ - denotes a set of address tuples. The first address in the tuple denotes the starting address of the allocated memory in the heap (inclusive) and the second one denotes the ending address (exclusive). 
-* $M$ - a tuple of 4 items. A stack of stack frames $\overline{L}$, a stack of function invocation labels $\overline{l}$ (a sequence of labels marking the function calling instructions), the heap and the register environment. $\overline{L}$ and $\overline{l}$ should have the same size. Given an index $i$, the $i$-th elements in $\overline{L}$ and $\overline{l}$ form the *activation record*.
+* $G$ - denotes a set of address tuples. The first address in the tuple denotes the starting address of the allocated memory in the heap (inclusive) and the second one denotes the ending address (exclusive).
+* $H$ - denotes the mapping from addresses to constants. $G$ and $H$ together model the run-time heap memory
+* $M$ - a tuple of 5 items. A stack of stack frames $\overline{L}$, a stack of function invocation labels $\overline{l}$ (a sequence of labels marking the function calling instructions), the heap and the register environment. $\overline{L}$ and $\overline{l}$ should have the same size. Given an index $i$, the $i$-th elements in $\overline{L}$ and $\overline{l}$ form the *activation record*.
 
 The small step operational semantic rules in shape $P \vdash (L, li) \longrightarrow (L, li)$ introduced in our earlier [class](./dynamic_semantics.md#operational-semantics-of-pseudo-assembly) are modified to have shape of $P \vdash (M, li) \longrightarrow (M, li)$.  
 
@@ -58,38 +62,48 @@ We highlight the important rules
 $$
 \begin{array}{cc}
 {\tt (pAlloc)} &  \begin{array}{c}
-        M = (L:\overline{L}, \overline{l}, H, R) \ \ \ \ 
-        findfree(H,L(s)) = loc \\ 
-        M' = (L\oplus(d,loc):\overline{L}, \overline{l}, H\cup[(loc, loc+L(s))], R)
+        M = (L:\overline{L}, \overline{l}, H, G, R) \ \ \ \ 
+        findfree(G,L(s)) = loc \\ 
+        H' = H\cup[(loc + i, 0) \mid i \in \{0, L(s)-1\}] \ \ \ G' = G \cup[(loc, loc+L(s))] \\ 
+        M' = (L\oplus(d,loc):\overline{L}, \overline{l}, H', G',  R)
         \\ \hline
         P \vdash (M, l: d \leftarrow alloc\ s) \longrightarrow (M', P(l+1))  
         \end{array} \\ \\ 
 {\tt (pFree)} & \begin{array}{c}
-        M = (L:\overline{L}, \overline{l}, H,R) \ \ \ \ loc = L(s) \\ 
-        H'\cup[(loc,loc')] = H \ \ \ \ 
-        M' = (L:\overline{L}, \overline{l}, H', R) \\ \hline
+        M = (L:\overline{L}, \overline{l}, H, G, R) \ \ \ \ loc = L(s) \\ 
+        G'\cup[(loc,loc')] = G \ \ \ \ H' = H - \{ loc, ..., loc' \} \ \ \ \
+        M' = (L:\overline{L}, \overline{l}, H', G', R) \\ \hline
         P \vdash (M, l: free\ s) \longrightarrow (M', P(l+1))
         \end{array} \\ \\ 
 
-{\tt (pDeref)} & \begin{array}{c}
-        M = (L:\overline{L}, \overline{l}, H,R) \ \ \ \ loc = L(s) \\ 
-        \exist (loc_1, loc_2) \in H. loc_1 \leq loc \lt loc_2 \\ 
-        v = bytetoint(loc) \ \ \ M' = (L\oplus(d,v):\overline{L}, \overline{l}, H, R)
+{\tt (pRef)} & \begin{array}{c}
+        M = (L:\overline{L}, \overline{l}, H, G, R) \ \ \ \ loc = L(s) \\ 
+        \exist (loc_1, loc_2) \in G. loc_1 \leq loc \lt loc_2 \\ 
+        v = H(loc) \ \ \ M' = (L\oplus(d,v):\overline{L}, \overline{l}, H, G, R)
         \\ \hline
-        P \vdash ( M, l: d \leftarrow deref\ s) \longrightarrow (M', P(l+1))
+        P \vdash ( M, l: d \leftarrow ref\ s) \longrightarrow (M', P(l+1))
+        \end{array} \\ \\ 
+
+{\tt (pDeref)} & \begin{array}{c} 
+        M = (L:\overline{L}, \overline{l}, H,G, R) \ \ \ \ loc = L(s_1) \\
+        \exist (loc_1, loc_2) \in G. loc_1 \leq loc \lt loc_2 \\ 
+        H' = H \oplus (loc, L(s_2)) \ \ \ M' = (L:\overline{L}, \overline{l}, H', G, R)\\ \hline
+        P \vdash (M ,l: deref\ s_1\ s_2) \longrightarrow (M', P(l+1))
         \end{array}
-\end{array}
+\end{array} 
 $$
 
-* The rule $(\tt pAlloc)$ defines the memory allocation routine. Given the asking size, $L(s)$, we make use of the run-time built-in function $findfree()$ to locate the starting address of the free memory region. We save the starting address in $d$, and add the allocated region $(loc, loc+L(s))$ to $H$ for book-keeping. 
-* The rule $(\tt pFree)$ defines the memory deallocation routine. Given the starting address of the memory to be freed $loc$, we remove the pair $(loc, loc')$ from $H$.
-* The rule $(\tt pDeref)$ defines the memory de-reference operation. Given the de-referenced address $loc$, we ensure the address is in $H$. We call a builtin function $bytetoint(loc)$ to read the byte from the given address and convert it into integer constant. We store the converted value into the stack frame and move onto the next instruction. 
+* The rule $(\tt pAlloc)$ defines the memory allocation routine. Given the asking size, $L(s)$, we make use of the run-time built-in function $findfree()$ to locate the starting address of the free memory region. We save the starting address in $d$, and "zero-out" the allocated region addresses ranging from $loc$ to $loc+L(s)$. 
+* The rule $(\tt pFree)$ defines the memory deallocation routine. Given the starting address of the memory to be freed $loc$, we remove the pair $(loc, loc')$ from $G$ and the keys in the range $(loc, loc')$  from $H$.
+* The rule $(\tt pRef)$ defines the memory reference operation. Given the referenced address $loc$, we ensure the address is in $G$ (which implies it is in $H$). We store the value $H(loc)$  into the stack frame and move onto the next instruction. 
+* The rule $(\tt pDeref)$ defines the memory deference operation. Given the dereferenced address $loc$, we ensure the address is in $G$ (which implies it is in $H$). We update the value in $H$ at location $loc$ to $L(s_2)$.
+
 
 $$
 \begin{array}{rc}
 {\tt (pCall)} &  \begin{array}{c}
-        l': begin\ f\ d \in P \ \ \ M = (L:\overline{L}, \overline{l}, H, R) \\ 
-        M' = (\{(d, L(s))\}:L:\overline{L}, l:\overline{l}, H, R)
+        l': begin\ f\ d \in P \ \ \ M = (L:\overline{L}, \overline{l}, H, G, R) \\ 
+        M' = (\{(d, L(s))\}:L:\overline{L}, l:\overline{l}, H, G, R)
         \\ \hline
         P \vdash (M, l: d \leftarrow call\ f\ s) \longrightarrow (M', P(l'+1))  
         \end{array} \\ \\ 
@@ -100,15 +114,15 @@ $$
         P \vdash (M, l:begin\ f\ d) \longrightarrow (M, P(l'+1)) 
         \end{array} \\ \\ 
 {\tt (pRet1)} &  \begin{array}{c}
-        M = (L':L:\overline{L}, l':\overline{l}, H, R)\ \ \ 
+        M = (L':L:\overline{L}, l':\overline{l}, H, G, R)\ \ \ 
         l': d \leftarrow call\ f\ s \in P \\  
         R' = R - {r_{ret}} \ \ \ 
-        M' = (L\oplus(d,R(r_{ret})):\overline{L}, \overline{l}, H, R')
+        M' = (L\oplus(d,R(r_{ret})):\overline{L}, \overline{l}, H, G, R')
         \\ \hline
         P \vdash (M, l:ret) \longrightarrow (M', P(l'+1))  
         \end{array} \\ \\ 
 {\tt (pRet2)} &  \begin{array}{c}
-        M = (\overline{L}, [], H, R)\ \ \ 
+        M = (\overline{L}, [], H, G, R)\ \ \ 
         \\ \hline
         P \vdash (M, l:ret) \longrightarrow exit()
         \end{array} \\ \\ 
@@ -120,7 +134,7 @@ $$
 * The rule $(\tt pRet1)$ manages the termination of a function call. We pop the stack frame and the top label $l'$ from the stack. We search for the caller instruction by the label $l'$. We update the caller's stack frame with the returned value of the function call. 
 * The rule ${\tt pRet2}$ defines the termination of the entire program.
 
-We omit the rest of rules as we need to change the $L$ to $M = (L:\overline{L}, \overline{l}, H, R)$.
+We omit the rest of rules as we need to change the $L$ to $M = (L:\overline{L}, \overline{l}, H, G, R)$.
 
 For example given a PA program 
 
@@ -138,13 +152,13 @@ For example given a PA program
 We have the following derivation
 
 ```java
-P |- ([[]], [], [], []), 1: begin plus1 x  ---> # (pBegin)
-P |- ([[]], [], [], []), 5: z <- call plus1 0 ---> # (pCall) 
-P |- ([[(x,0)],[]],[5], [], []), 2: y <- x + 1 ---> # (pOp)
-P |- ([[(x,0),(y,1)],[]],[5], [], []), 3: rret <- y ---> # (pTempVar)
-P |- ([[(x,0),(y,1)],[]],[5], [], [(rret,1]), 4: ret  ---> # (pRet1)
-P |- ([[(z,1)]],[], [], []), 6: rret <- z # (pTempVar) 
-P |- ([[(z,1)]],[], [], [(rret,1)]) 7: ret # (pRet2)
+P |- ([[]], [], [], [], []), 1: begin plus1 x  ---> # (pBegin)
+P |- ([[]], [], [], [], []), 5: z <- call plus1 0 ---> # (pCall) 
+P |- ([[(x,0)],[]],[5], [], [], []), 2: y <- x + 1 ---> # (pOp)
+P |- ([[(x,0),(y,1)],[]],[5], [], [], []), 3: rret <- y ---> # (pTempVar)
+P |- ([[(x,0),(y,1)],[]],[5], [], [], [(rret,1]), 4: ret  ---> # (pRet1)
+P |- ([[(z,1)]],[], [], [], []), 6: rret <- z # (pTempVar) 
+P |- ([[(z,1)]],[], [], [], [(rret,1)]) 7: ret # (pRet2)
 P |- exit()
 ```
 
@@ -193,9 +207,38 @@ For example, if we have a `min(x,y)` function which has no local variable and we
 4: popframe 12
 ```
 
-### TODO another example PA2 with array 
+### Another example with heap memory access
 
-## Extending SIMP with function and array
+The following PA program is an example of using the memory from the heap. 
+
+```java
+// PA2 
+1:  begin range x 
+2:  s <- 4 * x
+3:  a <- alloc s
+4:  i <- 0
+5:  t <- i < x 
+6:  ifn t goto 11
+7:  ai <- a + i
+8:  deref ai i 
+9:  i <- i + 1
+10: goto 5
+11: rret <- a
+12: ret
+13: r <- call range 3
+14: y <- ref r 2
+15: free r
+16: rret <- y
+17: ret
+```
+
+Instructions 1-12 define the `range(x)` function, which initializes an array with the given size `x` and the values are from `0` to `x`. Lines 13-14 invoke the function and access the 3rd element. Line 15 frees the memory.
+
+#### Cohort Exercise 
+As an exercise, can you work out the derivation of "running" the above program `PA2` using the operational semantics?
+
+
+## SIMP (extended with function and array)
 
 
 We consider syntax of the [SIMP language](./ir_pseudo_assembly.md#the-simp-language) extended with function and array.
@@ -275,16 +318,276 @@ return y;
 
 
 
-
-
 ## Operational Semantic of extended SIMP
 
+For brevity, we consider the big step operational semantics of extended SIMP by extending the [rules](./dynamic_semantics.md#big-step-operational-semantics).
 
-## Extened SIMP to PA conversion
+
+$$
+\begin{array}{rccl}
+(\tt SIMP\ Var\ Environment) & \Delta & \subseteq & (X \times V) \\ 
+(\tt SIMP\ Obj\ Environment) & \rho & \subseteq & (loc \times V)
+\end{array}
+$$
+First and foremost, in the extended SIMP, values include function declarations, memory tuples and unit, besides constants. Hence the $\Delta$ environment maps variables to values. 
+Besides the variable environment $\Delta$, we define the object (heap) environment $\rho$ as a mapping from memory location to values.
+
+### Big Step Operational Semantics for extended SIMP expression
+
+The rules of shape $\Delta \vdash E \Downarrow C$ have to be adapted to the shape of $\overline{\Delta} \vdash (\rho, E) \Downarrow (\rho', V)$, where $\overline{\Delta}$ is the stack of variable environments.
+
+For example, the $(\tt bVar)$ rule is updated as follows
+
+$$
+{\tt (bVar)} ~~~~ \Delta:\overline{\Delta} \vdash (\rho, X) \Downarrow (\rho,\Delta(X))
+$$
+
+The rest of the rules can be easily adapted to the new scheme. Now we consider cases for the new syntax.
+
+$$
+{\tt (bApp)} ~~~~ \begin{array}{c}
+        
+        \overline{\Delta} \vdash (\rho, E_2) \Downarrow (\rho_2,V_2) \\ 
+        (f, func\ f\ (x:T_1)T_2 \{\overline{S}\}) \in \overline{\Delta} \\ 
+        \Delta =  \{(x,V_2)\} \ \ \ (\Delta:\overline{\Delta}, \rho_2, \overline{S}) \Downarrow (\Delta':\overline{\Delta'}, \rho_3, return\ y) \ \ \ (y, V)\in \Delta'
+        \\ \hline
+        \overline{\Delta} \vdash (\rho, f(E_2)) \Downarrow (\rho_3, V)
+        \end{array}
+$$
+
+
+In case of a function application, we first evaluate the function argument into a value. We search for the function definition from the variable environment $\overline{\Delta}$ (in the order from the top frame to the bottom frame). A new variable environment (frame) $\Delta$ is created to store the binding between the function's formal argument and the actual argument. We then call the statement evaluation rules (to be discussed shortly) to run the body the of the function.  Finally, we retrieve the returned value from the call.
+
+$$
+{\tt (bArrInst)} ~~~~ \begin{array}{c}
+        
+        \overline{\Delta} \vdash (\rho, E_2) \Downarrow (\rho_1,V_2) \\ 
+        \forall x \in [m, m+V_2). loc(x) \not\in dom(\rho) \\ 
+        \rho' = \rho \cup \{ (loc(x), unit) \mid x \in [m, m+V_2) \} 
+        \\ \hline
+        \overline{\Delta} \vdash (\rho, T[E_2]) \Downarrow (\rho', (loc(m), loc(m+V_2)))
+        \end{array}
+$$
+
+In case of an array instantiation, we first evaluate the size argument into a value (must be an integer constant). We find a sequence of unsused memory locations $loc(m)$ to $loc(m+V_2)$ and initialize the value to $unit$. 
+
+
+$$
+{\tt (bArrRef)} ~~~~ \begin{array}{c}
+        
+
+        (X, (loc(m_1), loc(m_2))) \in \Delta \\
+        \Delta:\overline{\Delta} \vdash (\rho, E_2) \Downarrow (\rho_2, V_2) \ \ \ \
+        m_1 + V_2 < m_2
+        \\ \hline
+        \Delta:\overline{\Delta} \vdash (\rho, X[E_2]) \Downarrow (\rho_2, \rho_2(loc(m_1 + V_2))
+        \end{array}
+$$
+
+In case of an array reference, we lookup the memory location boundaries of $X$, then
+we evaluate $E_2$ into a constant (integer) $V_2$. If the index is within the boundary, we lookup 
+the value associated with the address. 
+
+### Big Step Operational Semantics for extended SIMP statement
+
+Similarly, to support the change of SIMP statement,
+ we adapt the big step oeprational semantics rule of shape $(\Delta, S) \Downarrow \Delta$ to shape $(\overline{\Delta}, \rho, S) \Downarrow (\overline{\Delta'}, \rho', S')$
+
+For example the assignment statement rule is updated as follows
+
+$$
+\begin{array}{rc}
+{\tt (bAssign)} & \begin{array}{c}
+    \Delta \vdash (\rho,E) \Downarrow (\rho',V)
+    \\ \hline
+    (\overline{\Delta}, \rho, X = E) \Downarrow (\Delta \oplus (X, V), \rho', nop)
+    \end{array}
+\end{array}
+$$
+
+ We focus on the new rules and omit the rest of the rules
+
+$$
+\begin{array}{rc}
+{\tt (bArrDeref)} & \begin{array}{c}
+    \Delta:\overline{\Delta} \vdash (\rho,E_1) \Downarrow (\rho_1,V_1) \ \ \ \ 
+    \Delta:\overline{\Delta} \vdash (\rho_1,E_2) \Downarrow (\rho_2,V_2) \\ 
+    (X, (loc(m_1), loc(m_2))) \in \Delta \ \ \ m_1 + V_1 < m_2 \\ 
+    \rho_3 = \rho_2 \oplus (loc(m_1 + V_1), V_2)
+    \\ \hline
+    (\Delta:\overline{\Delta}, \rho, X[E_1] = E_2) \Downarrow (\Delta:\overline{\Delta}, \rho_3, nop)
+    \end{array}
+\end{array}
+$$
+
+In case of array deference, we first compute the index argument into an integer constant $V_1$. We lookup the memory range $(loc(m_1), loc(m_2))$ of $X$ and ensure that the $m_1 + V_1$ is within range. Evaluating $E_2$ yields the value to be assigned to the memory location $loc(m_1 + V_1)$. Finally we return the updated object memory environment.
+
+$$
+\begin{array}{rc}
+{\tt (bFree)} & \begin{array}{c}
+    (X, (loc(m_1), loc(m_2))) \in \Delta \ \ \ \ \ 
+    \rho' \cup \{ (loc(x),V) \mid x \in [m_1, m_2)\} = \rho
+    \\ \hline
+    (\Delta:\overline{\Delta}, \rho, free\ X) \Downarrow (\Delta - ((X, (loc(m_1), loc(m_2)))):\overline{\Delta}, \rho', nop)
+    \end{array}
+\end{array}
+$$
+
+In case of free statement, we ensure that the argument is a variable that holding some reference to the object envrionment.  We remove the memory assignment from $\rho$ and remove $X$ from $\Delta$. 
+(In some system, $X$ is not removed from $\Delta$, which causes the "double-freeing" error.)
+
+
+### Big Step Operational Semantics for extended SIMP Program
+
+$$
+\begin{array}{rc}
+{\tt (bFuncDecl)} & \begin{array}{c}
+        \Delta' = \Delta \oplus(f, func\ f\ (X:T_1)T_2\{\overline{S'}\}) \\
+        (\Delta':\overline{\Delta}, \rho, \overline{D};\overline{S}) \Downarrow (\overline{\Delta''}, \rho', return\ X)
+        \\ \hline
+        (\Delta:\overline{\Delta}, \rho, func\ f\ (X:T_1)T_2\{\overline{S}\}; \overline{D};\overline{S}) \Downarrow (\overline{\Delta''}, \rho', return\ X)
+        \end{array} \\ \\ 
+{\tt (bSeq)} & \begin{array}{c}
+        (\overline{\Delta}, \rho, S) \Downarrow (\overline{\Delta}', \rho', nop) \\
+        (\overline{\Delta'}, \rho', \overline{S}) \Downarrow (\overline{\Delta''}, \rho'', return\ X)
+        \\ \hline
+        \overline{\Delta}, \rho, S;\overline{S}) \Downarrow (\overline{\Delta''}, \rho'', return\ X)
+        \end{array}
+\end{array}
+$$
+
+The above two rules handle the function declaration sequence and statement sequences. The rule $(\tt bFuncDecl)$ records the variable $f$ to function definition binding in $\Delta'$ and we use $\Delta':\overline{\Delta}$ to evaluate the rest of the evaluation. 
+The rule $(\tt bSeq)$ evaluates the first statement until it becomes $nop$ and moves on the the rest of the statement.
+
+
+
+For example, running the `SIMP1` program yields the following
+
+```python
+[{plus1: func plus1 (...)}] |- ({} 0) ⇓ ({},0) (bConst)
+
+(plus1: func plus1 (...)) in {plus1: func plus1 (...)}  [sub tree 1]
+--------------------------------------------------------------(bApp)
+[{plus1: func plus1 (...)}] |- ({}, plus1(0)} ⇓ ({},1) 
+--------------------------------------------------------------------(bAssign)    
+[{plus1: func plus1 (...)}], {}, z = plus1(0); ⇓ [{plus1: func plus1 (...), z:1}], {}, nop;    
+-------------------------------------------------------------------------(bSeq)
+[{plus1, func plus1 (...)}], {}, z = plus1(0); return z; ⇓ [{plus1: func plus1 (...), z:1}], {}, return z
+---------------------------------------------------------------------------- (bFuncDecl)
+[],{}, 
+func plus1 (x:int) int {
+    y = x + 1;
+    return y;
+}
+z = plus1(0);
+return z; ⇓ [{plus1: func plus1 (...), z:1}], {}, return z
+```
+
+where sub derivation`[sub tree 1]` is as follows
+
+```python
+[{x:0}, {plus1: func plus1 (...)}] |- ({}, x) ⇓ ({}, 0) (bVar)
+
+[{x:0}, {plus1: func plus1 (...)}] |- ({}, 1) ⇓ ({}, 1) (bConst)
+------------------------------------------------------------ (bOp)
+[{x:0}, {plus1: func plus1 (...)}] |- ({}, x + 1) ⇓ ({}, 1)
+-------------------------------------------------------------------------(bAssign)
+[{x:0}, {plus1: func plus1 (...)}], {}, y = x + 1; ⇓ [{x:0,y:1}, {plus1: func plus1 (...)}], nop
+---------------------------------------------------------------------------------------------(bSeq)
+[{x:0}, {plus1: func plus1 (...)}], {}, y = x + 1; return y; 
+⇓ [{x:0,y:1}, {plus1: func plus1 (...)}], {}, return y;
+```
+
+#### Cohort Exercise 
+As an exercise, can you work out the derivation of "running" the program `SIMP2` using the big step operational semantics?
+
+
+
+
+## SIMP to PA conversion (Extended)
+
+
+We consider the update to the [maximal munch algorithm](./ir_pseudo_assembly.md#maximal-munch-algorithm-v2). 
+
+$$ 
+\begin{array}{rc}
+{\tt (m2App)} & \begin{array}{c} 
+          G_e(E_2) \vdash (\hat{e_2}, \check{e_2} ) \\ 
+          t \ {\tt is\ a\ fresh\ variable} \\
+          l \ {\tt is\ a\ fresh\ label} 
+          \\ \hline
+          G_e(f(E_2)) \vdash (t, \check{e_2} + [l: t\leftarrow call\ f\ \hat{e}]) 
+          \end{array} 
+\end{array}  
+$$
+
+The ${\tt (m2App)}$ rule converts a function application expression to PA instructions.
+
+$$ 
+\begin{array}{rc}
+{\tt (m2ArrRef)} & \begin{array}{c} 
+          G_e(E_2) \vdash (\hat{e_2}, \check{e_2} ) \\ 
+          t, t' \ {\tt are\ fresh\ variables} \\
+          l, l' \ {\tt are\ fresh\ labels} 
+          \\ \hline
+          G_e(X[E_2]) \vdash (t', \check{e_2} + [l: t\leftarrow X + \hat{e_2}, l': t' \leftarrow deref\ t]) 
+          \end{array} 
+\end{array}  
+$$
+
+The ${\tt (m2ArrRef)}$ rule converts an array reference expression to PA instructions.
+
+
+$$ 
+\begin{array}{rc}
+{\tt (m2ArrInst)} & \begin{array}{c} 
+          G_e(E_2) \vdash (\hat{e_2}, \check{e_2} ) \ \ \ c \ {\tt is\ the size\ of\ } T\\ 
+          t, t' \ {\tt are\ fresh\ variables} \\
+          l, l' \ {\tt are\ fresh\ labels} 
+          \\ \hline
+          G_e(T[E_2]) \vdash (t', \check{e_2} + [l: t\leftarrow c * \hat{e_2}, l': t' \leftarrow alloc\ t]) 
+          \end{array} 
+\end{array}  
+$$
+
+The ${\tt (m2ArrInst)}$ rule converts an array instanstiation expression to PA instructions. Note that we assume that
+we can assess the size of $T$ in bytes.
+
+
+
+
+$$ 
+\begin{array}{rc}
+{\tt (m2ArrDeref)} & \begin{array}{c} 
+          G_e(E_1) \vdash (\hat{e_1}, \check{e_2}) \ \ \ \ G_e(E_2) \vdash (\hat{e_2}, \check{e_2}) \\
+          l, l'  {\tt\ are\ fresh\ labels}  \ \ \ t \ {\tt is\ a fresh\ variable} 
+          \\ \hline
+          G_s(X[E_1] = E_2) \vdash \check{e_1} + \check{e_2} + [l: t \leftarrow X + \hat{e_1}, l': deref\ t\ \hat{e_2}]
+          \end{array} 
+\end{array}  
+$$
+The ${\tt (m2ArrDeref)}$ rule converts an array derference assignment statement to PA instructions. 
+
+
+$$ 
+\begin{array}{rc}
+{\tt (m2FuncDecl)} & \begin{array}{c} 
+          l  {\tt\ is\ a fresh\ label} \ \ \ G_s(\overline{S}) \vdash lis
+          \\ \hline
+          G_d(func\ f(X:T_1)T_2 \{\overline{S}\}) \vdash [l:begin\ f\ x] + lis 
+          \end{array} 
+\end{array}  
+$$
+
+The ${\tt (m2FuncDecl)}$ rule converts a function declaration into PA instructions.
+
+Applying the above algorithm to `SIMP1` yields `PA1` and applying to `SIMP2` produces `PA2`. 
 
 
 ## Extend SIMP Type checking
 
+We consider extending the static semantic (type checking) of SIMP to support function and array.
 
 
-## Linear Type 
+
+## Linear Type System
