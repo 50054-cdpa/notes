@@ -969,7 +969,7 @@ $$
                     M \vdash_{src} s_1 \Rightarrow wis_1 \ \ \ M \vdash_{src} s_2 \Rightarrow wis_2 \\
                     M \vdash lis_1 \Rightarrow wis_3 \ \ \ M \vdash lis_2 \Rightarrow wis_4 \\ 
                     \hline
-                    M, L \vdash l_1:t \leftarrow s_1 == s_2; l_2:ifn\ t\ goto\ l_3 ; lis \Rightarrow \\ 
+                    M, L \vdash l_1:t \leftarrow s_1 == s_2; l_2:ifn\ t\ goto\ l_3 ; lis' \Rightarrow \\ 
                      wis_1 + wis_2 + [eq, if \{ loop \{ wis_3 + wis_1 + wis_2 + [ eq, brIf\ 0 ] \} \} else \{ nop \}] + wis_4
                 \end{array} 
 \\ \\
@@ -1014,8 +1014,8 @@ $$
                     M \vdash_{src} s_1 \Rightarrow wis_1 \ \ \ M \vdash_{src} s_2 \Rightarrow wis_2 \\
                     M \vdash lis_1 \Rightarrow wis_3 \ \ \ M \vdash lis_2 \Rightarrow wis_4 \\ 
                     \hline
-                    M, L \vdash l_1:t \leftarrow s_1 < s_2; l_2:ifn\ t\ goto\ l_3 ; lis \Rightarrow \\ 
-                     wis_1 + wis_2 + [lt, if \{ loop \{ wis_3 + wis_1 + wis_2 + [ eq, brIf\ 0 ] \} \} else \{ nop \}] + wis_4
+                    M, L \vdash l_1:t \leftarrow s_1 < s_2; l_2:ifn\ t\ goto\ l_3 ; lis' \Rightarrow \\ 
+                     wis_1 + wis_2 + [lt, if \{ loop \{ wis_3 + wis_1 + wis_2 + [ lt, brIf\ 0 ] \} \} else \{ nop \}] + wis_4
                 \end{array} 
 \\ \\
      {\tt (wLtIf)} & \begin{array}{c}
@@ -1106,13 +1106,13 @@ In turn if we apply the above PA to JVM bytecode conversion
 const 1
 const 2
 add
-get t 
-set t
+set t 
+get t
 const 3
 mul
-get r 
+set r 
 ```
-As observe, the `get t` followed by `set t` are rundandant, because `t` is not needed later (dead).
+As observe, the `set t` followed by `get t` are rundandant, because `t` is not needed later (dead).
 
 ```js
 const 1
@@ -1120,7 +1120,7 @@ const 2
 add
 const 3
 mul
-get r 
+set r 
 ```
 
 This can either be done via 

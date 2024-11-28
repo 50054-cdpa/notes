@@ -37,7 +37,7 @@ nav:
   - W11:
     - "Lattices & Sign Analysis":              "sign_analysis_lattice.md"
     - "Liveness Analysis":                     "liveness_analysis.md"
-    - "Code Generation":                       "code_generation.md"
+    - "Code Generation":                       "code_generation_wasm.md"
   - W12:
     - "Information Flow Analysis":             "advanced_static_analysis.md"
 
