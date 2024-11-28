@@ -892,7 +892,7 @@ $$
 (\tt brIfT0Loop) &  (\Delta, 1, \_, brIf\ 0;wis,(loop \{wis'\}, wis'');B) \longrightarrow (\Delta, \_, \_, wis', (loop \{wis'\}, wis'');B) 
 \\ \\ 
 (\tt brIfTN) &  (\Delta, 1, \_, brIf\ n;wis,(bi, wis');B) \longrightarrow (\Delta, 1, \_, brIf\ (n-1), B) \\ \\ 
-(\tt brIfF) & (\Delta, 0, \_, brIf\ _;wis, B) \longrightarrow (\Delta, \_, \_, wis, B)
+(\tt brIfF) & (\Delta, 0, \_, brIf\ \_;wis, B) \longrightarrow (\Delta, \_, \_, wis, B)
 \end{array}
 $$
 
