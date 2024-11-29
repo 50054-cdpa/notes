@@ -547,15 +547,11 @@ $$
 The ${\tt (m2ArrInst)}$ rule converts an array instanstiation expression to PA instructions. Note that we assume that
 we can assess the size of $T$ in bytes.
 
-
-
-
 $$ 
 \begin{array}{rc}
 {\tt (m2ArrDeref)} & \begin{array}{c} 
           G_e(E_1) \vdash (\hat{e_1}, \check{e_2}) \ \ \ \ G_e(E_2) \vdash (\hat{e_2}, \check{e_2}) \\
-          l, l'  {\tt\ are\ fresh\ labels}  \ \ \ t \ {\tt is\ a fresh\ variable} 
-          \\ \hline
+          l, l'  {\tt\ are\ fresh\ labels}  \ \ \ t \ {\tt is\ a fresh\ variable} \\ \hline
           G_s(X[E_1] = E_2) \vdash \check{e_1} + \check{e_2} + [l: t \leftarrow X + \hat{e_1}, l': deref\ t\ \hat{e_2}]
           \end{array} 
 \end{array}  
