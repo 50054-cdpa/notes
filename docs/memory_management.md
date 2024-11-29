@@ -1017,14 +1017,14 @@ $$
 \begin{array}{rc}
 {\tt (ltWhile)} & \begin{array}{c} 
           \Gamma \vdash E:bool, \Gamma_1 \\ 
-          \Gamma_1 \vdash \overline{S} : T, \Gamma_2  
+          \Gamma_1 \vdash \overline{S} : T, \Gamma_1  
           \\ \hline
-          \Gamma \vdash while\ E\ \{\overline{S}\} : T, \Gamma_2
+          \Gamma \vdash while\ E\ \{\overline{S}\} : T, \Gamma_1
           \end{array} 
 \end{array}
 $$
 
-The typing rule $(\tt ltWhile)$ is similar to $(\tt ltIf)$. 
+The typing rule $(\tt ltWhile)$ is similar to $(\tt ltIf)$, except that the type environments "before" and "after" the while body should be unchanged to ensure linearity.
 
 
 
