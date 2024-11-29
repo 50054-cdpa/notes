@@ -556,6 +556,7 @@ $$
           \end{array} 
 \end{array}  
 $$
+
 The ${\tt (m2ArrDeref)}$ rule converts an array derference assignment statement to PA instructions. 
 
 
@@ -635,7 +636,8 @@ The rule $(\tt tUnit)$ defines the type checking for unit value.
 
 For the extended SIMP statement type checking, we need to adjust the typing rules of shape $\Gamma \vdash S$ to $\Gamma \vdash S : T$. 
 
-We adjust the typing rules for the standard statement as follows.
+We adjust the typing rules for the standard statements as follows.
+
 $$
 \begin{array}{rc}
 {\tt (tAssign)} & \begin{array}{c} 
