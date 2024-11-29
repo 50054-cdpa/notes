@@ -75,7 +75,6 @@ $$
         M' = (L:\overline{L}, \overline{l}, H', G', R) \\ \hline
         P \vdash (M, l: free\ s) \longrightarrow (M', P(l+1))
         \end{array} \\ \\ 
-
 {\tt (pRef)} & \begin{array}{c}
         M = (L:\overline{L}, \overline{l}, H, G, R) \ \ \ \ loc = L(s) \\ 
         \exist (loc_1, loc_2) \in G. loc_1 \leq loc \lt loc_2 \\ 
@@ -83,7 +82,6 @@ $$
         \\ \hline
         P \vdash ( M, l: d \leftarrow ref\ s) \longrightarrow (M', P(l+1))
         \end{array} \\ \\ 
-
 {\tt (pDeref)} & \begin{array}{c} 
         M = (L:\overline{L}, \overline{l}, H,G, R) \ \ \ \ loc = L(s_1) \\
         \exist (loc_1, loc_2) \in G. loc_1 \leq loc \lt loc_2 \\ 
@@ -107,7 +105,6 @@ $$
         \\ \hline
         P \vdash (M, l: d \leftarrow call\ f\ s) \longrightarrow (M', P(l'+1))  
         \end{array} \\ \\ 
-
 {\tt (pBegin)} & \begin{array}{c}
         (l':ret) \in P \ \ \ \forall (l'':ret) \in P: l''>= l \implies l'' >= l'
         \\ \hline
@@ -125,7 +122,7 @@ $$
         M = (\overline{L}, [], H, G, R)\ \ \ 
         \\ \hline
         P \vdash (M, l:ret) \longrightarrow exit()
-        \end{array} \\ \\ 
+        \end{array} 
 \end{array}
 $$
 
@@ -360,7 +357,6 @@ In case of a function application, we first evaluate the function argument into 
 
 $$
 {\tt (bArrInst)} ~~~~ \begin{array}{c}
-        
         \overline{\Delta} \vdash (\rho, E_2) \Downarrow (\rho_1,V_2) \\ 
         \forall x \in [m, m+V_2). loc(x) \not\in dom(\rho) \\ 
         \rho' = \rho \cup \{ (loc(x), unit) \mid x \in [m, m+V_2) \} 
@@ -374,8 +370,6 @@ In case of an array instantiation, we first evaluate the size argument into a va
 
 $$
 {\tt (bArrRef)} ~~~~ \begin{array}{c}
-        
-
         (X, (loc(m_1), loc(m_2))) \in \Delta \\
         \Delta:\overline{\Delta} \vdash (\rho, E_2) \Downarrow (\rho_2, V_2) \ \ \ \
         m_1 + V_2 < m_2
@@ -794,18 +788,288 @@ y:int ∈ Γ1
 ```
 
 
-### Cohort Exericse
+### Cohort Exercise
 
 As an exercise, apply the type checking rule to `SIMP2`.
 
 
-## Memory Issues
+### Cohort Exercise 
+
+As an exercise, develop a type inference algorithm for the extended SIMP.
+
+## Run-time errors caused by illegal memory operations
 
 There are several issues arising with the memory management.
 
 ### Double-freeing 
 
-As motivated earlier, some 
+As motivated earlier, in some system, the operational semantics of the `free x` statement does not remove the variable `x` in the stack frame, which causes a double free error. For example
 
+```java
+// SIMP3 
+func f(x:int) int {
+    t = int[x];
+    free t;
+    free t; // run-time error, as t's reference is no longer valid.
+    return x; 
+}
+y = f(1);
+return y;
+```
+
+### Missing free
+
+On the other hand, missing free statement after array initialization might cause memory leak. 
+
+```java
+// SIMP4
+func f(x:int) int {
+    t = int[x];
+    return x; // unfreed memory unless garbage-collected.
+}
+y = f(1);
+return y;
+```
+
+### Array out of bound
+
+Another common error is array out of bound access. 
+
+```java
+// SIMP5
+func f(x:int) int {
+    t = int[x];
+    i = x;
+    t[i] = 0; // array out of bound
+    free t;
+    return x; 
+}
+y = f(1);
+return y;
+```
+
+Note that all these three examples are well-typed in the current type checking system. The array out of bound error can be detected via dependent type system (recall GADT example in [some earlier class](./fp_haskell_poly.md#generalized-algebraic-data-type)). The other two kinds of errors can be flagged out using Linear Type system.
 
 ## Linear Type System
+
+Linear Type was inspired by the linear logic proposed by Jean-Yves Girard. 
+
+Linear Type System is a popular static semantic design choice to ensure memory safety. It has strong influence in languages such as Cyclone and Rust. 
+
+The basic principal is that 
+
+1. each variable has only one entry in a type environment $\Gamma$ (same as the normal type system)
+1. after a variable's type assignment from some type environment $\Gamma$ is used in some proof derivation, it will be removed from $\Gamma$. 
+
+
+### Type Checking Expression using Linear Type System
+
+The linear typing rules for SIMP expression are in the form of $\Gamma \vdash E : T, \Gamma'$ which reads as "we type check $E$ to have type $T$ under $\Gamma$, after that $\Gamma$ becomes $\Gamma'$.
+
+
+$$
+\begin{array}{rc}
+{\tt (ltVar)} & \begin{array}{c} 
+          \Gamma'\oplus(X,T) = \Gamma
+          \\ \hline
+          \Gamma \vdash X : T, \Gamma' 
+          \end{array} 
+\end{array}
+$$
+
+The above rule type checks the variable $X$ to have type $T$, this is valid if we can find $(X,T)$ in the type environment $\Gamma$, and we remove that entry from $\Gamma$ to produce $\Gamma'$.
+
+
+$$
+\begin{array}{rc}
+{\tt (ltArrInst)} & \begin{array}{c} 
+          \Gamma \vdash E:int, \Gamma'
+          \\ \hline
+          \Gamma \vdash T[E] : [T], \Gamma' 
+          \end{array} 
+\end{array}
+$$
+
+The array instantion expression is treated as before except that the post-checking type environment is taken into consideration. 
+
+
+$$
+\begin{array}{rc}
+{\tt (ltApp)} & \begin{array}{c} 
+          \Gamma \vdash E_2:T_1, \Gamma' \ \ \ \ (f, T_1\rightarrow T_2) \in \Gamma'
+          \\ \hline
+          \Gamma \vdash f(E_2) : T_2, \Gamma' 
+          \end{array}  
+\end{array}
+$$
+
+When type checking the function application expression, we linearly type-check the argument $E_2$ to have type $T_1$ and we check the function $f$ is having the function type $T_1 \rightarrow T_2)$ in the update type environment. (Note that unlike other system, we do not remove the type assignment for functions after "use", so that a function can be reused.)
+
+
+$$
+\begin{array}{rc}
+{\tt (ltArrRef)} & \begin{array}{c} 
+          \Gamma \vdash E_2:int, \Gamma' \ \ \ \ (X, [T]) \in \Gamma'
+          \\ \hline
+          \Gamma \vdash X[E_2] : T, \Gamma' 
+          \end{array}  
+\end{array}
+$$
+
+Similarly, when type checking the array reference expression, we linearly type check the index expression against type $int$, and we check the array variable $X$ is in the type environment $\Gamma'$ without removing it. 
+
+We omit the linearly typing rules for the rest of expressions as they contain no surprise. 
+
+#### Cohort Exercise
+Work out the linear typing rule for $C$, $unit$, $(E)$ and $E\ op\ E$.
+
+
+### Type Checking Statement using Linear Type System
+
+The linear typing rules for SIMP statements are in the form of $\Gamma \vdash S : T, \Gamma'$ which reads as "we type check $S$ to have type $T$ under $\Gamma$, after that $\Gamma$ becomes $\Gamma'$.
+
+
+
+$$
+\begin{array}{rc}
+{\tt (ltAssign)} & \begin{array}{c} 
+          \Gamma \vdash E:T, \Gamma' 
+          \\ \hline
+          \Gamma \vdash X = E : unit, \Gamma' \oplus(X,T) 
+          \end{array} 
+\end{array}
+$$
+
+In rule $(\tt ltAssign)$ we type check the assignment statement, we first type check the RHS expression, and we "transfer" the ownership of type $T$ to $X$ in the resulting environment. For example, in an assignment statement, $X = Y$, $Y$'s type is transferred to $X$, and $Y$'s type assignment is no longer accessible after this statement. Hence the following programming is not typeable in the linear type system. 
+
+
+```java
+// SIMP6
+x = 1;
+y = x;
+z = x;
+```
+
+
+$$
+\begin{array}{rc}
+{\tt (ltNop)} & 
+          \Gamma \vdash nop : unit, \Gamma 
+\end{array}
+$$
+
+Typing $Nop$ does not change the type environment.  
+
+
+$$
+\begin{array}{rc}
+{\tt (ltArrDeref)} & \begin{array}{c} 
+          \Gamma \vdash E_2:T, \Gamma_1 \ \ \ \Gamma_1 \vdash E_1:int, \Gamma_2 \\ (X,[T]) \in \Gamma_2 
+          \\ \hline
+          \Gamma \vdash X[E_1] = E_2 : unit, \Gamma_2
+          \end{array} 
+\end{array}
+$$
+
+In case of array dereference statement, we type check the RHS expression. With the updated type environemnt $Gamma_1$ we type check the index expression $E_1$ having type $int$. Finally we make sure that $X$ is an array type in $\Gamma_2$ without removing it.
+
+$$
+\begin{array}{rc}
+{\tt (ltFree)} & \begin{array}{c} 
+          \Gamma \vdash X:[T], \Gamma' 
+          \\ \hline
+          \Gamma \vdash free\ X: unit, \Gamma'
+          \end{array} 
+\end{array}
+$$
+
+When type checking the free statement, $X$'s type must be an array type. (Note that $(X,[T]))$ will be removed.)
+
+
+$$
+\begin{array}{rc}
+{\tt (ltReturn)} & \begin{array}{c} 
+          \Gamma \vdash X:T, \Gamma' 
+          \\ \hline
+          \Gamma \vdash return\ X: T, \Gamma'
+          \end{array} 
+\end{array}
+$$
+
+Return statement carries the type of the variable being returned. After that, the type assignment of $X$ will be removed. 
+
+
+$$
+\begin{array}{rc}
+{\tt (ltIf)} & \begin{array}{c} 
+          \Gamma \vdash E_1:bool, \Gamma_1 \\ 
+          \Gamma_1 \vdash \overline{S_1} : T, \Gamma_2 \\  
+          \Gamma_1 \vdash \overline{S_2} : T, \Gamma_2 
+          \\ \hline
+          \Gamma \vdash if\ E_1\ \{\overline{S_1}\}\ else\ \{\overline{S_2}\} : T, \Gamma_2
+          \end{array} 
+\end{array}
+$$
+
+In the rule $(\tt ltIf)$, we first type check the condition expression $E_1$ against $bool$. We then type check the then and else statements under the same type $T$ and resulting type environment $\Gamma_2$. 
+
+
+
+$$
+\begin{array}{rc}
+{\tt (ltWhile)} & \begin{array}{c} 
+          \Gamma \vdash E:bool, \Gamma_1 \\ 
+          \Gamma_1 \vdash \overline{S} : T, \Gamma_2  
+          \\ \hline
+          \Gamma \vdash while\ E\ \{\overline{S}\} : T, \Gamma_2
+          \end{array} 
+\end{array}
+$$
+
+The typing rule $(\tt ltWhile)$ is similar to $(\tt ltIf)$. 
+
+
+
+
+$$
+\begin{array}{rc}
+{\tt (ltSeq)} & \begin{array}{c} 
+          \Gamma \vdash S:T, \Gamma_1 \\ 
+          \Gamma_1 \vdash \overline{S} : T', \Gamma_2  
+          \\ \hline
+          \Gamma \vdash S;\overline{S}:T', \Gamma_2
+          \end{array} 
+\end{array}
+$$
+
+In the rule $(\tt ltSeq)$, we type check a sequence of statements by propogating the updated type environments from top to bottom (left to right).
+
+
+### Type Checking SIMP Declaration using Linear Type System 
+
+
+$$
+\begin{array}{rc}
+{\tt (ltFuncDecl)} & \begin{array}{c} 
+          \Gamma \oplus(f:T_1 \rightarrow T_2)\oplus(X:T_1) \vdash \overline{S}:T_2, \Gamma
+          \\ \hline
+          \Gamma \vdash func\ f(X:T_1)T_2 \{ \overline{S} \}: T_1 \rightarrow T_2
+          \end{array} \\ \\ 
+{\tt (ltProg)} & \begin{array}{c} 
+          {\tt for\ } i \in [1,n] \ \ \
+          \Gamma_i \vdash D_i : T_i, \Gamma_i' \ \ \
+          \Gamma \vdash \overline{S}:T,\Gamma'
+          \\ \hline
+          \Gamma \vdash D_1;...;D_n;\overline{S}: T,\Gamma'
+          \end{array} 
+\end{array} 
+$$
+
+When type checking a function declaration, we extend the type environemnt with the function's type assignment and its argument type assignment, then type check the body. The additional requirement is that the resulting environment must be exactly the same as $\Gamma$ to maintain linearility. 
+
+In $(\tt ltPRog)$, we type check the function declaration idependently and then type chek the main statement sequence left to right. 
+
+## TODO: show that we can reject `SIMP3` and `SIMP4`.
+
+
+### Type inference is left as an exercise. 
