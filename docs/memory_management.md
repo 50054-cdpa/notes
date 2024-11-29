@@ -1049,7 +1049,7 @@ In the rule $(\tt ltSeq)$, we type check a sequence of statements by propogating
 $$
 \begin{array}{rc}
 {\tt (ltFuncDecl)} & \begin{array}{c} 
-          \Gamma \oplus(f:T_1 \rightarrow T_2)\oplus(X:T_1) \vdash \overline{S}:T_2, \Gamma
+          \Gamma \oplus(f:T_1 \rightarrow T_2)\oplus(X:T_1) \vdash \overline{S}:T_2, \Gamma\oplus(f:T_1 \rightarrow T_2)
           \\ \hline
           \Gamma \vdash func\ f(X:T_1)T_2 \{ \overline{S} \}: T_1 \rightarrow T_2
           \end{array} \\ \\ 
@@ -1063,7 +1063,7 @@ $$
 \end{array} 
 $$
 
-When type checking a function declaration, we extend the type environemnt with the function's type assignment and its argument type assignment, then type check the body. The additional requirement is that the resulting environment must be exactly the same as $\Gamma$ to maintain linearility. 
+When type checking a function declaration, we extend the type environemnt with the function's type assignment and its argument type assignment, then type check the body. The additional requirement is that the resulting environment must be exactly the same as $\Gamma\oplus(f:T_1 \rightarrow T_2)$ to maintain linearity. 
 
 In $(\tt ltPRog)$, we type check the function declaration idependently and then type chek the main statement sequence left to right. 
 
