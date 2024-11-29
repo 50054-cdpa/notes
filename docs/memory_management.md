@@ -441,7 +441,7 @@ In case of free statement, we ensure that the argument is a variable that holdin
 
 $$
 \begin{array}{rc}
-{\tt (bFuncDecl)} & \begin{array}{c}
+{\tt (bProg)} & \begin{array}{c}
         \Delta' = \Delta \oplus(f, func\ f\ (X:T_1)T_2\{\overline{S'}\}) \\
         (\Delta':\overline{\Delta}, \rho, \overline{D};\overline{S}) \Downarrow (\overline{\Delta''}, \rho', return\ X)
         \\ \hline
@@ -456,7 +456,7 @@ $$
 \end{array}
 $$
 
-The above two rules handle the function declaration sequence and statement sequences. The rule $(\tt bFuncDecl)$ records the variable $f$ to function definition binding in $\Delta'$ and we use $\Delta':\overline{\Delta}$ to evaluate the rest of the evaluation. 
+The above two rules define the execution of a SIMP program and statement sequences. The rule $(\tt bProg)$ records the variable $f$ to function definition binding in $\Delta'$ and we use $\Delta':\overline{\Delta}$ to evaluate the rest of the evaluation. 
 The rule $(\tt bSeq)$ evaluates the first statement until it becomes $nop$ and moves on the the rest of the statement.
 
 
@@ -473,7 +473,7 @@ For example, running the `SIMP1` program yields the following
 [{plus1: func plus1 (...)}], {}, z = plus1(0); ⇓ [{plus1: func plus1 (...), z:1}], {}, nop;    
 -------------------------------------------------------------------------(bSeq)
 [{plus1, func plus1 (...)}], {}, z = plus1(0); return z; ⇓ [{plus1: func plus1 (...), z:1}], {}, return z
----------------------------------------------------------------------------- (bFuncDecl)
+---------------------------------------------------------------------------- (bProg)
 [],{}, 
 func plus1 (x:int) int {
     y = x + 1;
@@ -586,8 +586,226 @@ Applying the above algorithm to `SIMP1` yields `PA1` and applying to `SIMP2` pro
 
 ## Extend SIMP Type checking
 
-We consider extending the static semantic (type checking) of SIMP to support function and array.
+We consider extending the [static semantic (type checking)](./static_semantics.md#type-checking-for-simp) of SIMP to support function and array.
 
+### Type Checking SIMP Expression (Extended) 
+
+Let's consider the type checking rules for the new SIMP expressions. Overall the type rule shape remains unchanged. Recall
+
+$$
+\begin{array}{rc}
+{\tt (tArrRef)} & \begin{array}{c} 
+          (X, [T]) \in \Gamma \ \ \ \ \Gamma \vdash E_2 : int
+          \\ \hline
+          \Gamma \vdash X[E_2] : T 
+          \end{array} 
+\end{array}  
+$$
+
+In the rule $(\tt tArrRef)$ we type check memory reference expression. We validate $X$'s type is an array type and $E_2$'s type must be an $int$ type.
+
+
+$$
+\begin{array}{rc}
+{\tt (tArrInst)} & \begin{array}{c} 
+          \Gamma \vdash E_2 : int
+          \\ \hline
+          \Gamma \vdash T[E_2] : [T] 
+          \end{array} 
+\end{array}  
+$$
+
+The rule $(\tt tArrInst)$ defines the type checking for array instantiation. The entire expression is of type $[T]$ if the size argument $E_2$ is of type $int$.
+
+$$
+\begin{array}{rc}
+{\tt (tApp)} & \begin{array}{c} 
+          \Gamma \vdash f : T_1 \rightarrow T_2 \ \ \ \ \Gamma \vdash E_2 : T_1
+          \\ \hline
+          \Gamma \vdash f(E_2) : T_2
+          \end{array} 
+\end{array}  
+$$
+
+The rule $(\tt tApp)$ defines the type checking for function application. The entire expression is of type 
+$T_2$ if $f$ has type $T_1 \rightarrow T_2$ and $E_2$ has type $T_1$.
+
+$$
+\begin{array}{rc}
+{\tt (tUnit)} & \begin{array}{c} 
+          \Gamma \vdash unit : unit
+          \end{array} 
+\end{array}
+$$
+
+The rule $(\tt tUnit)$ defines the type checking for unit value.
+
+### Type Checking SIMP Statement (Extended) 
+
+
+For the extended SIMP statement type checking, we need to adjust the typing rules of shape $\Gamma \vdash S$ to $\Gamma \vdash S : T$. 
+
+We adjust the typing rules for the standard statement as follows.
+$$
+\begin{array}{rc}
+{\tt (tAssign)} & \begin{array}{c} 
+          \Gamma \vdash E : T \ \ \ \ \Gamma \vdash X : T
+          \\ \hline
+          \Gamma \vdash X = E : unit
+          \end{array} \\ \\ 
+{\tt (tNop)} & \begin{array}{c} 
+          \Gamma \vdash nop : unit
+          \end{array} \\ \\ 
+{\tt (tReturn)} & \begin{array}{c} 
+          \Gamma \vdash X : T
+          \\ \hline
+          \Gamma \vdash return\ X: T
+          \end{array} \\ \\ 
+{\tt (tSeq)} & \begin{array}{c} 
+          \Gamma \vdash S : T \ \ \ \ \Gamma \vdash \overline{S}:T' 
+          \\ \hline
+          \Gamma \vdash S;\overline{S}: T'
+          \end{array} \\ \\ 
+{\tt (tIf)} & \begin{array}{c} 
+          \Gamma \vdash E : bool \ \ \ \ \Gamma \vdash \overline{S_1}:T \ \ \ \  \Gamma \vdash \overline{S_2}:T
+          \\ \hline
+          \Gamma \vdash if\ E\ \{\overline{S_1}\}\ else\ \{\overline{S_2}\}: T
+          \end{array} \\ \\ 
+{\tt (tWhile)} & \begin{array}{c} 
+          \Gamma \vdash E : bool \ \ \ \ \Gamma \vdash \overline{S}:T 
+          \\ \hline
+          \Gamma \vdash while\ E\ \{\overline{S}\} : T
+          \end{array} \\ \\ 
+\end{array} 
+$$
+
+The assignment statement and nop statement are of type $unit$. The return statement  has type $T$ if the return variable $X$ has type $T$. The head and the tail of a sequence of statements are typed indepdently. The two alternatives of an if statement should share the smae time. (In fact, we can be more specific to state that the type of if and while are $unit$, though it is unnecessarily here.)
+
+
+We turn into the typing for new syntax.
+
+$$
+\begin{array}{rc}
+{\tt (tFree)} & \begin{array}{c} 
+          \Gamma \vdash X : [T]
+          \\ \hline
+          \Gamma \vdash free\ X: unit
+          \end{array}
+\end{array}
+$$
+
+The free statement has type $unit$ provided the variable $X$ is having type $[T]$.
+
+
+$$
+\begin{array}{rc}
+{\tt (tArrDeref)} & \begin{array}{c} 
+          \Gamma \vdash E_1 : int \ \ \ \ \Gamma \vdash X:[T] \ \ \ \Gamma \vdash E_2:T
+          \\ \hline
+          \Gamma \vdash X[E_1] = E_2: unit
+          \end{array} 
+\end{array}  
+$$
+
+The array dereference statement has type $unit$ if the index expression $E_1$ has type $int$, $X$ has type $[T]$ and the right hand side $E_2$ has type $T$.
+
+
+
+### Type Checking SIMP Declaration (Extended) 
+
+
+$$
+\begin{array}{rc}
+{\tt (tFuncDecl)} & \begin{array}{c} 
+          \Gamma \oplus(f:T_1 \rightarrow T_2)\oplus(X:T_1) \vdash \overline{S}:T_2
+          \\ \hline
+          \Gamma \vdash func\ f(X:T_1)T_2 \{ \overline{S} \}: T_1 \rightarrow T_2
+          \end{array} \\ \\ 
+{\tt (tProg)} & \begin{array}{c} 
+          {\tt for\ } i \in [1,n] \ \ \
+          \Gamma_i \vdash D_i : T_i \ \ \
+          \Gamma \vdash \overline{S}:T
+          \\ \hline
+          \Gamma \vdash D_1;...;D_n;\overline{S}: T
+          \end{array} \
+\end{array} 
+$$
+
+In rule $(\tt tFuncDecl)$, we type check the function declaration by extending the type environment with the type of $f$ and the formal argument $X$ and type check the body.
+In rule $(\tt tProg)$, we type check the function declarations independently from the main program statement $\overline{S}$.
+
+
+### Example 
+
+We find the type checking derivation of the program `SIMP1`
+
+
+Let `Γ1= {(y,int)}` and `Γ={(plus1,int->int),(z,int)}`
+```python
+Γ1⊕(plus1,int->int)⊕(x,int) |- 1 :int(tConst)
+
+(x:int) ∈ Γ1⊕(plus1,int->int)⊕(x,int)
+-------------------------------------(tVar)
+Γ1⊕(plus1,int->int)⊕(x,int) |- x :int        (y:int)∈Γ1
+-------------------------------------(tOp) -----------------------------------(tVar)
+Γ1⊕(plus1,int->int)⊕(x,int) |- x + 1       Γ1⊕(plus1,int->int)⊕(x,int) |-y:int 
+-----------------------------------------------------------------------------(tAssign)
+Γ1⊕(plus1,int->int)⊕(x,int) |- y = x + 1:unit        [sub tree 2]                             
+----------------------------------------------------------------------------------------- (tSeq)
+Γ1⊕(plus1,int->int)⊕(x,int) |- y = x + 1; return y;:int
+------------------------------------------------------------- (tFuncDecl)
+Γ1 |- func plus1 (x:int) int {
+    y = x + 1;
+    return y;                            [sub tree 3]
+} : int -> int         
+---------------------------------------------------------------------------- (tProg)
+Γ |- func plus1 (x:int) int {
+    y = x + 1;
+    return y;
+}
+z = plus1(0);
+return z; :int 
+```
+
+where [sub tree 2] is 
+
+```python
+y:int ∈ Γ1
+---------------------------------------(tVar)
+ Γ1⊕(plus1,int->int)⊕(x,int) |- y:int 
+----------------------------------------------------------- (tReturn)
+Γ1⊕(plus1,int->int)⊕(x,int) |- return y;:int
+```
+
+[sub tree 3] is
+
+```python
+Γ |- 0:int (tConst)
+
+(plus1,int->int) ∈ Γ
+----------------------(tVar)
+Γ |- plus1:int -> int             (z,int) ∈ Γ
+--------------------------(tApp)  -------(tVar)
+Γ |- plus1(0):int                 Γ |- z:int       (z,int) ∈ Γ
+----------------------------------------(tAssign)  -------(tVar)
+Γ |- z=plus1(0);:unit                              Γ |- z:int
+----------------------------------------------------------- (tReturn)
+Γ |- z=plus1(0);return z;:int
+```
+
+
+### Cohort Exericse
+
+As an exercise, apply the type checking rule to `SIMP2`.
+
+
+## Memory Issues
+
+There are several issues arising with the memory management.
+
+### Double-freeing 
+
+As motivated earlier, some 
 
 
 ## Linear Type System
