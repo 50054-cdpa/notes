@@ -40,7 +40,7 @@ nav:
     - "Code Generation":                       "code_generation_wasm.md"
   - W12:
     - "Information Flow Analysis":             "advanced_static_analysis.md"
-
+    - "Memory Management":                     "memory_management.md"
 theme:
   # favicon:
   language: en
