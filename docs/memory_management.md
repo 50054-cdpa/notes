@@ -1055,7 +1055,7 @@ $$
           \end{array} \\ \\ 
 {\tt (ltProg)} & \begin{array}{c} 
           {\tt for\ } i \in [1,n] \ \ \
-          \Gamma_i \vdash D_i : T_i, \Gamma_i' \ \ \
+          {} \vdash D_i : T_i, \Gamma_i \ \ \
           \Gamma \vdash \overline{S}:T,\Gamma'
           \\ \hline
           \Gamma \vdash D_1;...;D_n;\overline{S}: T,\Gamma'
@@ -1065,7 +1065,47 @@ $$
 
 When type checking a function declaration, we extend the type environemnt with the function's type assignment and its argument type assignment, then type check the body. The additional requirement is that the resulting environment must be exactly the same as $\Gamma\oplus(f:T_1 \rightarrow T_2)$ to maintain linearity. 
 
-In $(\tt ltPRog)$, we type check the function declaration idependently and then type chek the main statement sequence left to right. 
+In $(\tt ltPRog)$, we type check the function declaration idependently with an empty type environment then type check the main statement sequence left to right. 
+
+
+Let's apply the linear type checking rules type check the function `f` from  our earlier example `SIMP3`.
+
+```python
+
+{(f,int->int),(x,int)} |- x : int (ltVar), {(f,int->int)} (ltVar)
+--------------------------------------------------------(ltAssign)
+{(f,int->int),(x,int)} |- t = int[x] :unit, {(f,int->int),(t,[int])} [sub tree 5]
+-----------------------------------------------------------------(ltSeq)
+{(f,int->int),(x,int)} |- t = int[x]; free t; free t; return x;
+----------------------------------------------------- (ltFuncDecl)
+{} |- func f(x:int) int {
+    t = int[x];
+    free t;
+    free t; 
+    return x; 
+}
+```
+
+[sub tree 5] is as follows
+
+
+```python
+
+{(f,int->int),(t,[int])} |- t : [int], {(f,int->int)} (ltVar) 
+----------------------------------------------------------- (ltFree)
+{(f,int->int),(t,[int])} |- free t : unit, {(f,int->int)}   [sub tree 6]
+---------------------------------------------------------- (ltSeq)
+{(f,int->int),(t,[int])} |- free t; free t; return x;
+```
+
+[sub tree 6] is as follows
+
+
+```python
+
+
+```
+
 
 ## TODO: show that we can reject `SIMP3` and `SIMP4`.
 
