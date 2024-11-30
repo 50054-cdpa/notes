@@ -823,7 +823,7 @@ On the other hand, missing free statement after array initialization might cause
 // SIMP4
 func f(x:int) int {
     t = int[x];
-    return x; // unfreed memory unless garbage-collected.
+    return 1; // unfreed memory unless garbage-collected.
 }
 y = f(1);
 return y;
@@ -837,10 +837,9 @@ Another common error is array out of bound access.
 // SIMP5
 func f(x:int) int {
     t = int[x];
-    i = x;
-    t[i] = 0; // array out of bound
+    t[1] = 0; // array out of bound might arise
     free t;
-    return x; 
+    return 0; 
 }
 y = f(1);
 return y;
@@ -1051,7 +1050,7 @@ $$
 {\tt (ltFuncDecl)} & \begin{array}{c} 
           \Gamma \oplus(f:T_1 \rightarrow T_2)\oplus(X:T_1) \vdash \overline{S}:T_2, \Gamma\oplus(f:T_1 \rightarrow T_2)
           \\ \hline
-          \Gamma \vdash func\ f(X:T_1)T_2 \{ \overline{S} \}: T_1 \rightarrow T_2
+          \Gamma \vdash func\ f(X:T_1)T_2 \{ \overline{S} \}: T_1 \rightarrow T_2, \Gamma
           \end{array} \\ \\ 
 {\tt (ltProg)} & \begin{array}{c} 
           {\tt for\ } i \in [1,n] \ \ \
@@ -1068,22 +1067,23 @@ When type checking a function declaration, we extend the type environemnt with t
 In $(\tt ltPRog)$, we type check the function declaration idependently with an empty type environment then type check the main statement sequence left to right. 
 
 
+
+#### Rejecting `SIMP3` via linear type system
 Let's apply the linear type checking rules type check the function `f` from  our earlier example `SIMP3`.
 
 ```python
-
 {(f,int->int),(x,int)} |- x : int (ltVar), {(f,int->int)} (ltVar)
 --------------------------------------------------------(ltAssign)
 {(f,int->int),(x,int)} |- t = int[x] :unit, {(f,int->int),(t,[int])} [sub tree 5]
 -----------------------------------------------------------------(ltSeq)
-{(f,int->int),(x,int)} |- t = int[x]; free t; free t; return x;
+{(f,int->int),(x,int)} |- t = int[x]; free t; free t; return x; : ???, ???
 ----------------------------------------------------- (ltFuncDecl)
 {} |- func f(x:int) int {
     t = int[x];
     free t;
     free t; 
     return x; 
-}
+} : ???, ???
 ```
 
 [sub tree 5] is as follows
@@ -1095,19 +1095,67 @@ Let's apply the linear type checking rules type check the function `f` from  our
 ----------------------------------------------------------- (ltFree)
 {(f,int->int),(t,[int])} |- free t : unit, {(f,int->int)}   [sub tree 6]
 ---------------------------------------------------------- (ltSeq)
-{(f,int->int),(t,[int])} |- free t; free t; return x;
+{(f,int->int),(t,[int])} |- free t; free t; return x; : ???, ???
 ```
 
 [sub tree 6] is as follows
 
-
 ```python
 
-
+we get stuck here. t's type has been "consumed" 
+---------------------------- (ltFree)
+{(f,int->int)} |- free t : ???, ???
+-------------------------------------------- (ltSeq)
+{(f,int->int)} |- free t; return x; : ???, ???
 ```
 
+Since the type checking fails, `SIMP3` will be rejected by the linear type system. 
 
-## TODO: show that we can reject `SIMP3` and `SIMP4`.
+#### Rejecting `SIMP4` via linear type system
+
+Let's try to type check `SIMP4`.
+
+```python
+{(f,int->int),(x,int)} |- x : int (ltVar), {(f,int->int)} (ltVar)
+--------------------------------------------------------(ltAssign)
+{(f,int->int),(x,int)} |- t = int[x] :unit, {(f,int->int),(t,[int])} [sub tree 7]
+-----------------------------------------------------------------(ltSeq)
+{(f,int->int),(x,int)} |- t = int[x]; return 1;:int, {(f,int->int),(t,[int])} we get stuck  
+----------------------------------------------------- (ltFuncDecl)
+{} |- func f(x:int) int {
+    t = int[x];
+    return 1;
+} : int, ??? 
+```
+
+where [sub tree 7] is as follows
 
 
-### Type inference is left as an exercise. 
+```python
+{(f,int->int),(t,[int])} |- 1 : int, {(f,int->int),(t,[int])}
+----------------------------------------------------- (ltReturn)
+{(f,int->int),(t,[int])} |- return 1; : int, {(f,int->int),(t,[int])}
+```
+
+The above program fails to type check as the result type environment of the $(\tt ltFuncDelc)$ rule is not matching with the input type environment. 
+
+
+
+### Make linear type system practical
+
+The linear type checking is a proof-of-concept that we could use it to detect run-time errors related to memory management. 
+
+The current system is still naive. 
+
+1. We probably need to apply the linearity restriction to heap object such as array but not to primitive values such as `int` and `bool`. For example, the following program will not type check
+
+```java
+func square (x:int):int {
+    y = x * x;
+    return y;
+}
+```
+
+2. We need a type inference algorithm, which should reject `SIMP3`. But for `SIMP4`, its type constraints should identify the missing `free` statement and let the compiler insert the statement on behalf of the programmers. 
+
+We leave these as future work. 
