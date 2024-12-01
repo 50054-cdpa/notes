@@ -343,7 +343,6 @@ The rest of the rules can be easily adapted to the new scheme. Now we consider c
 
 $$
 {\tt (bApp)} ~~~~ \begin{array}{c}
-        
         \overline{\Delta} \vdash (\rho, E_2) \Downarrow (\rho_2,V_2) \\ 
         (f, func\ f\ (x:T_1)T_2 \{\overline{S}\}) \in \overline{\Delta} \\ 
         \Delta =  \{(x,V_2)\} \ \ \ (\Delta:\overline{\Delta}, \rho_2, \overline{S}) \Downarrow (\Delta':\overline{\Delta'}, \rho_3, return\ y) \ \ \ (y, V)\in \Delta'
