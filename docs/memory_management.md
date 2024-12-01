@@ -31,7 +31,7 @@ Besides the existing instructions, we include
 * $d \leftarrow alloc\ s$ - denotes the memory allocation. It allocates $s$ bytes of unoccupied memory and assigns the reference address to $d$. 
 * $free\ s$ - deallocates the allocated memory at address stored in $s$. 
 * $d \leftarrow ref\ s$ - references the value at the memory address stored in $s$ and copies it to $d$. 
-* $deref\ s_1\ s_2$ - dereferences the memory location stored in $s_1$ and update it with the value of $s_2$. 
+* $deref\ s_1\ s_2$ - dereferences the memory location stored in $s_1$ and updates with the value of $s_2$. 
 
 
 ### Operational Semantics for Extended PA
