@@ -326,6 +326,7 @@ $$
 (\tt SIMP\ Obj\ Environment) & \rho & \subseteq & (loc \times V)
 \end{array}
 $$
+
 First and foremost, in the extended SIMP, values include function declarations, memory tuples and unit, besides constants. Hence the $\Delta$ environment maps variables to values. 
 Besides the variable environment $\Delta$, we define the object (heap) environment $\rho$ as a mapping from memory location to values.
 
