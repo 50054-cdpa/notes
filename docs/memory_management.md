@@ -121,7 +121,7 @@ $$
 {\tt (pRet2)} &  \begin{array}{c}
         M = (\overline{L}, [], H, G, R)\ \ \ 
         \\ \hline
-        P \vdash (M, l:ret) \longrightarrow exit()
+        P \vdash (M, l:ret) \longrightarrow exit(R(r_{ret}))
         \end{array} 
 \end{array}
 $$
