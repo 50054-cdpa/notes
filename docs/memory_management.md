@@ -84,7 +84,7 @@ $$
         \end{array} \\ \\ 
 {\tt (pDeref)} & \begin{array}{c} 
         M = (L:\overline{L}, \overline{l}, H,G, R) \ \ \ \ loc = L(s_1) \\
-        \exists (loc_1, loc_2) \in G. loc_1 \leq loc \lt loc_2 \\ 
+        \exists (loc_1, loc_2) \in G. loc_1 \leq loc < loc_2 \\ 
         H' = H \oplus (loc, L(s_2)) \ \ \ M' = (L:\overline{L}, \overline{l}, H', G, R)\\ \hline
         P \vdash (M ,l: deref\ s_1\ s_2) \longrightarrow (M', P(l+1))
         \end{array}
