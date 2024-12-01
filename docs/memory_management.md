@@ -77,7 +77,7 @@ $$
         \end{array} \\ \\ 
 {\tt (pRef)} & \begin{array}{c}
         M = (L:\overline{L}, \overline{l}, H, G, R) \ \ \ \ loc = L(s) \\ 
-        \exists (loc_1, loc_2) \in G. loc_1 \leq loc \lt loc_2 \\ 
+        \exists (loc_1, loc_2) \in G. loc_1 \leq loc < loc_2 \\ 
         v = H(loc) \ \ \ M' = (L\oplus(d,v):\overline{L}, \overline{l}, H, G, R)
         \\ \hline
         P \vdash ( M, l: d \leftarrow ref\ s) \longrightarrow (M', P(l+1))
