@@ -462,7 +462,7 @@ For example, running the `SIMP1` program yields the following
 
 (plus1: func plus1 (...)) in {plus1: func plus1 (...)}  [sub tree 1]
 --------------------------------------------------------------(bApp)
-[{plus1: func plus1 (...)}] |- ({}, plus1(0)} ⇓ ({},1) 
+[{plus1: func plus1 (...)}] |- ({}, plus1(0)) ⇓ ({},1) 
 --------------------------------------------------------------------(bAssign)    
 [{plus1: func plus1 (...)}], {}, z = plus1(0); ⇓ [{plus1: func plus1 (...), z:1}], {}, nop;    
 -------------------------------------------------------------------------(bSeq)
@@ -918,7 +918,7 @@ Similarly, when type checking the array reference expression, we linearly type c
 We omit the linearly typing rules for the rest of expressions as they contain no surprise. 
 
 #### Cohort Exercise
-Work out the linear typing rule for $C$, $unit$, $(E)$ and $E\ op\ E$.
+Work out the linear typing rules for $C$, $unit$, $(E)$ and $E\ op\ E$.
 
 
 ### Type Checking Statement using Linear Type System
