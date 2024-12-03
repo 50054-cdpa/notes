@@ -14,4 +14,4 @@
 | 11 | [Lattice, Sign Analysis](./sign_analysis_lattice.md) | [Liveness Analysis](./liveness_analysis.md) | [Code Generation](./code_generation_wasm.md) | Project Lab 2 10%,  Homework 5 5%  |  
 | 12 |  [Information Flow Analysis](./advanced_static_analysis.md) | [Memory Management](./memory_management.md)  | [Cohort Problem 10: Sign Analysis](https://github.com/50054-cdpa/cohort_probs/tree/main/sign_analysis)  |  |
 | 13 | Guest Lecture | | Revision | Project Lab 3 15% |  |
-| 14 | |  |  |Final Exam (19 Dec Thu 3:00PM-5:00PM) 30%|
+| 14 | |  |  |Final Exam (19 Dec Thu 1:00PM-3:00PM) 30%|
