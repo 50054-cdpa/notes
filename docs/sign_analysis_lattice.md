@@ -689,7 +689,7 @@ in its unabridge form.
 Next we re-model the relations among `s0,s1,s2,s3` in above equation system in $f_3$ as follows
 
 $$
-f_3(s_0,s_1,s_2,s_3) = ([x \mapsto \top],s_0[x \mapsto 0], s_1[x \mapsto (s_0(x) {\tt ++}\ {\tt +} )], s_2)
+f_3(s_0,s_1,s_2,s_3) = ([x \mapsto \top],s_0[x \mapsto 0], s_1[x \mapsto (s_1(x) {\tt ++}\ {\tt +} )], s_2)
 $$
 
 Thanks to Lemma 15, $f_3$ is monotonic.
@@ -698,13 +698,13 @@ The last step is to apply the naive fixed point algorithm to $f_3$ with $s_0 = s
 
 1. $s_0 = s_1 = s_2 = s_3 = [x \mapsto \bot]$, 
 $$ \begin{array}{rcl}
-f_3(s_0,s_1,s_2,s_3) &  = & ([x \mapsto \top], s_0[x \mapsto 0], s_1[x \mapsto (s_0(x) {\tt ++}\ {\tt +})], s_2) \\ & = & ([x \mapsto \top], [x \mapsto 0], [x \mapsto +], [x \mapsto \bot])
+f_3(s_0,s_1,s_2,s_3) &  = & ([x \mapsto \top], s_0[x \mapsto 0], s_1[x \mapsto (s_1(x) {\tt ++}\ {\tt +})], s_2) \\ & = & ([x \mapsto \top], [x \mapsto 0], [x \mapsto +], [x \mapsto \bot])
 \end{array}
 $$
 2. $s_0 = [x \mapsto \top], s_1 =[x \mapsto 0], s_2 = [x \mapsto +], s_3 = [x \mapsto \bot]$, 
 $$
 \begin{array}{rcl}
-f_3(s_0,s_1,s_2,s_3) & = & ([x \mapsto \top], s_0[x \mapsto 0], s_1[x \mapsto (s_0(x) {\tt ++}\ {\tt +})], s_2) \\ & = & ([x \mapsto \top], [x \mapsto 0], [x \mapsto +], [x \mapsto +])
+f_3(s_0,s_1,s_2,s_3) & = & ([x \mapsto \top], s_0[x \mapsto 0], s_1[x \mapsto (s_1(x) {\tt ++}\ {\tt +})], s_2) \\ & = & ([x \mapsto \top], [x \mapsto 0], [x \mapsto +], [x \mapsto +])
 \end{array}
 $$
 
