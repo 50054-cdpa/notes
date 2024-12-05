@@ -39,7 +39,9 @@ nav:
     - "Liveness Analysis":                     "liveness_analysis.md"
     - "Code Generation":                       "code_generation_wasm.md"
   - W12:
+    - "Code Generation":                       "code_generation_wasm.md"
     - "Information Flow Analysis":             "advanced_static_analysis.md"
+  - W13:
     - "Memory Management":                     "memory_management.md"
 theme:
   # favicon:
