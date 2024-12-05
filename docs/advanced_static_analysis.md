@@ -103,8 +103,8 @@ At label 6, `x`'s sign is $\top$. Such a problem exists in general as static ana
     | -- | $\top$ | +0 | -0 | + | - | 0 | $\bot$ | 
     |---|---|---|---|---|---|---|---|
     | $\top$| $\top$|$\top$|$\top$   | $\top$| $\top$| $\top$| $\bot$| 
-    | +0 | $\top$|$\top$| +0| $\top$ | + | + | $\bot$| 
-    | -0 | $\top$|-0 | $\top$   | $\top$ | + | + | $\bot$| 
+    | +0 | $\top$|$\top$| +0| $\top$ | + | +0 | $\bot$| 
+    | -0 | $\top$|-0 | $\top$   | $\top$ | + | -0 | $\bot$| 
     | + | $\top$|$\top$|+| $\top$ | + | + | $\bot$| 
     | - | $\top$ | - | $\top$ | - | $\top$ | - | $\bot$ |
     | 0 | $\top$ | -0  | +0 | - | + | 0 | $\bot$ |
