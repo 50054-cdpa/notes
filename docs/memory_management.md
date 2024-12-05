@@ -1054,7 +1054,7 @@ $$
           \end{array} \\ \\ 
 {\tt (ltProg)} & \begin{array}{c} 
           {\tt for\ } i \in [1,n] \ \ \
-          {} \vdash D_i : T_i, \Gamma_i \ \ \
+          \{\} \vdash D_i : T_i, \Gamma_i \ \ \
           \Gamma \vdash \overline{S}:T,\Gamma'
           \\ \hline
           \Gamma \vdash D_1;...;D_n;\overline{S}: T,\Gamma'
