@@ -100,8 +100,8 @@ $$
 $$
 \begin{array}{rc}
 {\tt (pCall)} &  \begin{array}{c}
-        l': begin\ f\ d \in P \ \ \ M = (L:\overline{L}, \overline{l}, H, G, R) \\ 
-        M' = (\{(d, L(s))\}:L:\overline{L}, l:\overline{l}, H, G, R)
+        l': begin\ f\ d' \in P \ \ \ M = (L:\overline{L}, \overline{l}, H, G, R) \\ 
+        M' = (\{(d', L(s))\}:L:\overline{L}, l:\overline{l}, H, G, R)
         \\ \hline
         P \vdash (M, l: d \leftarrow call\ f\ s) \longrightarrow (M', P(l'+1))  
         \end{array} \\ \\ 
@@ -153,7 +153,7 @@ P |- ([[]], [], [], [], []), 1: begin plus1 x  ---> # (pBegin)
 P |- ([[]], [], [], [], []), 5: z <- call plus1 0 ---> # (pCall) 
 P |- ([[(x,0)],[]],[5], [], [], []), 2: y <- x + 1 ---> # (pOp)
 P |- ([[(x,0),(y,1)],[]],[5], [], [], []), 3: rret <- y ---> # (pTempVar)
-P |- ([[(x,0),(y,1)],[]],[5], [], [], [(rret,1]), 4: ret  ---> # (pRet1)
+P |- ([[(x,0),(y,1)],[]],[5], [], [], [(rret,1)], 4: ret  ---> # (pRet1)
 P |- ([[(z,1)]],[], [], [], []), 6: rret <- z ---> # (pTempVar) 
 P |- ([[(z,1)]],[], [], [], [(rret,1)]) 7: ret ---> # (pRet2)
 P |- exit()
@@ -359,13 +359,15 @@ $$
 {\tt (bArrInst)} ~~~~ \begin{array}{c}
         \overline{\Delta} \vdash (\rho, E_2) \Downarrow (\rho_1,V_2) \\ 
         \forall x \in [m, m+V_2). loc(x) \not\in dom(\rho) \\ 
-        \rho' = \rho \cup \{ (loc(x), unit) \mid x \in [m, m+V_2) \} 
+        V = default(T) \ \ \
+        \rho' = \rho \cup \{ (loc(x), V) \mid x \in [m, m+V_2) \} 
         \\ \hline
         \overline{\Delta} \vdash (\rho, T[E_2]) \Downarrow (\rho', (loc(m), loc(m+V_2)))
         \end{array}
 $$
 
-In case of an array instantiation, we first evaluate the size argument into a value (must be an integer constant). We find a sequence of unsused memory locations $loc(m)$ to $loc(m+V_2)$ and initialize the value to $unit$. 
+In case of an array instantiation, we first evaluate the size argument into a value (must be an integer constant).
+We find a sequence of unsused memory locations $loc(m)$ to $loc(m+V_2)$ and initialize the value to the default value. 
 
 
 $$
@@ -392,9 +394,9 @@ For example the assignment statement rule is updated as follows
 $$
 \begin{array}{rc}
 {\tt (bAssign)} & \begin{array}{c}
-    \Delta \vdash (\rho,E) \Downarrow (\rho',V)
+    \Delta:\overline{\Delta} \vdash (\rho,E) \Downarrow (\rho',V)
     \\ \hline
-    (\overline{\Delta}, \rho, X = E) \Downarrow (\Delta \oplus (X, V), \rho', nop)
+    (\Delta:\overline{\Delta}, \rho, X = E) \Downarrow (\Delta \oplus (X, V):\overline{\Delta}, \rho', nop)
     \end{array}
 \end{array}
 $$
