@@ -56,7 +56,7 @@ The main resources are lecture slides, tutorial sessions, and online documentati
 1. Modern Compiler Implementation in ML by Andrew W. Appel
 1. Types and Programming Languages by Benjamin C. Pierce
 1. Static Program Analysis by Anders Møller and Michael I. Schwartzbach
-1. Learn you a Haskell for Great Good! - `https://learnyouahaskell.com/`
+1. Scala 3 Book `https://docs.scala-lang.org/scala3/book/introduction.html`
 
 
 
@@ -64,7 +64,7 @@ The main resources are lecture slides, tutorial sessions, and online documentati
 
 
 * Kenny Lu (kenny_lu@sutd.edu.sg) 
-    * Office Hour: Wednesday 3:00-4:30pm (please send email to arrange)
+    * Office Hour: Monday 3:00-4:30pm (please send email to arrange)
 
 
 ## Communication
@@ -86,16 +86,10 @@ If you have course/assignment/project related questions, please post it on the d
     * [Win11](https://ubuntu.com/tutorials/install-ubuntu-on-wsl2-on-windows-11-with-gui-support#1-overview)
 * If you are using Linux, it should be perfect.
 * If you are using Mac, please install homebrew.
-* Install Haskell tools
-    1. (For Windows WSL2 and Ubuntu only) `sudo apt install build-essential libgmp-dev`
-    1. Install ghcup >= 0.1.30.0 `https://www.haskell.org/ghcup/`
-    1. Install ghc == 9.6.6 (via the `ghcup tui` command)
-    1. Install cabal >= 3.10.3.0 (via the `ghcup tui` command)
-    1. install hls >= 2.7.0.0 (via the `ghcup tui` command)
-    1. Install stack >= 2.15.5 (via the `ghcup tui` command)
+* Make sure JVM >=11 is installed and ant is installed.
+* Install Scala >= 3
+  * https://www.scala-lang.org/download/
 * IDE: It's your choice, but VSCode works fine.
-    1. if you are using VSCode with Windows and Ubuntu WSL2, it is recommended to install the "Remote development" extension by (microsoft.com).
-    1. if you are using VSCode, it is recommended to install the "Haskell" extension (by Haskell).
 * You should try test your setup by attempting Homework 1 on your own. 
 
 
@@ -110,9 +104,9 @@ The aim of the project is to apply the techniques and concepts taught in this mo
 
 You may work as a team (up to max 3 members). Please register your team [here](https://docs.google.com/spreadsheets/d/1oH51zYVGD6ieXwr2Nc8UZxK9q4qMxBMRp-pQxgJCXL8/edit?usp=sharing).  
 
-* Lab 1 (10%, Deadline - 17 Nov 2024 23:59)
-* Lab 2 (10%, Deadline - 1  Dec 2024 23:59)
-* Lab 3 (15%, Deadline - 15 Dec 2024 23:59)
+* Lab 1 (10%, Deadline - 16 Nov 2025 23:59)
+* Lab 2 (10%, Deadline - 30 Nov 2025 23:59)
+* Lab 3 (15%, Deadline - 14 Dec 2026 23:59)
 
 
 ## Submission Policy and Plagiarism
