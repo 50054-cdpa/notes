@@ -106,7 +106,7 @@ You may work as a team (up to max 3 members). Please register your team [here](h
 
 * Lab 1 (10%, Deadline - 16 Nov 2025 23:59)
 * Lab 2 (10%, Deadline - 30 Nov 2025 23:59)
-* Lab 3 (15%, Deadline - 14 Dec 2026 23:59)
+* Lab 3 (15%, Deadline - 14 Dec 2025 23:59)
 
 
 ## Submission Policy and Plagiarism
