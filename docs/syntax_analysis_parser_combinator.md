@@ -39,6 +39,7 @@ case class Factor(v:Int)
 Recall Grammar 4 defined above contains some left recursion. 
 
 To eliminate the left recursion, we apply the same trick by rewriting left recursive grammar rules
+
 $$
 \begin{array}{rcl}
 N & ::= & N\alpha_1 \\

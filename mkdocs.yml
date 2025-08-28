@@ -16,9 +16,9 @@ nav:
     - Intro:                                   "introduction.md"
     - "FP Intro":                              "fp_intro.md"
   - W2:
-    - "FP Haskell":                            "fp_haskell.md"
+    - "FP Scala":                              "fp_scala.md"
   - W3:
-    - "FP Haskell Polymorphic":                "fp_haskell_poly.md"
+    - "FP Scala Polymorphic":                  "fp_scala_poly.md"
   - W4:
     - "FP Applicative Monads":                 "fp_applicative_monad.md"
   - W5:
@@ -37,9 +37,9 @@ nav:
   - W11:
     - "Lattices & Sign Analysis":              "sign_analysis_lattice.md"
     - "Liveness Analysis":                     "liveness_analysis.md"
-    - "Code Generation":                       "code_generation_wasm.md"
+    - "Code Generation":                       "code_generation.md"
   - W12:
-    - "Code Generation":                       "code_generation_wasm.md"
+    - "Code Generation":                       "code_generation.md"
     - "Information Flow Analysis":             "advanced_static_analysis.md"
   - W13:
     - "Memory Management":                     "memory_management.md"
