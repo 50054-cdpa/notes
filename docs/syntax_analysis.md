@@ -98,20 +98,21 @@ The set of tokens of a grammar is basically all the terminals. In this JSON gram
 
 and white spaces are the Lexical Tokens of the language.
 
-If we are to represent it using Haskell data types, we could use the following algebraic data type:
+If we are to represent it using Scala data types, we could use the following algebraic data type:
 
-```hs
-data LToken = 
-    IntTok Int |
-    StrTok String | 
-    SQuote | 
-    LBracket | 
-    RBracket | 
-    LBrace |
-    RBrace | 
-    Colon  |
-    Comma   
-    deriving (Show, Eq) 
+```scala
+enum LToken { // lexical Tokens
+    case IntTok(v:Int)
+    case StrTok(v:String)
+    case SQuote
+    case LBracket
+    case RBracket
+    case LBrace
+    case RBrace
+    case Colon
+    case Comma
+    case WhiteSpace
+}
 ```
 
 Note that in the above, we find that `IntTok` and `StrTok` have semantic components (i.e. the underlying values.) The rest of the tokens  do not.
@@ -122,10 +123,10 @@ Given the input
 {'k1':1,'k2':[]}
 ```
 
-the  lexer function `lex :: String -> [LToken]` should return
+the  lexer function `lex(s:String):List[LToken]` should return
 
-```hs
-[LBrace,SQuote,StrTok "k1" ,SQuote,Colon, IntTok 1,Comma,SQuote,StrTok "k2",SQuote,Colon,LBracket, RBracket,RBrace]
+```scala
+List(LBRace,SQuote,StrTok("k1"),SQuote,Colon,IntTok(1),Comma,SQuote, StrTok("k2"), Colon,LBracket, RBracket, RBrace)
 ```
 
 One could argue that we cheat by assuming the integer and string data types are available as builtin terminals. In case we don't have integer and string as builtin terminals, we could expand the grammar as follows:
@@ -148,85 +149,85 @@ For the rest of this lesson, we will stick with the first formulation in which w
 
 Perhaps one easier way to implement a lexer is to make use of regular expression.
 
-#### A simple example of using Regex
+#### A simple example of using `scala.util.matching.Regex`
 
-We can specify a regex pattern as follows. 
+We can specify a regex pattern as follows. This example was adopted from
+(<https://www.scala-lang.org/api/3.3.6/scala/util/matching/Regex.html>)
 
-```hs
-import Text.Regex.TDFA (=~~)
-date = "^([[:digit:]]{4})-([[:digit:]]{2})-([[:digit:]]{2})$"
+```scala
+val date = raw"(\d{4})-(\d{2})-(\d{2})".r
 ```
 
-Next we can perform a match against the above regex pattern using the `(=~~)` function.
+Next we can perform a match against the above regex pattern using the `match` expression.
 
-```hs
-(=~~) "2024-06-01" date :: Maybe (String,String,String,[String])
--- yields Just ("","2024-06-01","",["2024","06","01"])
+```scala
+"2004-01-20" match {
+  case date(year, month, day) => s"$year was a good year for PLs."
+}
+```
+
+The above expression is evaluated to
+
+```
+2004 was a good year for PLs.
 ```
 
 We could develop a simple lexer using the above trick. First we define the pattern for reach token.
 
-```hs
-integer = "^([[:digit:]]+)(.*)"
-string  = "^([^']*)(.*)"
-squote  = "^(')(.*)"
-lbracket = "^(\\[)(.*)"
-rbracket = "^(\\])(.*)"
-lbrace = "^(\\{)(.*)"
-rbrace = "^(\\})(.*)"
-colon = "^(:)(.*)"
-comma = "^(,)(.*)"
+```scala
+val integer = raw"(\d+)(.*)".r
+val string = raw"([^']*)(.*)".r
+val squote = raw"(')(.*)".r
+val lbracket = raw"(\[)(.*)".r
+val rbracket = raw"(\])(.*)".r
+val lbrace = raw"(\{)(.*)".r
+val rbrace = raw"(\})(.*)".r
+val colon = raw"(:)(.*)".r
+val comma = raw"(,)(.*)".r
 ```
 
 For each token, we have two sub patterns, the first sub-pattern capture the token, and second sub-pattern captures the remaining input, so that we can pass it to the next iteration.
 
 Next we define the following function which tries to extract a token from the begining of the input string, and return the rest if a match is found, otherwise, an error is returned.
 
-```hs
+```scala
+import LToken.*
 type Error = String
-
-
-(=~=) :: String -> String -> Maybe (String,String)
-(=~=) input regex = case input =~~ regex of 
-    Nothing -> Nothing 
-    Just (_::String,_::String,_::String,[tokStr,rest]) -> Just (tokStr, rest)
-    Just _ -> Nothing
-
-lexOne :: String -> Either Error (LToken, String)
-lexOne input =
-    case input =~= integer of
-        Just (i,rest) -> Right (IntTok (read i), rest)
-        Nothing -> case input =~= squote of
-            Just (_,rest) -> Right (SQuote, rest)
-            Nothing -> case input =~= lbracket of 
-                Just (_,rest) -> Right (LBracket, rest) 
-                Nothing -> case input =~= rbracket of 
-                    Just (_, rest) -> Right (RBracket, rest)
-                    Nothing -> case input =~= lbrace of 
-                        Just (_, rest) -> Right (LBrace, rest)
-                        Nothing -> case input =~= rbrace of
-                            Just (_, rest) -> Right (RBrace, rest)
-                            Nothing -> case input =~= colon of
-                                Just (_, rest) -> Right (Colon, rest) 
-                                Nothing -> case input =~= comma of 
-                                    Just (_, rest) -> Right (Comma, rest)
-                                    Nothing -> case input =~= string of
-                                        Just (s,rest) -> Right (StrTok s, rest)
-                                        Nothing -> Left "lexOne failed."
+def lex_one(src:String):Either[String, (LToken, String)] = src match {
+    case integer(s, rest) => Right((IntTok(s.toInt), rest))
+    case squote(_, rest) => Right((SQuote, rest))
+    case lbracket(_, rest) => Right((LBracket, rest))
+    case rbracket(_, rest) => Right((RBracket, rest)) 
+    case lbrace(_, rest) => Right((LBracket, rest))
+    case rbrace(_, rest) => Right((RBracket, rest)) 
+    case colon(_, rest) => Right((Colon, rest))
+    case comma(_, rest) => Right((Comma, rest))
+    case string(s, rest) => Right((StrTok(s), rest))
+    case _ => Left(s"lexer error: unexpected token at ${src}")
+}
 ```
 
-Note that the order of the Haskell patterns is important, since there is some overlapping cases from the above definition (e.g. the regex pattern `string` and the rest except for `squote`).
+Note that the order of the Scala patterns is important, since there is some overlapping cases from the above definition (e.g. the regex pattern `string` and the rest except for `squote`).
 
 Lastly we define the top level `lex` function by calling `lex_one` in a recursive function.
 
-```hs
-lex :: String -> Either Error [LToken] 
-lex src = go src []
-    where go :: String -> [LToken] -> Either Error [LToken] 
-          go []  acc = Right acc 
-          go xs acc = case lexOne xs of
-            Left err -> Left err
-            Right (tok, rest) -> go rest (acc ++ [tok])
+```scala
+def lex(src:String):Either[Error, List[LToken]] = {
+    def go(src:String, acc:List[LToken]):Either[Error, List[LToken]] = {
+        if (src.length == 0)  
+        {
+            Right(acc)
+        } 
+        else 
+        {
+            lex_one(src) match {
+                case Left(error) => Left(error)
+                case Right((ltoken, rest)) => go(rest, acc++List(ltoken))
+            }
+        }
+    }
+    go(src, List())
+}
 ```
 
 ### Implementing a Lexer using a Parser
@@ -265,7 +266,7 @@ Consider the JSON grammar in its unabridged form,
 (10) N ::= 's':J
 ```
 
-We take the output from our lexer example as the input, with some simplification by removing the Haskell data constructors
+We take the output from our lexer example as the input, with some simplification by removing the Scala constructors
 
 ```
 { , ' , k1 , ' , : , 1 , , , ' , k2 , : , [ , ] , }
@@ -348,7 +349,7 @@ N,NS }
 </tr>
 
 <tr>
-<td colspan="4"> ... (for the steps skipped, please refer to <a href="/notes/syntax_analysis_annex/">syntax_analysis_annex</a>) </td>
+<td colspan="4"> ... (for the steps skipped, please refer to syntax_analysis_annex.md) </td>
 </tr>
 <tr>
 <td>
@@ -457,7 +458,7 @@ Consider the input `1 + 2 * 3`. Parsing this input with the above grammar produc
 ```mermaid
 graph
   E-->E1["E"]
-  E-->+ 
+  E-->+
   E-->E2["E"] 
   E1-->i1["i(1)"]
   E2-->E3["E"]
@@ -718,8 +719,8 @@ We fill up the table
 |---|---|---|
 | E | E ::= TE' |   |
 | E'|   | E' ::= + TE' |
-| T | T ::= i  |   |
-  
+| T | T ::= i  |   |  
+
 We conclude that a grammar is in `LL(1)` if it contains no conflicts. A conflict arises when there are more than one production rule to be applied given a non-terminal and a leading symbol. Given a `LL(1)` grammar, we can perform predictive top-down parsing by selecting the right production rule by examining the leading input symbol.
 
 In general, there are two kinds of conflicts found in grammar that violates the `LL(1)` grammar requirements.
@@ -817,7 +818,7 @@ first(B) = \{d\} \\
 follow(S) = \{\} \\
 follow(X) = \{d\} \\
 follow(C) = follow(X) = \{d\} \\
-follow(B) = \{a\}
+follow(B) = \{d\}
 \end{array}
 $$
 

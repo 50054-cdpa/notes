@@ -847,13 +847,13 @@ y = f(1);
 return y;
 ```
 
-Note that all these three examples are well-typed in the current type checking system. The array out of bound error can be detected via dependent type system (recall GADT example in [some earlier class](./fp_haskell_poly.md#generalized-algebraic-data-type)). The other two kinds of errors can be flagged out using Linear Type system.
+Note that all these three examples are well-typed in the current type checking system. The array out of bound error can be detected via dependent type system (recall GADT example in [some earlier class](./fp_scala_poly.md#generalized-algebraic-data-type)). The other two kinds of errors can be flagged out using Linear Type system.
 
 ## Linear Type System
 
 Linear Type was inspired by the linear logic proposed by Jean-Yves Girard. 
 
-Linear Type System is a popular static semantic design choice to ensure memory safety. It has strong influence in languages such as Cyclone and Rust. 
+Linear Type System is a popular static semantic design choice to ensure memory safety. It has strong influences in languages such as Cyclone and Rust. 
 
 The basic principal is that 
 

@@ -326,8 +326,8 @@ Type inference is also known as type reconstruction is a static semantics analys
 
 For example, given the Haskell function
 
-```hs
-f x = x + (1::Int)
+```scala
+def f(x:Int) = x + 1
 ```
 
 the compiler is able to deduce that the type of `f` is `Int -> Int`. 
@@ -337,7 +337,7 @@ Likewise for the following SIMP program
 ```java
 y = y + 1
 ```
-we can also deduce that `y` is a of type `int`.
+we can also deduce that `y` is of type `int`.
 
 What we aim to achieve is a sound and systematic process to deduce the omitted type information.
 

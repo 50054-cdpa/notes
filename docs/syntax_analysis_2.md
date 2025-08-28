@@ -92,7 +92,7 @@ We first consider the simplest parsing table where we ignore the leading token f
 
 The main idea is that the actions (which define the change and update of the state and stack) are output based on the current state and the current stack. If we recall that this is a form of state machine.
 
-From this point onwards, we use pseudo Haskell syntax illustrate the algorithm behind the parsing table construction.
+From this point onwards, we use pseudo Scala syntax illustrate the algorithm behind the parsing table construction.
 
 Let `.` denote a meta symbol which indicate the current parsing context in a production rule.
 
@@ -108,71 +108,77 @@ We call each of these possible contexts an `Item`.
 We define `Items` to be a set of `Item`s, `Grammar` to be a set of production rules (whose definition is omitted, we use the syntax
 `LHS::=RHS` directly in the pseudo-code.)
 
-```hs
-type Items = Set Item
-type Grammar = Set Prod
+```scala
+type Items = Set[Item]
+type Grammar = Set[Prod]
 ```
 
 We consider the following operations.
 
-```hs
-closure :: Items -> Grammar -> Items 
-closure items grammar = 
-  let set1 = do 
-      { (N ::= alpha . X beta) <- items
-      ; (X ::= gamma)          <- gramma
-      ; return (X ::= . gamma) 
-      }
-      set2 = do 
-      { (N ::= . epsilon) <- items
-      ; return (N ::= epsilon .)
-      }
-      newItems = set1 `union` set 2
-  in if newItems `isSubsetOf` items
-     then items
-     else closure (items `union` newItems) grammar
+```scala
+def closure(I:Items)(G:Grammar):Items = { 
+  val newItems = for {
+    (N ::= alpha . X beta) <- I
+    (X ::= gamma)          <- G
+  } yield ( X::= . gamma ).union(
+    for {
+      (N ::= . epsilon ) <- I
+    } yield ( N::= epsilon .)
+  )
+  if (newItems.forall(newItem => I.contains(newItem)))
+  { I }
+  else { closure(I.union(newItems))(G)}
 
-goto :: Items -> Grammar -> Symbol -> Items 
-goto items grammar sym = 
-   let j = do 
-      (M ::= alpha . X beta) <- items
-      return (N ::= alpha X . beta)
-   in closure j grammar
+def goto(I:Items)(G:Grammar)(sym:Symbol):Items = {
+  val J = for {
+    (N ::= alpha . X beta) <- I
+  } yield (N ::= alpha X . beta)
+  closure(J)(G)
+}
 ```
 
-Function `closure` takes an item set `items` and a grammar then returns the closure of `items`. For each item of shape `N::=alpha . X beta` in `items`, we look for the correspondent production rule `X ::= gamma` in `grammar` if `X` is a non-terminal, add `X::= . gamma` to the new item sets if it is not yet included in `items`.
+Function `closure` takes an item set `I` and a grammar then returns the closure of `I`. For each item of shape `N::=alpha . X beta` in `I`, we look for the correspondent production rule `X ::= gamma` in `G` if `X` is a non-terminal, add `X::= . gamma` to the new item sets if it is not yet included in `I`.
 
-Note that Haskell by default does not support pattern such as `(N ::= alpha . X beta)` and `(X::= gamma)`. In this section, let's pretend that these patterns are allowed in Haskell so that we can explain the algorithm in Haskell style pseudo-code.
+Noe that Scala by default does not support pattern such as `(N ::= alpha . X beta)` and `(X::= gamma)`. In this section, let's pretend that these patterns are allowed in Scala so that we can explain the algorithm in Scala style pseudo-code.
 
-Function `goto` takes an item set `items` and searches for item inside of shape
-`N::= alpha . X beta` then add `N::=alpha X. beta` as the next set `j`. We compute the closure of `j` and return it as result.
+Function `goto` takes an item set `I` and searches for item inside of shape
+`N::= alpha . X beta` then add `N::=alpha X. beta` as the next set `J`. We compute the closure of `J` and return it as result.
 
-```hs
+```scala
 type State = Items
 type Transition = (State, Symbol, State)
-data StateMachine = StateMachine { states::Set State, transitions::Set Transition , accepts::Set State} 
+case class StateMachine(states:Set[State], transitions:Set[Transition], accepts:Set[State]) 
 
-buildSM :: State -> Grammar -> StateMachine 
-buildSM init grammar = 
-  case step1 (Set.fromList [init]) Set.Empty of 
-    { (states, trans) -> StateMachine states trans (step2 states) }
-  where step1 :: Set State -> Set Transition -> (Set State, Set Transition)  
-        step1 states trans = -- compute all states and transitions
-          let newStateTrans = do 
-              { i                      <- states
-              ; (A ::= alpha . X beta) <- i
-              ; let j = goto i grammar X
-              ; return (j, (i, X, j))
-              }
-              newStates = map fst newStateTrans
-              newTrans = map snd newStateTrans
-          in if newStates `isSubsetOf` states
-             then (states, trans) 
-             else step1 (states `union` newStates) (trans `union` newTrans)
-        step2 :: Set State -> Set State 
-        step2 states = -- compute all final states
-          filter (\i -> exists (\item -> case item of 
-            { (N :: alpha . $ ) -> True; _ -> False }) i) states
+
+def buildSM(init:State)(G:Grammar):StateMachine = { 
+  def step1(states:Set[State])(trans:Set[Transition]):(Set[State], Set[Transition]) = { // compute all states and transitions
+    val newStateTrans = for {
+      I                      <- states
+      (A ::= alpha . X beta) <- I 
+      J                      <- pure(goto(I)(G)(X))
+    } yield (J, (I,X,J))
+    if newStateTrans.forall( st => st match {
+      case (new_state, _) => states.contains(new_state)
+    }) { (states, trans) }
+    else {
+      val newStates = newStateTrans.map( x => x._1) 
+      val newTrans  = newStateTrans.map( x => x._2) 
+      step1(states.union(newStates))(trans.union(newTrans))
+      }
+  }
+  def step2(states:Set[State]):Set[State] = { // compute all final states
+    states.filter( I => I.exists( item => item match {
+      case (N ::= alpha . $) => true 
+      case _ => false
+    }))
+  }
+  step1(Set(init))(Set()) match {
+    case (states, trans) => {
+      val finals = step2(states)
+      StateMachine(states, trans, finals)
+    }
+  }
+}
 ```
 
 Function `buildSM` consists of two steps. In `step1` we start with the initial state `init` and compute all possible states and transitions by applying `goto`. In `step2`, we compute all final states.
@@ -180,6 +186,7 @@ Function `buildSM` consists of two steps. In `step1` we start with the initial s
 By applying `buildSM` to Grammar 6 yields the following state diagram.
 
 ```mermaid
+
 graph
   State10["State10 <br/> S'::=.E$ <br/> E::=.TE' <br/> T::=i "]--T-->State11["State11 <br/> E::=T.E' <br/> E'::=+TE' <br/> E'::= . epsilon <br/> E'::= epsilon."]
   State10--E-->State12["State12 <br/> S'::=E.$"]
@@ -192,52 +199,53 @@ graph
   State15--E'-->State16["State16 <br/> E'::=+TE'."]
 ```
 
-```hs
-reduce :: [State] -> [(Items, Prod)] 
-reduce states = 
-  foldl (\(acc, items) -> 
-    foldl (\(acc2,item) -> case item of 
-      { (N::= alpha . ) -> acc2 ++ [(item, N::=alpha)]
-      ; _  -> acc2
-      } acc (toList items))
-  ) [] states
+```scala
+def reduce(states:List[State]):List[(Items, Prod)] = {
+  states.foldLeft(List())((accI:(List[(Items,Prod)], Items)) => accI match {
+    case (acc,I) => I.toList.foldLeft(acc)( ai:(List[(Items,Prod)], Item)) => ai match {
+      case (a, ( N::= alpha .)) => a.append(List((I, N::=alpha)))
+      case (a, _) => a 
+    } 
+  }
+}
 ```
 
 Function `reduce` takes a list of states and search for item set that contains an item of shape `N::= alpha .`.
 
-```hs
+```scala
+enum Action {
+  case Shift(i:State)
+  case Reduce(p:Prod)
+  case Accept
+  case Goto(i:State)
+}
 
-data Action = Shift State | Reduce Prdo | Accept | Goto State
-
-ptable :: Grammar -> Prod -> [(State, Symbol, Action)] 
-ptable grammar (S ::= X$) = 
-  let init = closure (Set.fromList [S ::=.X$]) grammar
-  in case buildSM init grammar of 
-  { StateMachine states trans finals -> 
-    let shifts = do 
-        { (i, x, j) <- trans
-        ; if isTerminal x
-        ; return (i, x, (Shift j))
+def ptable(G:Grammar)(prod:Prod):List[(State, Symbol, Action)] = prod match {
+  case (S::= X$) => {
+    val init = Set(closure(Set(S ::=.X$))(G))
+    buildSM(init)(G) match {
+      case StateMachine(states, trans, finals) => {
+        val shifts  = for {
+          (I, x, J) <- trans
+          if isTerminal(x)
+        } yield (I, x, Shift(J))
+        val gotos   = for {
+          (I, x, J) <- trans
+          if !isTerminal(x)
+          yield (I, x, Goto(J)))
         }
-
-        gotos = do
-        { (i, x, j) <- grans
-        ; if not (isTerminal x)
-        ; return (i, x, (Goto j))
-        }
-
-        reduces = do 
-        { (i, N::=alpha) <- reduce states
-        ; x <- allTerminals grammar 
-        ; return (i, x, reduce (N::=alpha))
-        }
-
-        accepts = do 
-        { i <- finals
-        ; return (i, $, Accept) 
-        }
-    in shifts ++ gotos ++ reduces ++ accepts
-  }
+        val reduces = for {
+          (I, N::=alpha) <- reduce(states)
+          x <- allTerminals(G)
+        } yield (I, x, Reduce(N::=alpha))
+        val accepts = for {
+          I <- finals
+        } yield (I, $, Accept)
+        shifts ++ gotos ++ reduces ++ accepts
+      }
+    }
+  } 
+}
 ```
 
 Function `ptable` computes the `LR(0)` parsing table by making use of the functions defined earlier.
@@ -263,47 +271,42 @@ One issue with the above `LR(0)` parsing table is that we see conflicts in cells
 
 A simple fix to this problem is to consider only the symbols that follows the LHS non-terminal.
 
-```hs
-reduce :: [State] -> [(Items, Symbol, Prod)] 
-reduce states = 
-  foldl (\(acc, items) -> 
-    foldl (\(acc1, item) -> case item of 
-      { (N::= alpha .) -> acc1 ++ (map (\s -> (I, s N::=alpha) (follow N grammar)) -- the fix
-      ; _ -> acc1)
-      }) acc (toList items)
-    ) [] states 
-
-ptable :: Grammar -> Prod -> [(State, Symbol, Action)] 
-ptable gramamr (S ::= X$) = 
-  let init = closure (Set.fromList [S ::=.X$]) grammar
-  in case buildSM init grammar of 
-  { StateMachine states trans finals -> 
-    let shifts = do 
-        { (i, x, j) <- trans
-        ; if isTerminal x
-        ; return (i, x, (Shift j))
-        }
-
-        gotos = do
-        { (i, x, j) <- grans
-        ; if not (isTerminal x)
-        ; return (i, x, (Goto j))
-        }
-
-        reduces = do 
-        { (i, x, N::=alpha) <- reduce states --  the fix
-        ; return (i, x, reduce (N::=alpha))
-        }
-
-        accepts = do 
-        { i <- finals
-        ; return (i, $, Accept) 
-        }
-    in shifts ++ gotos ++ reduces ++ accepts
+```scala
+def reduce(states:List[State]):List[(Items, Symbol, Prod)] = {
+  states.foldLeft(List())((accI:(List[(Items, Symbol,  Prod)], Items)) => accI match {
+    case (acc,I) => I.toList.foldLeft(acc)( ai:(List[(Items, Symbol,  Prod)], Item)) => ai match {
+      case (a, ( N::= alpha .)) => a ++ (follow(N).map( s => (I, s N::=alpha))) // fix
+      case (a, _) => a 
+    } 
   }
-```
+}
 
-The helper function `follow` compute the set of following symbols from the given non-terminal and grammar. Its definition is omitted as the details were discussed in the last lesson (top-down parsing).
+def ptable(G:Grammar)(prod:Prod):List[(State, Symbol, Action)] = prod match {
+  case (S::= X$) => {
+    val init = Set(closure(Set(S ::=.X$))(G))
+    buildSM(init)(G) match {
+      case StateMachine(states, trans, finals) => {
+        val shifts  = for {
+          (I, x, J) <- trans
+          if isTerminal(x)
+        } yield (I, x, Shift(J))
+        val gotos   = for {
+          (I, x, J) <- trans
+          if !isTerminal(x)
+          yield (I, x, Goto(J)))
+        }
+        val reduces = for {
+          (I, x, N::=alpha) <- reduce(states)
+        } yield (I, x, Reduce(N::=alpha)) // fix
+        val accepts = for {
+          I <- finals
+        } yield (I, $, Accept)
+        shifts ++ gotos ++ reduces ++ accepts
+      }
+    }
+  } 
+}
+```
 
 Given this fix, we are able to generate the conflict-free parsing table that we introduced earlier in this section.
 
@@ -328,31 +331,30 @@ For instance for production rule 3 `E' ::= +TE'`, we have 12 possible items
 
 We adjust the definition of `closure` and `goto`
 
-```hs 
-closure :: Items -> Grammar -> Items 
-closure items grammar = 
-  let newItems = do 
-      { (N ::= alpah . X beta, t) <- items 
-      ; (X ::= gamma)             <- grammar
-      ; w                         <- first (beta t) grammar
-      ; let js = do 
-                 { (N ::= . epsilon, t) <- items
-                 ; return (N::= epsilon ., t)}
-      ; return ( X ::= . gamma, w) `union` js}
-  if (newItems `isSubsetOf` items)
-  then items 
-  else closure (items `union` newItems) grammar
+```scala
+def closure(I:Items)(G:Grammar):Items = { 
+  val newItems = for {
+    (N ::= alpha . X beta, t) <- I
+    (X ::= gamma)             <- G
+    w                         <- first(beta t)
+  } yield ( X::= . gamma, w).union(
+    for {
+      (N ::= . epsilon, t) <- I
+    } yield ( N::= epsilon ., t)
+  )
+  if (newItems.forall(newItem => I.contains(newItem)))
+  { I }
+  else { closure(I.union(newItems))(G)}
 
-goto :: Items -> Grammar -> Symbol -> Items 
-goto items grammar sym = 
-  let j = do 
-        { (N ::= alpha . X beta, t) <- items
-        ; return (N ::= alpha X . beta, t)
-        }
-  in closure j grammar
+def goto(I:Items)(G:Grammar)(sym:Symbol):Items = {
+  val J = for {
+    (N ::= alpha . X beta, t) <- I
+  } yield (N ::= alpha X . beta, t)
+  closure(J)(G)
+}
 ```
 
-When computing the closure of an item `(N ::= alpha . X beta, t)`, we look up production rule `X ::= gamma`, to add `X ::= .gamma` into the new item set, we need to consider the possible leading terminal tokens coming from `beta`, and `t` in case `beta` accepts epsilon. The helper function `first` finds the set of first terminals in a sequence of symbols in the given grammar, which was discussed in the last unit (in top-down parsing.) We skip the details definition of `first` function. 
+When computing the closure of an item `(N ::= alpha . X beta, t)`, we look up production rule `X ::= gamma`, to add `X ::= .gamma` into the new item set, we need to consider the possible leading terminal tokens coming from `beta`, and `t` in case `beta` accepts epsilon.
 
 Applying the adjusted definition, we have the follow state diagram
 
@@ -373,14 +375,15 @@ For the top-most production rule, there is no leading token, we put a special sy
 
 To incorporate item's new definition, we adjust the `reduce` function as follows
 
-```hs
-reduce :: [State] -> [(Items, Symbol, Prod)] = 
-reduce states = 
-  foldl ( \(acc, items) -> 
-    foldl (\(acc1, item) -> case item of 
-      { (N :: =alpha ., t) -> acc1 ++ [(I, t, N::=alpha)]
-      ;  _ -> acc1 }) acc (toList items)
-    ) [] states
+```scala
+def reduce(states:List[State]):List[(Items, Symbol, Prod)] = {
+  states.foldLeft(List())((accI:(List[(Items,Symbol, Prod)], Items)) => accI match {
+    case (acc,I) => I.toList.foldLeft(acc)( ai:(List[(Items, Symbol, Prod)], Item)) => ai match {
+      case (a, ( N::= alpha ., t)) => a.append(List((I, t, N::=alpha)))
+      case (a, _) => a 
+    } 
+  }
+}
 ```
 
 `buildSM` and `ptable` function remain unchanged as per `SLR` parsing.
@@ -465,7 +468,7 @@ graph
 |19 |   |  |   |  | reduce 3 | | | | | |
 |20 |   |  |   |  | reduce 5 | | | | | |
 
-In which the shift-reduce conflicts are eliminated because when given an item `(N ::= alpha . X beta, t)`, we add `X ::= . gamma` into the closure, by computing `first (beta t) grammar`. This is only specific to this production rule `X::= gamma` and not other alternative.  
+In which the shift-reduce conflicts are eliminated because when given an item `(N ::= alpha . X beta, t)`, we add `X ::= . gamma` into the closure, by computing `first(beta t)`. This is only specific to this production rule `X::= gamma` and not other alternative.  
 
 ### LR(1) and left recursion
 
