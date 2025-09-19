@@ -848,7 +848,7 @@ $$
                 J \vdash  (\Delta, c_0, c_1, if\_icmpge\ l';jis) \longrightarrow (\Delta, \_, \_, jis') 
                 \end{array} \\ \\
 (\tt sjCmpGE2) & \begin{array}{c} 
-                c_0 \lt c_1 
+                c_0 < c_1 
                 \\ \hline
                 J \vdash  (\Delta, c_0, c_1, if\_icmpge\ l';jis) \longrightarrow (\Delta , \_, \_, jis) 
                 \end{array} \\ \\ 
@@ -873,7 +873,7 @@ $$
 The rule $(\tt sjCmpNE1)$ performs the jump when the values held by the stacks are not equal.
 The rule $(\tt sjCmpNE2)$ moves onto the next instruction (skpping the jump) when the values held by the stacks are equal.
 The rule $(\tt sjCmpGE1)$ performs the jump when the values in the stack $c_0 \geq c_1$.
-The rule $(\tt sjCmpGE2)$ moves onto the next instruction (skpping the jump) when the $c_0 \lt c_1$.
+The rule $(\tt sjCmpGE2)$ moves onto the next instruction (skpping the jump) when the $c_0 < c_1$.
 
 
 ## Conversion from PA to JVM bytecodes
