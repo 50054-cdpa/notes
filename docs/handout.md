@@ -86,7 +86,7 @@ If you have course/assignment/project related questions, please post it on the d
     * [Win11](https://ubuntu.com/tutorials/install-ubuntu-on-wsl2-on-windows-11-with-gui-support#1-overview)
 * If you are using Linux, it should be perfect.
 * If you are using Mac, please install homebrew.
-* Make sure JVM >=11 is installed and ant is installed.
+* Make sure JVM >=11 is installed.
 * Install Scala >= 3
   * https://www.scala-lang.org/download/
 * IDE: It's your choice, but VSCode works fine.
