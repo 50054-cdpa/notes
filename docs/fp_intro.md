@@ -315,9 +315,13 @@ $$
 \underline{(\lambda x. ((\lambda x. x)\ x))}\ (\lambda y.y)  &
 \longrightarrow_{\tt(\alpha)} \\
 \underline{(\lambda z. [z/x]((\lambda x.x)\ x))}\ (\lambda y.y) & \longrightarrow_{\tt (substitution)} \\
-\underline{(\lambda z. ((\lambda x. x)\ z))\ (\lambda y.y)}  &
+\underline{(\lambda z. ([z/x](\lambda x.x)\ [z/x]x))}\ (\lambda y.y) & \longrightarrow_{\tt (substitution)} \\
+\underline{(\lambda z. ([z/x](\lambda x.x)\ z))}\ (\lambda y.y) & \longrightarrow_{(\alpha)} \\
+\underline{(\lambda z. ([z/x](\lambda u.[u/x]x)\ z))}\ (\lambda y.y) & \longrightarrow_{\tt (substitution)} \\
+\underline{(\lambda z. ([z/x](\lambda u.u)\ z))}\ (\lambda y.y) & \longrightarrow_{\tt (substitution)} \\
+\underline{(\lambda z. ((\lambda u. u)\ z))\ (\lambda y.y)}  &
 \longrightarrow_{\tt(\beta)} \\  
-\underline{(\lambda x. x)\ (\lambda y.y)} &
+\underline{(\lambda u. u)\ (\lambda y.y)} &
 \longrightarrow_{\tt (\beta)}  \\
 \lambda y.y
 \end{array}
