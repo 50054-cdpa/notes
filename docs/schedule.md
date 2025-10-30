@@ -9,9 +9,9 @@
 | 6 | [Parser-Combinator](./syntax_analysis_parser_combinator.md) | [IR: Pseudo-Assembly](./ir_pseudo_assembly.md) | [Cohort Problem 5 Cont'd](https://github.com/50054-cdpa/cohort_probs/tree/main/syntax_analysis), <br/> [Homework 4](https://github.com/50054-cdpa/homework/tree/main/syntax_analysis), <br/> Project Briefing  | [Bottom-up Parsing](./syntax_analysis_2.md) for self-study. it won't show up in exams. | 
 | 7 |  |  |  | Homework 4 5% | 
 | 8 | [1. Semantic Analysis](./semantic_analysis.md) <br/> [2. Dynamic Semantics](./dynamic_semantics.md) | **Mid-term exam (during class hours)** | [Cohort Problem 7](https://github.com/50054-cdpa/cohort_probs/tree/main/dynamic_semantics) | Mid-term 10%  |
-| 9 | [Static Semantics for SIMP](./static_semantics.md) | [Static Semantics for Lambda Calculus](./static_semantics_2.md) | [Cohort Problem 8](https://github.com/50054-cdpa/cohort_probs/tree/main/static_semantics), [Homework 5](https://github.com/50054-cdpa/homework/tree/main/semantic_analysis)  | Project Lab 1 10% |
+| 9 | Guest Lecture | 1. [Static Semantics for SIMP](./static_semantics.md)  <br/> 2. [Static Semantics for Lambda Calculus](./static_semantics_2.md) | [Cohort Problem 8](https://github.com/50054-cdpa/cohort_probs/tree/main/static_semantics), [Homework 5](https://github.com/50054-cdpa/homework/tree/main/semantic_analysis)  | Project Lab 1 10% |
 | 10 | [Name Analysis, SSA](./name_analysis.md) | [Name Analysis, SSA](./name_analysis.md) | [Cohort Problem 9: Name Analysis](https://github.com/50054-cdpa/cohort_probs/tree/main/name_analysis) | | 
 | 11 | [Lattice, Sign Analysis](./sign_analysis_lattice.md) | [Liveness Analysis](./liveness_analysis.md) | [Code Generation: Stack Machine](./code_generation.md) | Project Lab 2 10%,  Homework 5 5%  |  
 | 12 | [Code Generation: Register Allocation](./code_generation_wasm.md)   | [Information Flow Analysis](./advanced_static_analysis.md) | [Cohort Problem 10: Sign Analysis](https://github.com/50054-cdpa/cohort_probs/tree/main/sign_analysis)  |  |
-| 13 | [Memory Management](./memory_management.md) | [Memory Management](./memory_management.md) | Guest Lecture | Project Lab 3 15% |  |
+| 13 | [Memory Management](./memory_management.md) | [Memory Management](./memory_management.md) |  | Project Lab 3 15% |  |
 | 14 | |  |  |Final Exam (17 Dec Wed 9:00AM-11:00AM) 30%|
