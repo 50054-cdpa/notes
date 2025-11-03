@@ -90,7 +90,6 @@ The following are some of the commony used techniques, (we have learned some of 
 
 1. Testing
 1. Run-time verification - analyse the target programs with instrumentation by checking the logs and traces against its specification.
-1. Program Slicing - try to decompose a program into "slices", small units of codes, that exhibit the behaviors of interests.
 
 ### Static Semantic Analysis
 
@@ -100,6 +99,7 @@ Static Semantic Analysis focuses on achieving the same goal as dynamic semantic 
 1. Control flow analysis - to determine the control flow graph of a given program. It gets harder has higher order function and function pointers introduced.
 1. Data flow analysis - the goal is determine the possible values being held by a variable at a particular program location.
 1. Model checking - given a specification, to reason the program's correctness using a math model, e.g. logic constraints.
+1. Program Slicing - try to decompose a program into "slices", small units of codes, that exhibit the behaviors of interests.
 
 The advantage is that we gain some generality of the results without worry about the limitation of code coverage. The disadvantage is that we often loose accuracy through approximation
 
