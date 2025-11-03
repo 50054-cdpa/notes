@@ -347,7 +347,7 @@ Given a SIMP program $\overline{S}$, the goal of type inference is to find the "
 
 Given that $\Gamma$ is a set of variable to type mappings, the "best" can be defined as the smallest possible set that make $\overline{S}$ typeable. This is also called the most general solution.
 
-### Definition - Most general type (envrionment)
+### Definition - Most general type (environment)
 
 Let $\Gamma$ be type environment and $\overline{S}$ be a sequence of SIMP statements, such that $\Gamma \vdash \overline{S}$. $\Gamma$ is the *most general* type environment iff for all $\Gamma'$ such that $\Gamma' \vdash \overline{S}$ we have $\Gamma \subseteq \Gamma'$.
 
