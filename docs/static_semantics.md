@@ -324,13 +324,13 @@ Then $\Gamma \vdash \Delta'$ and $\Gamma \vdash \overline{S'}$.
 
 Type inference is also known as type reconstruction is a static semantics analysis process that aims to reconstruct the missing (or omitted) typing info from the source programs. 
 
-For example, given the Haskell function
+For example, given the Scala function
 
 ```scala
 def f(x:Int) = x + 1
 ```
 
-the compiler is able to deduce that the type of `f` is `Int -> Int`. 
+the compiler is able to deduce that the type of `f` is `Int => Int`. 
 
 Likewise for the following SIMP program
 

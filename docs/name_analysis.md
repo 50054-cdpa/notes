@@ -236,11 +236,16 @@ There are two possible preceding instructions that lead us to the following inst
 namely, 3 and 9. When the preceding instruction is 3, the above phi assignments will assign `s0` to `s1` and `c0` to `c1`. Otherwise, `s2` is assigned to `s1` and `c2` is assigned to `c1`.
 
 To cater for the phi assignment, we extend the small step operational semantics from
-$$P \vdash (L, li) \longrightarrow (L', li')$$ 
+
+$$
+P \vdash (L, li) \longrightarrow (L', li')
+$$ 
 
 to 
 
-$$P \vdash (L, li, p) \longrightarrow (L', li', p')$$ 
+$$
+P \vdash (L, li, p) \longrightarrow (L', li', p')
+$$ 
 
 The third component $p$ in the program context is a label from the preceding instruction based on the execution. 
 
