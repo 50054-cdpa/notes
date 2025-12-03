@@ -1012,7 +1012,7 @@ f_4(s_0, s_1, s_2, s_3, s_4, s_5, s_6, s_7, s_8, s_9) & = & \left (
 $$
 
 If we apply $f_4$ one more time to the above set of states, we get the same states.
-At this point, we reach the fixed point of the $f_4$ functipn w.r.t the $(Var \rightarrow Sign)^9$ lattice. 
+At this point, we reach the fixed point of the $f_4$ function w.r.t the $(Var \rightarrow Sign)^9$ lattice. 
 
 
 ### Optimization
