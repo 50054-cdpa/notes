@@ -259,7 +259,7 @@ New statement syntax includes:
 
 New expression syntax includes
 
-* $f[E]$ - function application, where $f$ is a function name (a special variable)
+* $f(E)$ - function application, where $f$ is a function name (a special variable)
 * $T[E]$ - array initialization, where $T$ is the element type of the array and $E$ denotes the size of the array.
 * $X[E]$ - array element dereference, where $X$ is an array and $E$ is the element index. 
 
