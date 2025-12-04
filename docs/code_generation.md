@@ -997,7 +997,7 @@ $$
 {\tt (jLabel2)} & \begin{array}{c} 
                     l  \in L
                     \\ \hline
-                    L \vdash l \Rightarrow [ilabel\ l] 
+                    L \vdash l \Rightarrow [ilabel\ L(l)] 
                    \end{array}  
 \end{array}
 $$
