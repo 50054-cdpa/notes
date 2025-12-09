@@ -898,12 +898,12 @@ Now since there are repeated labels in `PA2`, we need an extra relabelling step 
 4: s1 <- s0
 5: c1 <- c0
 6: t0 <- c1 < x0
-7: ifn t0 goto 11
+7: ifn t0 goto 13
 8: s2 <- c1 + s1
 9: c2 <- c1 + 1
 10: s1 <- s2
 11: c1 <- c2
-12: goto 4
+12: goto 6
 13: rret <- s1 
 14: ret
 ```
