@@ -753,6 +753,7 @@ f_4(s_0, s_1, s_2, s_3, s_4, s_5, s_6, s_7, s_8, s_9) & = & \left (
 \end{array}
 $$
 
+
 1. $s_0 = s_1 = s_2 = s_3 = s_4 = s_5 = s_6 = s_7 = s_8 = [x \mapsto \bot, y \mapsto \bot, t \mapsto \bot]$, 
 
 $$
@@ -762,7 +763,7 @@ f_4(s_0, s_1, s_2, s_3, s_4, s_5, s_6, s_7, s_8, s_9) & = & \left (
     [x \mapsto \top, y \mapsto \top, t \mapsto \top], \\  
     [x \mapsto \bot, y \mapsto \bot, t \mapsto \bot], \\ 
     [x \mapsto \bot, y \mapsto 0, t \mapsto \bot], \\ 
-    [x \mapsto \bot, y \mapsto 0, t \mapsto \top], \\ 
+    [x \mapsto \bot, y \mapsto \bot, t \mapsto \top], \\ 
     [x \mapsto \bot, y \mapsto \bot, t \mapsto \bot], \\ 
     [x \mapsto \bot, y \mapsto \bot, t \mapsto \bot], \\ 
     [x \mapsto \bot, y \mapsto \bot, t \mapsto \bot], \\ 
@@ -779,7 +780,7 @@ $$
 s_0 = [x \mapsto \top, y \mapsto \top, t \mapsto \top], \\  
 s_1 = [x \mapsto \bot, y \mapsto \bot, t \mapsto \bot], \\ 
 s_2 = [x \mapsto \bot, y \mapsto 0, t \mapsto \bot], \\ 
-s_3 = [x \mapsto \bot, y \mapsto 0, t \mapsto \top], \\ 
+s_3 = [x \mapsto \bot, y \mapsto \bot, t \mapsto \top], \\ 
 s_4 = [x \mapsto \bot, y \mapsto \bot, t \mapsto \bot], \\ 
 s_5 = [x \mapsto \bot, y \mapsto \bot, t \mapsto \bot], \\ 
 s_6 = [x \mapsto \bot, y \mapsto \bot, t \mapsto \bot], \\ 
@@ -797,7 +798,7 @@ f_4(s_0, s_1, s_2, s_3, s_4, s_5, s_6, s_7, s_8, s_9) & = & \left (
     [x \mapsto \top, y \mapsto \top, t \mapsto \top], \\  
     [x \mapsto \bot, y \mapsto 0, t \mapsto \bot], \\ 
     [x \mapsto \bot, y \mapsto 0, t \mapsto \top], \\
-    [x \mapsto \bot, y \mapsto 0, t \mapsto \top], \\ 
+    [x \mapsto \bot, y \mapsto \bot, t \mapsto \top], \\ 
     [x \mapsto \bot, y \mapsto \bot, t \mapsto \bot], \\ 
     [x \mapsto \bot, y \mapsto \bot, t \mapsto \bot], \\
     [x \mapsto \bot, y \mapsto \bot, t \mapsto \bot], \\
@@ -808,6 +809,41 @@ f_4(s_0, s_1, s_2, s_3, s_4, s_5, s_6, s_7, s_8, s_9) & = & \left (
 $$
 
 3. 
+$$ 
+\begin{array}{l} 
+s_0 = [x \mapsto \top, y \mapsto \top, t \mapsto \top], \\  
+s_1 = [x \mapsto \top, y \mapsto \top, t \mapsto \top], \\  
+s_2 = [x \mapsto \bot, y \mapsto 0, t \mapsto \bot], \\ 
+s_3 = [x \mapsto \bot, y \mapsto 0, t \mapsto \top], \\
+s_4 = [x \mapsto \bot, y \mapsto \bot, t \mapsto \top], \\ 
+s_5 = [x \mapsto \bot, y \mapsto \bot, t \mapsto \bot], \\ 
+s_6 = [x \mapsto \bot, y \mapsto \bot, t \mapsto \bot], \\
+s_7 = [x \mapsto \bot, y \mapsto \bot, t \mapsto \bot], \\
+s_8 = [x \mapsto \bot, y \mapsto \bot, t \mapsto \bot]
+\end{array} 
+$$
+
+$$
+\begin{array}{rcl}
+f_4(s_0, s_1, s_2, s_3, s_4, s_5, s_6, s_7, s_8, s_9) & = & \left (
+    \begin{array}{c} 
+    [x \mapsto \top, y \mapsto \top, t \mapsto \top], \\  
+    [x \mapsto \top, y \mapsto \top, t \mapsto \top], \\  
+    [x \mapsto \top, y \mapsto 0, t \mapsto \top], \\ 
+    [x \mapsto \bot, y \mapsto 0, t \mapsto \top], \\ 
+    [x \mapsto \bot, y \mapsto 0, t \mapsto \top], \\
+    [x \mapsto \bot, y \mapsto \bot, t \mapsto \top], \\  
+    [x \mapsto \bot, y \mapsto \bot, t \mapsto \bot], \\ 
+    [x \mapsto \bot, y \mapsto \bot, t \mapsto \bot], \\ 
+    [x \mapsto \bot, y \mapsto \bot, t \mapsto \top] 
+    \end{array} 
+    \right )
+\end{array}
+$$
+
+
+
+4. 
 $$ 
 \begin{array}{l} 
 s_0 = [x \mapsto \top, y \mapsto \top, t \mapsto \top], \\  
@@ -840,7 +876,8 @@ f_4(s_0, s_1, s_2, s_3, s_4, s_5, s_6, s_7, s_8, s_9) & = & \left (
 \end{array}
 $$
 
-4. 
+
+5. 
 $$ 
 \begin{array}{l} 
 s_0 = [x \mapsto \top, y \mapsto \top, t \mapsto \top], \\  
@@ -874,7 +911,7 @@ f_4(s_0, s_1, s_2, s_3, s_4, s_5, s_6, s_7, s_8, s_9) & = & \left (
 \end{array}
 $$
 
-5. 
+6. 
 $$
 \begin{array}{c} 
 s_0 = [x \mapsto \top, y \mapsto \top, t \mapsto \top], \\  
@@ -908,7 +945,7 @@ f_4(s_0, s_1, s_2, s_3, s_4, s_5, s_6, s_7, s_8, s_9) & = & \left (
 $$
 
 
-6. 
+7. 
 $$
 \begin{array}{c} 
 s_0 = [x \mapsto \top, y \mapsto \top, t \mapsto \top], \\  
@@ -942,7 +979,7 @@ f_4(s_0, s_1, s_2, s_3, s_4, s_5, s_6, s_7, s_8, s_9) & = & \left (
 $$
 
 
-7. 
+8. 
 $$
 \begin{array}{c} 
 s_0 = [x \mapsto \top, y \mapsto \top, t \mapsto \top], \\  
@@ -976,7 +1013,7 @@ f_4(s_0, s_1, s_2, s_3, s_4, s_5, s_6, s_7, s_8, s_9) & = & \left (
 \end{array}
 $$
 
-8.
+9.
  
 $$
 \begin{array}{c} 
@@ -1010,6 +1047,7 @@ f_4(s_0, s_1, s_2, s_3, s_4, s_5, s_6, s_7, s_8, s_9) & = & \left (
     \right )    
 \end{array}
 $$
+
 
 If we apply $f_4$ one more time to the above set of states, we get the same states.
 At this point, we reach the fixed point of the $f_4$ function w.r.t the $(Var \rightarrow Sign)^9$ lattice. 
