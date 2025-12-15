@@ -364,15 +364,15 @@ while c < x {
   # the while loop body
   Gs[ s = c + s; c = c + 1]
   ---> # (mSequence), (mOp) and (mOp) rules
-  [ 8: t3 <- c, 9: t4 <- s, 10: t5 <- t3 + t4,  11: t6 <- c, 12: t7 <- 1, 13: t8 <- t6 + t7 ]
+  [ 8: t3 <- c, 9: t4 <- s, 10: s <- t3 + t4,  11: t5 <- c, 12: t6 <- 1, 13: c <- t5 + t6 ]
   # end of the while loop
   [ 14: goto 4 ]
   # the conditional jump 
   ---> [7: ifn t goto 15 ]
 --->  # putting altogther
 [4: t1 <- x, 5: t2 <- c, 6:  t <- t1 < t2,   7: ifn t goto 15, 
- 8: t3 <- c, 9: t4 <- s, 10: t5 <- t3 + t4,  11: t6 <- c, 
- 12: t7 <- 1, 13: t8 <- t6 + t7, 14: goto 4] 
+ 8: t3 <- c, 9: t4 <- s, 10: s <- t3 + t4,  11: t5 <- c, 
+ 12: t6 <- 1, 13: c <- t5 + t6, 14: goto 4] 
 ```
 
 3. Finally we convert the return statement
@@ -394,10 +394,10 @@ Putting 1,2,3 together
 7: ifn t goto 15 
 8: t3 <- c
 9: t4 <- s
-10: t5 <- t3 + t4
-11: t6 <- c 
-12: t7 <- 1 
-13: t8 <- t6 + t7
+10: s <- t3 + t4
+11: t5 <- c 
+12: t6 <- 1 
+13: c <- t5 + t6
 14: goto 4
 15: rret <- s
 16: ret
