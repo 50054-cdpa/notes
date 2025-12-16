@@ -1158,6 +1158,8 @@ func square (x:int):int {
 }
 ```
 
-2. We need a type inference algorithm, which should reject `SIMP3`. But for `SIMP4`, its type constraints should identify the missing `free` statement and let the compiler insert the statement on behalf of the programmers. 
+2. Typing rules will become complex if we consider nested arrays. 
+
+3. We need a type inference algorithm, which should reject `SIMP3`. But for `SIMP4`, its type constraints should identify the missing `free` statement and let the compiler insert the statement on behalf of the programmers. 
 
 We leave these as future work. 
