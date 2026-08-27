@@ -230,6 +230,7 @@ fv((\lambda x. \lambda y.x\ y)\ ({\tt y}\ w)) =  \{ {\tt y}, w \}
 $$
 
 Thus:
+
 $$
 \begin{array}{rl}
 (\lambda x. \lambda y.x\ y)\ ({\tt y}\ w) & \longrightarrow_{\scriptsize {\tt (\beta\ reduction)}} \\
