@@ -117,21 +117,21 @@ informally the above graph structure is called a *lattice* in math.
 We will discuss the formal details of lattice shortly. For now let's consider applying the above abstract domain to analyse the sign property of `SIMP2`. For the ease of implementation we conduct the sign analysis on the Pseudo Assembly instead of SIMP. (The design choice of using Pseudo Assembly is to better align with the project of this module, it is possible to apply the same technique to the SIMP programs directly.)
 
 ```java
-// PA2        // x -> top
+// PA2        // x -> bot
 1: x <- 0     // x -> 0
 2: x <- x + 1 // x -> 0 ++ + -> +
 3: rret <- x  // x -> +
 4: ret
 ```
 
-we can follow the flow of the program, before the program starts, we assign $\top$ to `x`, as `x` could be any value. After instruction 1, we deduce that `x` must be having the abstract value `0`, since we assign `0` to `x`. After instruction 2, we deduce that `x` has the abstract value `+` because we add (`++`) `1` to an abstract value `0`. (Note that the `0`, `1` and `++` in the comments are abstract values and abstract operator. Their overloaded definition will be discussed later in this unit.) For simplicity, we ignore the sign analysis for special variable `input` (which is always $\top$) and the register `rret` (whose sign is not useful.)
+we can follow the flow of the program, before the program starts, we assign $\bot$ to `x`, as `x` is undefined. After instruction 1, we deduce that `x` must be having the abstract value `0`, since we assign `0` to `x`. After instruction 2, we deduce that `x` has the abstract value `+` because we add (`++`) `1` to an abstract value `0`. (Note that the `0`, `1` and `++` in the comments are abstract values and abstract operator. Their overloaded definitions will be discussed later in this unit.) For simplicity, we ignore the sign analysis for special variable `input` (which is always $\top$) and the register `rret` (whose sign is not useful.)
 
 
 Let's consider another example 
 
 ```java
-// PA3                // x -> top, t -> top
-1: x <- 0             // x -> 0, t -> top
+// PA3                // x -> bot, t -> bot
+1: x <- 0             // x -> 0, t -> bot
 2: t <- input < 0     // x -> 0, t -> top
 3: ifn t goto 6       // x -> 0, t -> top
 4: x <- x + 1         // x -> +, t -> top
@@ -140,7 +140,7 @@ Let's consider another example
 7: ret                
 ```
 
-We start off by assigning $\top$ to `x`, then `0` to `x` at the instruction 1.
+We start off by assigning $\bot$ to `x`, then `0` to `x` at the instruction 1.
 At instruction 2, we assign the result of the boolean condition to `t` which could be 0 or 1 hence `top` is the abstract value associated with `t`.
 Instruction 3 is a conditional jump. Instruction 4 is the then-branch, we update `x`'s sign to `+`. Instruction 6 is the end of the if-else statement, where we need to merge the two possibility of `x`'s sign. If `t`'s value is 0, `x`'s sign is `0`, otherwise `x`'s sign is `+`. Hence we take the upperbound of `+`, `0` according to `Graph1` which is $\top$.
 
@@ -410,7 +410,7 @@ the sign analysis approach "infer" the signs of the variables based on the "prev
 
 
 ```java
-// PA2         // s0 = [x -> top]
+// PA2         // s0 = [x -> bot]
 1: x <- 0      // s1 = s0[x -> 0]
 2: x = x + 1   // s2 = s1[x  -> s1(x) ++ +]
 3: rret <- x   // s3 = s2
@@ -468,7 +468,7 @@ Similarly we can define the other abstract operators
 Given the definitions of the abstract operators, our next task is to solve the equation among the state variable `s0`, `s1`, `s2` and `s3`
 
 ```
-s0 = [x -> top]
+s0 = [x -> bot]
 s1 = s0[x -> 0]
 s2 = s1[x  -> s1(x) ++ +]
 s3 = s2
@@ -482,7 +482,7 @@ Note that we can't use unification here as `x` is assocated with different sign 
 To solve the set of equation constraints we could process the equations from top to bottom.
 
 ```
-s0 = [x -> top]
+s0 = [x -> bot]
 s1 = [x -> 0]
 s2 = [x -> +]
 s3 = [x -> +]
@@ -493,8 +493,8 @@ Then we can conclude that the sign of variable `x` at instruction 3 is positive.
 However, we need a more general solver as the equation systems could be recursive in the presence of loops.  For example.
 
 ```java
-// PA4              // s0 = [x -> top, y -> top, t -> top]
-1: x <- input       // s1 = s0
+// PA4              // s0 = [x -> bot, y -> bot, t -> bot]
+1: x <- input       // s1 = s0[x -> top] input must be top
 2: y <- 0           // s2 = s1[y -> 0]
 3: t <- x > 0       // s3 = upperbound(s2,s7)[t -> top]
 4: ifn t goto 8     // s4 = s3
@@ -619,7 +619,7 @@ $$
 
 The height of a complete lattice is the length of the longest path from $\top$ to  $\bot$.
 
-The intution of this theorem is that if we start from the $\bot$ of the lattice and keep applying a monotonic function $f$, we will reach a fixed point and it must be the only least fixed point. 
+The intuition of this theorem is that if we start from the $\bot$ of the lattice and keep applying a monotonic function $f$, we will reach a fixed point and it must be the only least fixed point. 
 The presence of $\bigsqcup$ in the definition above is find the common upper bound for all these applications. Note that the $f^{i}(\bot) \sqcup f^{i+1}(\bot) = f^{i+1}(\bot)$ as $f$ is monotonic. Eventually, we get rid of the $\bigsqcup$ in the result.
 
 For example, consider function $f_2$. If we start from $\bot$ and apply $f_2$ repetively, we reach $+$ which is the least fixed point.
@@ -667,7 +667,7 @@ For instance, if we apply the above algorithm to the $f_2$ with the lattice in `
 Recall the set of equations generated from `PA2`
 
 ```
-s0 = [x -> top]
+s0 = [x -> bot]
 s1 = s0[x -> 0]
 s2 = s1[x  -> s1(x) ++ +]
 s3 = s2
@@ -689,7 +689,7 @@ in its unabridge form.
 Next we re-model the relations among `s0,s1,s2,s3` in above equation system in $f_3$ as follows
 
 $$
-f_3(s_0,s_1,s_2,s_3) = ([x \mapsto \top],s_0[x \mapsto 0], s_1[x \mapsto (s_1(x) {\tt ++}\ {\tt +} )], s_2)
+f_3(s_0,s_1,s_2,s_3) = ([x \mapsto \bot],s_0[x \mapsto 0], s_1[x \mapsto (s_1(x) {\tt ++}\ {\tt +} )], s_2)
 $$
 
 Thanks to Lemma 15, $f_3$ is monotonic.
@@ -698,32 +698,32 @@ The last step is to apply the naive fixed point algorithm to $f_3$ with $s_0 = s
 
 1. $s_0 = s_1 = s_2 = s_3 = [x \mapsto \bot]$, 
 $$ \begin{array}{rcl}
-f_3(s_0,s_1,s_2,s_3) &  = & ([x \mapsto \top], s_0[x \mapsto 0], s_1[x \mapsto (s_1(x) {\tt ++}\ {\tt +})], s_2) \\ & = & ([x \mapsto \top], [x \mapsto 0], [x \mapsto +], [x \mapsto \bot])
+f_3(s_0,s_1,s_2,s_3) &  = & ([x \mapsto \bot], s_0[x \mapsto 0], s_1[x \mapsto (s_1(x) {\tt ++}\ {\tt +})], s_2) \\ & = & ([x \mapsto \bot], [x \mapsto 0], [x \mapsto +], [x \mapsto \bot])
 \end{array}
 $$
-2. $s_0 = [x \mapsto \top], s_1 =[x \mapsto 0], s_2 = [x \mapsto +], s_3 = [x \mapsto \bot]$, 
+2. $s_0 = [x \mapsto \bot], s_1 =[x \mapsto 0], s_2 = [x \mapsto +], s_3 = [x \mapsto \bot]$, 
 $$
 \begin{array}{rcl}
-f_3(s_0,s_1,s_2,s_3) & = & ([x \mapsto \top], s_0[x \mapsto 0], s_1[x \mapsto (s_1(x) {\tt ++}\ {\tt +})], s_2) \\ & = & ([x \mapsto \top], [x \mapsto 0], [x \mapsto +], [x \mapsto +])
+f_3(s_0,s_1,s_2,s_3) & = & ([x \mapsto \bot], s_0[x \mapsto 0], s_1[x \mapsto (s_1(x) {\tt ++}\ {\tt +})], s_2) \\ & = & ([x \mapsto \bot], [x \mapsto 0], [x \mapsto +], [x \mapsto +])
 \end{array}
 $$
 
-3. $s_0 = [x \mapsto \top], s_1 =[x \mapsto 0], s_2 = [x \mapsto +], s_3 = [x \mapsto +]$, 
+3. $s_0 = [x \mapsto \bot], s_1 =[x \mapsto 0], s_2 = [x \mapsto +], s_3 = [x \mapsto +]$, 
 $$
 \begin{array}{rcl}
-f_3(s_0,s_1,s_2,s_3) & = & ([x \mapsto \top], s_0[x \mapsto 0], s_1[x \mapsto (s_0(x) {\tt ++}\ {\tt +})], s_2) \\ & = & ([x \mapsto \top], [x \mapsto 0], [x \mapsto +], [x \mapsto +])
+f_3(s_0,s_1,s_2,s_3) & = & ([x \mapsto \bot], s_0[x \mapsto 0], s_1[x \mapsto (s_0(x) {\tt ++}\ {\tt +})], s_2) \\ & = & ([x \mapsto \bot], [x \mapsto 0], [x \mapsto +], [x \mapsto +])
 \end{array}
 $$
 
-4. fixed point reached, the solution is $s_0 = [x \mapsto \top], s_1 =[x \mapsto 0], s_2 = [x \mapsto +], s_3 = [x \mapsto +]$.
+4. fixed point reached, the solution is $s_0 = [x \mapsto \bot], s_1 =[x \mapsto 0], s_2 = [x \mapsto +], s_3 = [x \mapsto +]$.
 
 
 ### Applying Naive Fixed Point Algorithm to Sign Analysis Problem of `PA4`
 
 Recall the set of equations generated from `PA4`'s sign analysis
 ```
-s0 = [x -> top, y -> top, t -> top]
-s1 = s0
+s0 = [x -> bot, y -> bot, t -> bot]
+s1 = s0[x -> top]
 s2 = s1[y -> 0]
 s3 = upperbound(s2,s7)[t -> top]
 s4 = s3
@@ -739,8 +739,8 @@ $$
 \begin{array}{rcl}
 f_4(s_0, s_1, s_2, s_3, s_4, s_5, s_6, s_7, s_8, s_9) & = & \left (
     \begin{array}{c} 
-    [x \mapsto \top, y \mapsto \top, t \mapsto \top], \\  
-    s_0, \\ 
+    [x \mapsto \bot, y \mapsto \bot, t \mapsto \bot], \\  
+    s_0[x \mapsto \top], \\ 
     s_1[y \mapsto 0], \\ 
     (s_2 \sqcup s_7)[t \mapsto \top], \\ 
     s_3, \\ 
@@ -759,8 +759,8 @@ $$
 \begin{array}{rcl}
 f_4(s_0, s_1, s_2, s_3, s_4, s_5, s_6, s_7, s_8, s_9) & = & \left (
     \begin{array}{c} 
-    [x \mapsto \top, y \mapsto \top, t \mapsto \top], \\  
-    [x \mapsto \bot, y \mapsto \bot, t \mapsto \bot], \\ 
+    [x \mapsto \bot, y \mapsto \bot, t \mapsto \bot], \\  
+    [x \mapsto \top, y \mapsto \bot, t \mapsto \bot], \\ 
     [x \mapsto \bot, y \mapsto 0, t \mapsto \bot], \\ 
     [x \mapsto \bot, y \mapsto \bot, t \mapsto \top], \\ 
     [x \mapsto \bot, y \mapsto \bot, t \mapsto \bot], \\ 
@@ -776,8 +776,8 @@ $$
 2. 
 $$ 
 \begin{array}{l} 
-s_0 = [x \mapsto \top, y \mapsto \top, t \mapsto \top], \\  
-s_1 = [x \mapsto \bot, y \mapsto \bot, t \mapsto \bot], \\ 
+s_0 = [x \mapsto \bot, y \mapsto \bot, t \mapsto \bot], \\  
+s_1 = [x \mapsto \top, y \mapsto \bot, t \mapsto \bot], \\ 
 s_2 = [x \mapsto \bot, y \mapsto 0, t \mapsto \bot], \\ 
 s_3 = [x \mapsto \bot, y \mapsto \bot, t \mapsto \top], \\ 
 s_4 = [x \mapsto \bot, y \mapsto \bot, t \mapsto \bot], \\ 
@@ -793,9 +793,9 @@ $$
 \begin{array}{rcl}
 f_4(s_0, s_1, s_2, s_3, s_4, s_5, s_6, s_7, s_8, s_9) & = & \left (
     \begin{array}{c} 
-    [x \mapsto \top, y \mapsto \top, t \mapsto \top], \\  
-    [x \mapsto \top, y \mapsto \top, t \mapsto \top], \\  
-    [x \mapsto \bot, y \mapsto 0, t \mapsto \bot], \\ 
+    [x \mapsto \bot, y \mapsto \bot, t \mapsto \bot], \\  
+    [x \mapsto \top, y \mapsto \bot, t \mapsto \bot], \\  
+    [x \mapsto \top, y \mapsto 0, t \mapsto \bot], \\ 
     [x \mapsto \bot, y \mapsto 0, t \mapsto \top], \\
     [x \mapsto \bot, y \mapsto \bot, t \mapsto \top], \\ 
     [x \mapsto \bot, y \mapsto \bot, t \mapsto \bot], \\ 
@@ -810,9 +810,9 @@ $$
 3. 
 $$ 
 \begin{array}{l} 
-s_0 = [x \mapsto \top, y \mapsto \top, t \mapsto \top], \\  
-s_1 = [x \mapsto \top, y \mapsto \top, t \mapsto \top], \\  
-s_2 = [x \mapsto \bot, y \mapsto 0, t \mapsto \bot], \\ 
+s_0 = [x \mapsto \bot, y \mapsto \bot, t \mapsto \bot], \\  
+s_1 = [x \mapsto \top, y \mapsto \bot, t \mapsto \bot], \\  
+s_2 = [x \mapsto \top, y \mapsto 0, t \mapsto \bot], \\ 
 s_3 = [x \mapsto \bot, y \mapsto 0, t \mapsto \top], \\
 s_4 = [x \mapsto \bot, y \mapsto \bot, t \mapsto \top], \\ 
 s_5 = [x \mapsto \bot, y \mapsto \bot, t \mapsto \bot], \\ 
@@ -826,10 +826,10 @@ $$
 \begin{array}{rcl}
 f_4(s_0, s_1, s_2, s_3, s_4, s_5, s_6, s_7, s_8, s_9) & = & \left (
     \begin{array}{c} 
-    [x \mapsto \top, y \mapsto \top, t \mapsto \top], \\  
-    [x \mapsto \top, y \mapsto \top, t \mapsto \top], \\  
+    [x \mapsto \bot, y \mapsto \bot, t \mapsto \bot], \\  
+    [x \mapsto \top, y \mapsto \bot, t \mapsto \bot], \\  
+    [x \mapsto \top, y \mapsto 0, t \mapsto \bot], \\ 
     [x \mapsto \top, y \mapsto 0, t \mapsto \top], \\ 
-    [x \mapsto \bot, y \mapsto 0, t \mapsto \top], \\ 
     [x \mapsto \bot, y \mapsto 0, t \mapsto \top], \\
     [x \mapsto \bot, y \mapsto \bot, t \mapsto \top], \\  
     [x \mapsto \bot, y \mapsto \bot, t \mapsto \bot], \\ 
@@ -845,15 +845,15 @@ $$
 4. 
 $$ 
 \begin{array}{l} 
-s_0 = [x \mapsto \top, y \mapsto \top, t \mapsto \top], \\  
-s_1 = [x \mapsto \top, y \mapsto \top, t \mapsto \top], \\  
-s_2 = [x \mapsto \bot, y \mapsto 0, t \mapsto \bot], \\ 
-s_3 = [x \mapsto \bot, y \mapsto 0, t \mapsto \top], \\
+s_0 = [x \mapsto \bot, y \mapsto \bot, t \mapsto \bot], \\  
+s_1 = [x \mapsto \top, y \mapsto \bot, t \mapsto \bot], \\  
+s_2 = [x \mapsto \top, y \mapsto 0, t \mapsto \bot], \\ 
+s_3 = [x \mapsto \top, y \mapsto 0, t \mapsto \top], \\
 s_4 = [x \mapsto \bot, y \mapsto 0, t \mapsto \top], \\ 
-s_5 = [x \mapsto \bot, y \mapsto \bot, t \mapsto \bot], \\ 
+s_5 = [x \mapsto \bot, y \mapsto \bot, t \mapsto \top], \\ 
 s_6 = [x \mapsto \bot, y \mapsto \bot, t \mapsto \bot], \\
 s_7 = [x \mapsto \bot, y \mapsto \bot, t \mapsto \bot], \\
-s_8 = [x \mapsto \bot, y \mapsto \bot, t \mapsto \bot]
+s_8 = [x \mapsto \bot, y \mapsto \bot, t \mapsto \top]
 \end{array} 
 $$
 
@@ -861,13 +861,13 @@ $$
 \begin{array}{rcl}
 f_4(s_0, s_1, s_2, s_3, s_4, s_5, s_6, s_7, s_8, s_9) & = & \left (
     \begin{array}{c} 
-    [x \mapsto \top, y \mapsto \top, t \mapsto \top], \\  
-    [x \mapsto \top, y \mapsto \top, t \mapsto \top], \\  
+    [x \mapsto \bot, y \mapsto \bot, t \mapsto \bot], \\  
+    [x \mapsto \top, y \mapsto \bot, t \mapsto \bot], \\  
+    [x \mapsto \top, y \mapsto 0, t \mapsto \bot], \\ 
     [x \mapsto \top, y \mapsto 0, t \mapsto \top], \\ 
-    [x \mapsto \bot, y \mapsto 0, t \mapsto \top], \\ 
-    [x \mapsto \bot, y \mapsto 0, t \mapsto \top], \\
+    [x \mapsto \top, y \mapsto 0, t \mapsto \top], \\
     [x \mapsto \bot, y \mapsto +, t \mapsto \top], \\  
-    [x \mapsto \bot, y \mapsto \bot, t \mapsto \bot], \\ 
+    [x \mapsto \bot, y \mapsto \bot, t \mapsto \top], \\ 
     [x \mapsto \bot, y \mapsto \bot, t \mapsto \bot], \\ 
     [x \mapsto \bot, y \mapsto 0, t \mapsto \top] 
     \end{array} 
@@ -879,13 +879,13 @@ $$
 5. 
 $$ 
 \begin{array}{l} 
-s_0 = [x \mapsto \top, y \mapsto \top, t \mapsto \top], \\  
-s_1 = [x \mapsto \top, y \mapsto \top, t \mapsto \top], \\  
-s_2 = [x \mapsto \top, y \mapsto 0, t \mapsto \top], \\ 
-s_3 = [x \mapsto \bot, y \mapsto 0, t \mapsto \top], \\
-s_4 = [x \mapsto \bot, y \mapsto 0, t \mapsto \top], \\ 
+s_0 = [x \mapsto \bot, y \mapsto \bot, t \mapsto \bot], \\  
+s_1 = [x \mapsto \top, y \mapsto \bot, t \mapsto \bot], \\  
+s_2 = [x \mapsto \top, y \mapsto 0, t \mapsto \bot], \\ 
+s_3 = [x \mapsto \top, y \mapsto 0, t \mapsto \top], \\
+s_4 = [x \mapsto \top, y \mapsto 0, t \mapsto \top], \\ 
 s_5 = [x \mapsto \bot, y \mapsto +, t \mapsto \top], \\ 
-s_6 = [x \mapsto \bot, y \mapsto \bot, t \mapsto \bot], \\
+s_6 = [x \mapsto \bot, y \mapsto \bot, t \mapsto \top], \\
 s_7 = [x \mapsto \bot, y \mapsto \bot, t \mapsto \bot], \\
 s_8 = [x \mapsto \bot, y \mapsto 0, t \mapsto \top]
 \end{array} 
@@ -896,15 +896,15 @@ $$
 \begin{array}{rcl}
 f_4(s_0, s_1, s_2, s_3, s_4, s_5, s_6, s_7, s_8, s_9) & = & \left (
     \begin{array}{c} 
-    [x \mapsto \top, y \mapsto \top, t \mapsto \top], \\  
-    [x \mapsto \top, y \mapsto \top, t \mapsto \top], \\ 
-    [x \mapsto \top, y \mapsto 0, t \mapsto \top], \\ 
+    [x \mapsto \bot, y \mapsto \bot, t \mapsto \bot], \\  
+    [x \mapsto \top, y \mapsto \bot, t \mapsto \bot], \\ 
+    [x \mapsto \top, y \mapsto 0, t \mapsto \bot], \\ 
     [x \mapsto \top, y \mapsto 0, t \mapsto \top], \\
-    [x \mapsto \bot, y \mapsto 0, t \mapsto \top], \\
-    [x \mapsto \bot, y \mapsto +, t \mapsto \top], \\  
+    [x \mapsto \top, y \mapsto 0, t \mapsto \top], \\
+    [x \mapsto \top, y \mapsto +, t \mapsto \top], \\  
     [x \mapsto \bot, y \mapsto +, t \mapsto \top], \\ 
-    [x \mapsto \bot, y \mapsto \bot, t \mapsto \bot], \\ 
-    [x \mapsto \bot, y \mapsto 0, t \mapsto \top]
+    [x \mapsto \bot, y \mapsto \bot, t \mapsto \top], \\ 
+    [x \mapsto \top, y \mapsto 0, t \mapsto \top]
     \end{array} 
     \right )
 \end{array}
@@ -913,15 +913,15 @@ $$
 6. 
 $$
 \begin{array}{c} 
-s_0 = [x \mapsto \top, y \mapsto \top, t \mapsto \top], \\  
-s_1 = [x \mapsto \top, y \mapsto \top, t \mapsto \top], \\ 
-s_2 = [x \mapsto \top, y \mapsto 0, t \mapsto \top], \\ 
+s_0 = [x \mapsto \bot, y \mapsto \bot, t \mapsto \bot], \\  
+s_1 = [x \mapsto \top, y \mapsto \bot, t \mapsto \bot], \\ 
+s_2 = [x \mapsto \top, y \mapsto 0, t \mapsto \bot], \\ 
 s_3 = [x \mapsto \top, y \mapsto 0, t \mapsto \top], \\
-s_4 = [x \mapsto \bot, y \mapsto 0, t \mapsto \top], \\
-s_5 = [x \mapsto \bot, y \mapsto +, t \mapsto \top], \\  
+s_4 = [x \mapsto \top, y \mapsto 0, t \mapsto \top], \\
+s_5 = [x \mapsto \top, y \mapsto +, t \mapsto \top], \\  
 s_6 = [x \mapsto \bot, y \mapsto +, t \mapsto \top], \\ 
-s_7 = [x \mapsto \bot, y \mapsto \bot, t \mapsto \bot], \\ 
-s_8 = [x \mapsto \bot, y \mapsto 0, t \mapsto \top]
+s_7 = [x \mapsto \bot, y \mapsto \bot, t \mapsto \top], \\ 
+s_8 = [x \mapsto \top, y \mapsto 0, t \mapsto \top]
 \end{array} 
 $$
 
@@ -929,15 +929,15 @@ $$
 \begin{array}{rcl}
 f_4(s_0, s_1, s_2, s_3, s_4, s_5, s_6, s_7, s_8, s_9) & = & \left (
     \begin{array}{c} 
-    [x \mapsto \top, y \mapsto \top, t \mapsto \top], \\  
-    [x \mapsto \top, y \mapsto \top, t \mapsto \top], \\ 
-    [x \mapsto \top, y \mapsto 0, t \mapsto \top], \\ 
+    [x \mapsto \bot, y \mapsto \bot, t \mapsto \bot], \\  
+    [x \mapsto \top, y \mapsto \bot, t \mapsto \bot], \\ 
+    [x \mapsto \top, y \mapsto 0, t \mapsto \bot], \\ 
     [x \mapsto \top, y \mapsto 0, t \mapsto \top], \\
     [x \mapsto \top, y \mapsto 0, t \mapsto \top], \\ 
+    [x \mapsto \top, y \mapsto +, t \mapsto \top], \\ 
+    [x \mapsto \top, y \mapsto +, t \mapsto \top], \\ 
     [x \mapsto \bot, y \mapsto +, t \mapsto \top], \\ 
-    [x \mapsto \bot, y \mapsto +, t \mapsto \top], \\ 
-    [x \mapsto \bot, y \mapsto +, t \mapsto \top], \\ 
-    [x \mapsto \bot, y \mapsto 0, t \mapsto \top]
+    [x \mapsto \top, y \mapsto 0, t \mapsto \top]
     \end{array} 
     \right )
 \end{array}
@@ -947,15 +947,15 @@ $$
 7. 
 $$
 \begin{array}{c} 
-s_0 = [x \mapsto \top, y \mapsto \top, t \mapsto \top], \\  
-s_1 = [x \mapsto \top, y \mapsto \top, t \mapsto \top], \\ 
-s_2 = [x \mapsto \top, y \mapsto 0, t \mapsto \top], \\ 
+s_0 = [x \mapsto \bot, y \mapsto \bot, t \mapsto \bot], \\  
+s_1 = [x \mapsto \top, y \mapsto \bot, t \mapsto \bot], \\ 
+s_2 = [x \mapsto \top, y \mapsto 0, t \mapsto \bot], \\ 
 s_3 = [x \mapsto \top, y \mapsto 0, t \mapsto \top], \\
 s_4 = [x \mapsto \top, y \mapsto 0, t \mapsto \top], \\ 
-s_5 = [x \mapsto \bot, y \mapsto +, t \mapsto \top], \\ 
-s_6 = [x \mapsto \bot, y \mapsto +, t \mapsto \top], \\ 
+s_5 = [x \mapsto \top, y \mapsto +, t \mapsto \top], \\ 
+s_6 = [x \mapsto \top, y \mapsto +, t \mapsto \top], \\ 
 s_7 = [x \mapsto \bot, y \mapsto +, t \mapsto \top], \\ 
-s_8 = [x \mapsto \bot, y \mapsto 0, t \mapsto \top]
+s_8 = [x \mapsto \top, y \mapsto 0, t \mapsto \top]
 \end{array} 
 $$
 
@@ -963,14 +963,14 @@ $$
 \begin{array}{rcl}
 f_4(s_0, s_1, s_2, s_3, s_4, s_5, s_6, s_7, s_8, s_9) & = & \left (
     \begin{array}{c} 
-    [x \mapsto \top, y \mapsto \top, t \mapsto \top], \\  
-    [x \mapsto \top, y \mapsto \top, t \mapsto \top], \\ 
-    [x \mapsto \top, y \mapsto 0, t \mapsto \top], \\ 
+    [x \mapsto \bot, y \mapsto \bot, t \mapsto \bot], \\  
+    [x \mapsto \top, y \mapsto \bot, t \mapsto \bot], \\ 
+    [x \mapsto \top, y \mapsto 0, t \mapsto \bot], \\ 
     [x \mapsto \top, y \mapsto 0, t \mapsto \top], \\
     [x \mapsto \top, y \mapsto 0, t \mapsto \top], \\ 
     [x \mapsto \top, y \mapsto +, t \mapsto \top], \\     
-    [x \mapsto \bot, y \mapsto +, t \mapsto \top], \\ 
-    [x \mapsto \bot, y \mapsto +, t \mapsto \top], \\ 
+    [x \mapsto \top, y \mapsto +, t \mapsto \top], \\ 
+    [x \mapsto \top, y \mapsto +, t \mapsto \top], \\ 
     [x \mapsto \top, y \mapsto 0, t \mapsto \top]
     \end{array} 
     \right )    
@@ -981,49 +981,14 @@ $$
 8. 
 $$
 \begin{array}{c} 
-s_0 = [x \mapsto \top, y \mapsto \top, t \mapsto \top], \\  
-s_1 = [x \mapsto \top, y \mapsto \top, t \mapsto \top], \\ 
-s_2 = [x \mapsto \top, y \mapsto 0, t \mapsto \top], \\ 
-s_3 = [x \mapsto \top, y \mapsto 0, t \mapsto \top], \\
-s_4 = [x \mapsto \top, y \mapsto 0, t \mapsto \top], \\ 
-s_5 = [x \mapsto \top, y \mapsto +, t \mapsto \top], \\     
-s_6 = [x \mapsto \bot, y \mapsto +, t \mapsto \top], \\ 
-s_7 = [x \mapsto \bot, y \mapsto +, t \mapsto \top], \\ 
-s_8 = [x \mapsto \top, y \mapsto 0, t \mapsto \top]
-\end{array} 
-$$
-
-
-$$
-\begin{array}{rcl}
-f_4(s_0, s_1, s_2, s_3, s_4, s_5, s_6, s_7, s_8, s_9) & = & \left (
-    \begin{array}{c} 
-    [x \mapsto \top, y \mapsto \top, t \mapsto \top], \\  
-    [x \mapsto \top, y \mapsto \top, t \mapsto \top], \\ 
-    [x \mapsto \top, y \mapsto 0, t \mapsto \top], \\ 
-    [x \mapsto \top, y \mapsto 0, t \mapsto \top], \\
-    [x \mapsto \top, y \mapsto 0, t \mapsto \top], \\
-    [x \mapsto \top, y \mapsto +, t \mapsto \top], \\
-    [x \mapsto \top, y \mapsto +, t \mapsto \top], \\ 
-    [x \mapsto \bot, y \mapsto +, t \mapsto \top], \\ 
-    [x \mapsto \top, y \mapsto 0, t \mapsto \top]
-    \end{array} 
-    \right )    
-\end{array}
-$$
-
-9.
- 
-$$
-\begin{array}{c} 
-s_0 = [x \mapsto \top, y \mapsto \top, t \mapsto \top], \\  
-s_1 = [x \mapsto \top, y \mapsto \top, t \mapsto \top], \\ 
-s_2 = [x \mapsto \top, y \mapsto 0, t \mapsto \top], \\ 
+s_0 = [x \mapsto \bot, y \mapsto \bot, t \mapsto \bot], \\  
+s_1 = [x \mapsto \top, y \mapsto \bot, t \mapsto \bot], \\ 
+s_2 = [x \mapsto \top, y \mapsto 0, t \mapsto \bot], \\ 
 s_3 = [x \mapsto \top, y \mapsto 0, t \mapsto \top], \\
 s_4 = [x \mapsto \top, y \mapsto 0, t \mapsto \top], \\ 
 s_5 = [x \mapsto \top, y \mapsto +, t \mapsto \top], \\     
 s_6 = [x \mapsto \top, y \mapsto +, t \mapsto \top], \\ 
-s_7 = [x \mapsto \bot, y \mapsto +, t \mapsto \top], \\ 
+s_7 = [x \mapsto \top, y \mapsto +, t \mapsto \top], \\ 
 s_8 = [x \mapsto \top, y \mapsto 0, t \mapsto \top]
 \end{array} 
 $$
@@ -1033,9 +998,9 @@ $$
 \begin{array}{rcl}
 f_4(s_0, s_1, s_2, s_3, s_4, s_5, s_6, s_7, s_8, s_9) & = & \left (
     \begin{array}{c} 
-    [x \mapsto \top, y \mapsto \top, t \mapsto \top], \\  
-    [x \mapsto \top, y \mapsto \top, t \mapsto \top], \\ 
-    [x \mapsto \top, y \mapsto 0, t \mapsto \top], \\ 
+    [x \mapsto \bot, y \mapsto \bot, t \mapsto \bot], \\  
+    [x \mapsto \top, y \mapsto \bot, t \mapsto \bot], \\ 
+    [x \mapsto \top, y \mapsto 0, t \mapsto \bot], \\ 
     [x \mapsto \top, y \mapsto 0, t \mapsto \top], \\
     [x \mapsto \top, y \mapsto 0, t \mapsto \top], \\
     [x \mapsto \top, y \mapsto +, t \mapsto \top], \\
@@ -1047,7 +1012,7 @@ f_4(s_0, s_1, s_2, s_3, s_4, s_5, s_6, s_7, s_8, s_9) & = & \left (
 \end{array}
 $$
 
-If we apply $f_4$ one more time to the above set of states, we get the same states.
+From step 7 to step 8, we applied $f_4$ one more time to the set of states, we get the same states.
 At this point, we reach the fixed point of the $f_4$ function w.r.t the $(Var \rightarrow Sign)^9$ lattice. 
 
 
@@ -1119,3 +1084,5 @@ We have seen the definitions of $++, --, **$ and $<<$
 > Question: the abstraction operations are pretty coarse (not accurate). For instance, `<<` and `===` should return either `0` or `1` hence $\top$ is too coarse. Can you define a lattice for sign analysis which offers better accuracy? 
 
 > Question: Convert `SIMP1` into a PA. Can we apply the sign analysis to find out that the `sqrt(x)` is definifely failing?
+
+> Question: In s0, what if we set everything to top instead of bot?

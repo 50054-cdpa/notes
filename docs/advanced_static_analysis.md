@@ -12,7 +12,7 @@
 The Sign Analysis that we developed in the previous class has some limitation.
 
 ```java
-// PA1               // s0 = [ x -> top, t -> top, input -> top ]
+// PA1               // s0 = [ x -> bot, t -> bot, input -> top ]
 1: x <- input        // s1 = s0[ x -> s0(input) ]
 2: t <- x >= 0       // s2 = lub(s1,s5) [ t -> lub(s1,s5)(x) >== 0 ]
 3: ifn t goto 6      // s3 = s2   
@@ -56,7 +56,7 @@ By converting the equation system into monotonic function
 
 ```
 f1((s0, s1, s2, s3, s4, s5, s6)) = ( 
-    [ x -> top, t -> top, input -> top ], 
+    [ x -> bot, t -> bot, input -> top ], 
     s0[ x -> s0(input) ], 
     lub(s1,s5) [ t -> lub(s1,s5)(x) >== 0 ],
     s2, 
@@ -69,8 +69,8 @@ f1((s0, s1, s2, s3, s4, s5, s6)) = (
 when we apply the fixed point algorithm to the `f1` and the VarSign lattice, we have the following solution
 
 ```
-s0 = [ x -> top, t -> top, input -> top ], 
-s1 = [ x -> top, t -> top, input -> top ],
+s0 = [ x -> bot, t -> bot, input -> top ], 
+s1 = [ x -> top, t -> bot, input -> top ],
 s2 = [ x -> top, t -> top, input -> top ],
 s3 = [ x -> top, t -> top, input -> top ],
 s4 = [ x -> top, t -> top, input -> top ],
@@ -145,7 +145,7 @@ return y;
 As we translate the above SIMP program in to Pseudo Assembly, we retain the assertions as instructions
 
 ```java
-// PA2               // s0 = [ x -> top, t -> top, input -> top ]
+// PA2               // s0 = [ x -> bot, t -> bot, input -> top ]
 1: x <- input        // s1 = s0[ x -> s0(input) ]
 2: t <- x >= 0       // s2 = lub(s1,s6) [ t -> lub(s1,s6)(x) >== 0 ]
 3: ifn t goto 7      // s3 = s2   
@@ -220,7 +220,7 @@ With the adjusted monotonic equations, we can now define the monotonic function 
 
 ```
 f2((s0, s1, s2, s3, s4, s5, s6, s7, s8)) = ( 
-    [ x -> top, t -> top, input -> top ]
+    [ x -> bot, t -> bot, input -> top ]
     s0[ x -> s0(input) ], 
     lub(s1,s6) [ t -> lub(s1,s6)(x) >== 0 ],
     s2, 
@@ -235,8 +235,8 @@ f2((s0, s1, s2, s3, s4, s5, s6, s7, s8)) = (
 By applying the fixed point algorithm to `f2` we find the following solution
 
 ```
-s0 = [ x -> top, t -> top, input -> top ]
-s1 = [ x -> top, t -> top, input -> top ]
+s0 = [ x -> bot, t -> bot, input -> top ]
+s1 = [ x -> top, t -> bot, input -> top ]
 s2 = [ x -> top, t -> +0, input -> top ]
 s3 = [ x -> top, t -> +0, input -> top ]
 s4 = [ x -> +0, t -> +0, input -> top ]
