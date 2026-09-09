@@ -64,7 +64,7 @@ The main resources are lecture slides, tutorial sessions, and online documentati
 
 
 * Yunjeong Lee (yunjeong_lee@sutd.edu.sg)
-    * Office Hour: 
+    * Office Hour: Wednesday 3:00-4:30pm (please send email to arrange)
 * Kenny Lu (kenny_lu@sutd.edu.sg) 
     * Office Hour: Wednesday 3:00-4:30pm (please send email to arrange)
 
