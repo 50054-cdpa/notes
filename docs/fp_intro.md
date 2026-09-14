@@ -366,7 +366,7 @@ We extend the syntax with let-binding:
 
 $$
 \begin{array}{rccl}
- {\tt (Lambda\ Terms)} & t & ::= & x \mid \lambda x.t \mid t\ t \mid let\ x=\ t\ in\ t
+ {\tt (Lambda\ Terms)} & t & ::= & x \mid \lambda x.t \mid t\ t \mid \text{let}\ x=\ t\ \text{in}\ t
 \end{array}
 $$
 
@@ -374,7 +374,7 @@ and the evaluation rule:
 
 $$
 \begin{array}{rl}
-{\tt (Let)} & let\ x=t_1\ in\ t_2 \longrightarrow [t_1/x]t_2 \\ \\
+{\tt (Let)} & \text{let}\ x=t_1\ \text{in}\ t_2 \longrightarrow [t_1/x]t_2 \\ \\
 \end{array}
 $$
 
@@ -382,13 +382,13 @@ and the substitution rule and the free variable function $fv()$:
 
 $$
 \begin{array}{rcl}
-\lbrack t_1 / x \rbrack let\ y = t_2\ in\ t_3 & = & let\ y = \lbrack t_1 / x \rbrack t_2\ in\ \lbrack t_1 / x \rbrack t_3 & {\tt if}\  y\neq x\  {\tt and}\  y \not \in fv(t_1) \\
+\lbrack t_1 / x \rbrack \text{let}\ y = t_2\ \text{in}\ t_3 & = & \text{let}\ y = \lbrack t_1 / x \rbrack t_2\ in\ \lbrack t_1 / x \rbrack t_3 & {\tt if}\  y\neq x\  {\tt and}\  y \not \in fv(t_1) \\
 \end{array} 
 $$
 
 $$
 \begin{array}{rcl}
-fv(let\ x=t_1\ in\ t_2) & = & (fv(t_1) - \{x\}) \cup fv(t_2) \\
+fv(\text{let}\ x=t_1\ \text{in}\ t_2) & = & (fv(t_1) - \{x\}) \cup fv(t_2) \\
 \end{array}
 $$
 
@@ -403,7 +403,7 @@ In the alternative approach, we could use a pre-processing step to desugar the l
 We can rewrite:
 
 $$
-let\ x=t_1\ in\ t_2
+\text{let}\ x=t_1\ \text{in}\ t_2
 $$
 
 into:
@@ -418,7 +418,7 @@ where $x \not\in fv(t_1)$.
 
 ### Conditional Expression
 
-A language is pretty much useless without conditional $if\ t_1\ then\ t_2\ else\ t_3$. There are at least
+A language is pretty much useless without conditional $\text{if}\ t_1\ \text{then}\ t_2\ \text{else}\ t_3$. There are at least
 two different ways of incorporating conditional expression in our lambda term language.
 
 #### Approach 1 - Extending the syntax and the evaluation rules
@@ -427,7 +427,7 @@ We could extend the grammar
 
 $$
 \begin{array}{rccl}
- {\tt (Lambda\ Terms)} & t & ::= & x \mid \lambda x.t \mid t\ t \mid let\ x=\ t\ in\ t \mid  if\ t\ then\ t\ else\ t \mid t\ op\ t \mid c \\
+ {\tt (Lambda\ Terms)} & t & ::= & x \mid \lambda x.t \mid t\ t \mid \text{let}\ x=\ t\ \text{in}\ t \mid  \text{if}\ t\ \text{then}\ t\ \text{else}\ t \mid t\ op\ t \mid c \\
  {\tt (Builtin\ Operators)} & op & ::= & + \mid - \mid * \mid / \mid\ == \\
  {\tt (Builtin\ Constants)} & c & ::= & 0 \mid 1 \mid ... \mid true \mid false
 \end{array}
@@ -441,10 +441,10 @@ $$
 {\tt (ifI)} & \begin{array}{c}
                t_1 \longrightarrow t_1'  \\
                \hline
-               if\ t_1\ then\ t_2\ else\ t_3 \longrightarrow if\ t_1'\ then\ t_2\ else\ t_3
+               \text{if}\ t_1\ \text{then}\ t_2\ \text{else}\ t_3 \longrightarrow \text{if}\ t_1'\ \text{then}\ t_2\ \text{else}\ t_3
                \end{array} \\ \\
-{\tt (ifT)} &  if\ true\ then\ t_2\ else\ t_3 \longrightarrow t_2 \\ \\
-{\tt (ifF)} &  if\ false\ then\ t_2\ else\ t_3 \longrightarrow t_3 \\ \\
+{\tt (ifT)} &  \text{if}\ true\ \text{then}\ t_2\ \text{else}\ t_3 \longrightarrow t_2 \\ \\
+{\tt (ifF)} &  \text{if}\ false\ \text{then}\ t_2\ \text{else}\ t_3 \longrightarrow t_3 \\ \\
 {\tt (OpI1)} & \begin{array}{c}
                 t_1 \longrightarrow t_1' \\
                 \hline
@@ -453,10 +453,10 @@ $$
 {\tt (OpI2)} & \begin{array}{c}
                 t_2 \longrightarrow t_2' \\
                 \hline
-                c_1\ op\ t_2\  \longrightarrow c_1\ op\ t_2'
+                c_1\ op\ t_2\  \longrightarrow c_1\ \text{op}\ t_2'
                 \end{array} \\ \\
 {\tt (OpC)} &  \begin{array}{c}
-                invoke\ low\ level\ call\  op(c_1, c_2) = c_3 \\
+                \text{invoke low level call \ op}(c_1, c_2) = c_3 \\
                 \hline  
                 c_1\ op\ c_2\  \longrightarrow c_3
                 \end{array} \\ \\
@@ -466,8 +466,8 @@ $$
 
 In the above we use a horizontal line to separate complex deduction rules that have some premise. The relations and statement written above the horizontal line are called the **premises**, and the relation the written below is called the **conclusion**. The conclusion holds if the premises are valid.
 
-* The rule ${\tt (ifI)}$ states that if we can evaluate  $t_1$ to  $t_1'$, then  $if\ t_1\ then\ t_2\ else\ t_3$ can be evaluated to  $if\ t_1' \ then\ t_2\ else\ t_3$. In otherwords, for us to reduce $if\ t_1\ then\ t_2\ else\ t_3$ to $if\ t_1' \ then\ t_2\ else\ t_3$, a pre-condition is to reduce $t_1$ to $t_1'$. 
-* The rule  ${\tt (ifT)}$ states that if the conditional expression is $true$, the entire term is evaluated to the then-branch.
+* The rule ${\tt (\text{if}I)}$ states that \text{if} we can evaluate  $t_1$ to  $t_1'$, then  $\text{if}\ t_1\ \text{then}\ t_2\ \text{else}\ t_3$ can be evaluated to $\text{if}\ t_1' \ \text{then}\ t_2\ \text{else}\ t_3$. In other words, for us to reduce $\text{if}\ t_1\ \text{then}\ t_2\ \text{else}\ t_3$ to $\text{if}\ t_1' \ \text{then}\ t_2\ \text{else}\ t_3$, a pre-condition is to reduce $t_1$ to $t_1'$. 
+* The rule  ${\tt (ifT)}$ states that if the conditional expression is $\text{true}$, the entire term is evaluated to the then-branch.
 * The rule  ${\tt (ifF)}$ is similar.
 * Rules  ${\tt (OpI1)}$ and ${\tt (OpI2)}$ are similar to rule ${\tt (IfI)}$.
 * The rule  ${\tt (OpC)}$ invokes the built-in low level call to apply the binary operation to the two operands  $c_1$ and  $c_2$.  
@@ -478,7 +478,7 @@ $$
 \begin{array}{rcll}
  \lbrack t_1 / x \rbrack c & = & c \\ 
    \lbrack t_1 / x \rbrack t_2\ op\ t_3 & = & (\lbrack t_1 / x \rbrack t_2)\ op\ (\lbrack t_1 / x \rbrack t_3) \\ 
-  \lbrack t_1 / x \rbrack if\ t_2\ then\ t_3\ else\ t_4 & = & if\ \lbrack t_1 / x \rbrack t_2\ then\ \lbrack t_1 / x \rbrack t_3\ else\ \lbrack t_1 / x \rbrack t_4 \\ 
+  \lbrack t_1 / x \rbrack \text{if}\ t_2\ \text{then}\ t_3\ \text{else}\ t_4 & = & \text{if}\ \lbrack t_1 / x \rbrack t_2\ \text{then}\ \lbrack t_1 / x \rbrack t_3\ \text{else}\ \lbrack t_1 / x \rbrack t_4 \\ 
 \end{array}
 $$
 
@@ -486,7 +486,7 @@ $$
 $$
 \begin{array}{rcl}
 fv(t_1\ op\ t_2) & = & fv(t_1) \cup fv(t_2) \\ 
-fv(if\ t_1\ then\ t_2\ else\ t_3) & = & fv(t_1) \cup fv(t_2) \cup fv(t_3) \\
+fv(\text{if}\ t_1\ \text{then}\ t_2\ \text{else}\ t_3) & = & fv(t_1) \cup fv(t_2) \cup fv(t_3) \\
 fv(c) & = & \{\} \\
 \end{array}
 $$
@@ -495,10 +495,10 @@ Let's consider an example:
 
 $$
 \begin{array}{rl}
-(\lambda x.if\ x==0\ then\  0\  else\  10/x)\ 2 & \longrightarrow_{\scriptsize {\tt \beta}} \\
-\lbrack 2/x \rbrack if\ x==0\ then\  0\  else\  10/x & \longrightarrow_{\scriptsize {\tt (substitution)}} \\
-if\ 2==0\ then\  0\  else\  10/2 & \longrightarrow_{\scriptsize {\tt (IfI)}} \\
-if\ false\ then\ 0\  else\  10/2 & \longrightarrow_{\scriptsize {\tt (IfF)}} \\
+(\lambda x.\text{if}\ x==0\ \text{then}\  0\  \text{else}\  10/x)\ 2 & \longrightarrow_{\scriptsize {\tt \beta}} \\
+\lbrack 2/x \rbrack \text{if}\ x==0\ \text{then}\  0\  \text{else}\  10/x & \longrightarrow_{\scriptsize {\tt (substitution)}} \\
+\text{if}\ 2==0\ \text{then}\  0\  \text{else}\  10/2 & \longrightarrow_{\scriptsize {\tt (IfI)}} \\
+\text{if}\ false\ \text{then}\ 0\  \text{else}\  10/2 & \longrightarrow_{\scriptsize {\tt (IfF)}} \\
 10/2 & \longrightarrow_{\scriptsize {\tt (OpC)}} \\
 5
 \end{array}
@@ -512,8 +512,8 @@ Thanks to [Church-encoding](https://en.wikipedia.org/wiki/Church_encoding) (disc
 
 Let's define:
 
-* $true$ as $\lambda x.\lambda y.x$
-* $false$ as $\lambda x.\lambda y.y$
+* $\text{true}$ as $\lambda x.\lambda y.x$
+* $\text{false}$ as $\lambda x.\lambda y.y$
 * $ite$ (read as if-then-else) as $\lambda e_1. \lambda e_2. \lambda e_3. e_1\ e_2\ e_3$
 
 We assume the function application is left associative,
@@ -525,7 +525,7 @@ $$
 ite\ true\ w\ z & = \\
 (\lambda e_1. \lambda e_2. \lambda e_3. e_1\ e_2\ e_3)\ true\ w\ z &
 \longrightarrow \\
-true\ w\ z & =  \\
+\text{true}\ w\ z & =  \\
 (\lambda x.\lambda y.x)\ w\ z & \longrightarrow  \\
 w
 \end{array}
@@ -583,13 +583,13 @@ For instance:
 
 $$
 \begin{array}{rl}
-(\mu f.\lambda x.if\ x==1\ then\ 1\ else\ x*(f\ (x-1)))\ 3 & \longrightarrow_{\scriptsize {\tt(NOR)+(unfold)}} \\
-(\lbrack (\mu f.\lambda x.if\ x==1\ then\ 1\ else\ x*(f\ (x-1)))/f \rbrack \lambda x.if\ x==1\ then\ 1\ else\ x*(f\ (x-1)))\ 3 & \longrightarrow_{\scriptsize {\tt (substitution) + (\alpha)}} \\
-(\lambda x.if\ x==1\ then\ 1\ else\ x*((\mu f.\lambda y.if\ y==1\ then\ 1\ else\ y*(f\ (y-1)))\ (x-1)))\ 3 & \longrightarrow_{\scriptsize {\tt (\beta)}} \\
-\lbrack 3/x \rbrack if\ x==1\ then\ 1\ else\ x*((\mu f.\lambda y.if\ y==1\ then\ 1\ else\ y*(f\ (y-1)))\ (x-1)) & \longrightarrow_{\scriptsize {\tt (substitution)}} \\
-if\ 3==1\ then\ 1\ else\ 3*((\mu f.\lambda y.if\ y==1\ then\ 1\ else\ y*(f\ (y-1)))\ (3-1)) & \longrightarrow_{\scriptsize {\tt (ifI)+(OpC)}} \\
-if\ false\ then\ 1\ else\ 3*((\mu f.\lambda y.if\ y==1\ then\ 1\ else\ y*(f\ (y-1)))\ (3-1)) & \longrightarrow_{\scriptsize {\tt (ifF)}} \\
-3*((\mu f.\lambda y.if\ y==1\ then\ 1\ else\ y*(f\ (y-1)))\ (3-1)) & \longrightarrow_{\scriptsize {\tt (OpI2)}} \\
+(\mu f.\lambda x.\text{if}\ x==1\ \text{then}\ 1\ \text{else}\ x*(f\ (x-1)))\ 3 & \longrightarrow_{\scriptsize {\tt(NOR)+(unfold)}} \\
+(\lbrack (\mu f.\lambda x.\text{if}\ x==1\ \text{then}\ 1\ \text{else}\ x*(f\ (x-1)))/f \rbrack \lambda x.\text{if}\ x==1\ \text{then}\ 1\ \text{else}\ x*(f\ (x-1)))\ 3 & \longrightarrow_{\scriptsize {\tt (substitution) + (\alpha)}} \\
+(\lambda x.\text{if}\ x==1\ \text{then}\ 1\ \text{else}\ x*((\mu f.\lambda y.\text{if}\ y==1\ \text{then}\ 1\ \text{else}\ y*(f\ (y-1)))\ (x-1)))\ 3 & \longrightarrow_{\scriptsize {\tt (\beta)}} \\
+\lbrack 3/x \rbrack \text{if}\ x==1\ \text{then}\ 1\ \text{else}\ x*((\mu f.\lambda y.\text{if}\ y==1\ \text{then}\ 1\ \text{else}\ y*(f\ (y-1)))\ (x-1)) & \longrightarrow_{\scriptsize {\tt (substitution)}} \\
+\text{if}\ 3==1\ \text{then}\ 1\ \text{else}\ 3*((\mu f.\lambda y.\text{if}\ y==1\ \text{then}\ 1\ \text{else}\ y*(f\ (y-1)))\ (3-1)) & \longrightarrow_{\scriptsize {\tt (ifI)+(OpC)}} \\
+\text{if}\ \text{false}\ \text{then}\ 1\ \text{else}\ 3*((\mu f.\lambda y.\text{if}\ y==1\ \text{then}\ 1\ \text{else}\ y*(f\ (y-1)))\ (3-1)) & \longrightarrow_{\scriptsize {\tt (ifF)}} \\
+3*((\mu f.\lambda y.\text{if}\ y==1\ \text{then}\ 1\ \text{else}\ y*(f\ (y-1)))\ (3-1)) & \longrightarrow_{\scriptsize {\tt (OpI2)}} \\
 ... \\
 3*(2*1)
 \end{array}
@@ -619,21 +619,21 @@ $$
 \begin{array}{cc}
    fac(n) = \left [
          \begin{array}{ll}
-            1 &  {if}~ n = 0 \\
-            n*fac(n-1) & {otherwise}
+            1 &  \text{if}~ n = 0 \\
+            n*\text{fac}(n-1) & \text{otherwise}
          \end{array} \right .
 \end{array}
 $$
 
 Our goal is to look for a fixpoint function $Fac$ such that
-$Y\ Fac \longrightarrow Fac\ (Y\ Fac)$ and $Y\ Fac$ implements
+$Y\ \text{Fac} \longrightarrow \text{Fac}\ (Y\ \text{Fac})$ and $Y\ \text{Fac}$ implements
 the above definition.
 
 Let $Fac$ be
 
 $$
 \begin{array}{c}
- \lambda fac. \lambda n. ite\ (iszero\ n)\ one\ (mul\ n\ (fac\ (pred\ n)))
+ \lambda \text{fac}. \lambda n. ite\ (\text{iszero}\ n)\ \text{one}\ (\text{mul}\ n\ (\text{fac}\ (\text{pred}\ n)))
 \end{array}
 $$
 
@@ -646,10 +646,10 @@ described above.
 
 How to define the following?
 
-* $one$
-* $iszero$
-* $mul$
-* $pred$
+* $\text{one}$
+* $\text{iszero}$
+* $\text{mul}$
+* $\text{pred}$
 
 
 #### Discussion 2
