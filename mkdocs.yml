@@ -31,17 +31,17 @@ nav:
     - "Dynamic Semantics":                     "dynamic_semantics.md"
   - W9:
     - "Static Semantics":                      "static_semantics.md"
-    - "Static Semantics for Lambda Calculus":  "static_semantics_2.md"
   - W10:
+    - "Static Semantics for Lambda Calculus":  "static_semantics_2.md"
     - "Name Analysis":                         "name_analysis.md"
   - W11:
+    - "Code Generation":                       "code_generation_wasm.md"
+  - W12:
     - "Lattices & Sign Analysis":              "sign_analysis_lattice.md"
     - "Liveness Analysis":                     "liveness_analysis.md"
     - "Code Generation":                       "code_generation_wasm.md"
-  - W12:
-    - "Code Generation":                       "code_generation_wasm.md"
-    - "Information Flow Analysis":             "advanced_static_analysis.md"
   - W13:
+    - "Information Flow Analysis":             "advanced_static_analysis.md"
     - "Memory Management":                     "memory_management.md"
 theme:
   # favicon:
