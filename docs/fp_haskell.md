@@ -580,8 +580,6 @@ Running `mapML (\x -> x+1) (Cons 1 Nil)` yields
 
 
 
-yields the same output as above.
-
 ## Summary
 
 In this lesson, we have discussed
