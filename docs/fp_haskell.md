@@ -12,7 +12,7 @@ By the end of this class, you should be able to
 
 Haskell is one of the pure function programming languages that adopts lazy evaluation. That makes it very special. 
 
-Haskell is widely used in the industry and the research communities. There many industry projects and open source projects were implemented mainly in Haskell, e.g. Pandoc, Mu, Idris, Elm and etc. There are many other languages are strongly influenced by Haskell, e.g. Scala, Rust and even Python.
+Haskell is widely used in the industry and the research communities. There are many industry projects and open source projects implemented mainly in Haskell, e.g. Pandoc, Mu, Idris, Elm and etc. Many other languages are strongly influenced by Haskell, e.g. Scala, Rust and even Python.
 For more details in how Haskell is used in the real-world business, you may refer to the following for further readings.
 
 * [Haskell in Production: Standard Chartered](https://serokell.io/blog/haskell-in-production-standard-chartered)
@@ -52,9 +52,9 @@ In this module, we focus and utilise mostly the functional programming feature o
 | Constant | $c$ | `1`, `2`, `True`, `False` |
 | Lambda abstraction| $\lambda x.t$  |  `\x->t`  |
 | Function application | $t_1\ t_2$  |  `t1 t2`  |
-| Conditional          | $if\ t_1\ then\ t_2\ else\ t_3$ | `if t1 then t2 else t3` |
-| Let Binding          | $let\ x = t_1\ in\ t_2$ | `let x = t1 in t2` |
-| Recursion            | $let\ f = (\mu g.\lambda x.g\ x)\ in\ f\ 1$| `let f x = f x in f 1` |
+| Conditional          | $\text{if } t_1\ \text{then } t_2\ \text{else } t_3$ | `if t1 then t2 else t3` |
+| Let Binding          | $\text{let } x = t_1\ \text{in } t_2$ | `let x = t1 in t2` |
+| Recursion            | $\text{let } f = (\mu g.\lambda x.g\ x)\ \text{in } f\ 1$| `let f x = f x in f 1` |
 
 
 Similar to other mainstream languages, defining recursion in Haskell is straight-forward, we just
@@ -136,7 +136,7 @@ sum l = case l of
 
 Pattern cases are visited from top to bottom (or left to right). In this example, we first check whether the input list `l` is an empty list. If it is empty, the sum of an empty list must be `0`. 
 
-If the input list `l` is not an empty list, it must have at least one element. The pattern `hd:tl` extracts the first element of the list and binds it to a local variable `hd` and the remainder (which is the sub list formed by taking away the first element from `l`) is bound to `hd`. We often call `hd` as the head of the list and `tl` as the tail. We would like to remind that `hd` is storing a single integer in this case, and `tl` is capturing a list of integers.
+If the input list `l` is not an empty list, it must have at least one element. The pattern `hd:tl` extracts the first element of the list and binds it to a local variable `hd` and the remainder (which is the sub list formed by taking away the first element from `l`) is bound to `tl`. We often call `hd` as the head of the list and `tl` as the tail. We would like to remind that `hd` is storing a single integer in this case, and `tl` is capturing a list of integers.
 
 If the case pattern is the outer most expression in a function body, we could rewrite it as follows,
 
@@ -152,11 +152,11 @@ One advantage of implementing the `sum` function in FP style is that it is much 
 
 $$
 \begin{array}{rl}
-sum(l) = & \left [
+\text{sum}(l) = & \left[
     \begin{array}{ll}
-    0 & {l\ is\ empty} \\
-    head(l)+sum(tail(l)) & {otherwise}
-    \end{array} \right .
+    0 & l \text{ is empty} \\
+    \text{head}(l) + \text{sum}(\text{tail}(l)) & \text{otherwise}
+    \end{array} \right.
 \end{array}
 $$
 
@@ -191,7 +191,7 @@ Note that the optional type annotation contains a type parameter (type variable)
 
 Note that recursive calls to `reverse` will incur additional memory space in the machine in form of additional function call frames on the call stack if a function call-stack is used in a run-time system. 
 
-A call stack frame has to created to "save" the state of function execution such as local variables. As nested recursive calls are being built up, the machine might run out of memory. This is also known as Stack Overflow Error.
+A call stack frame has to be created to "save" the state of function execution such as local variables. As nested recursive calls are being built up, the machine might run out of memory. This is also known as Stack Overflow Error.
 
 Haskell follows closely to lambda calculus and tries to avoid using call stack whenever it is possible. However non-tail recursive call will still impact the performance.
 
@@ -346,11 +346,11 @@ which resembles the math specification
 
 $$
 \begin{array}{cc}
-qsort(l) = & \left[
+\text{qsort}(l) = & \left[
     \begin{array}{ll}
-    l & |l| < 2 \\
-    qsort(\{x|x \in l \wedge x < head(l) \}) \uplus \{head(l)\} \uplus qsort(\{x|x\in l \wedge \neg(x < head(l)) \}) & otherwise
-    \end{array} \right .
+    l & \lvert l \rvert < 2 \\
+    \text{qsort}(\{x \mid x \in l \wedge x < \text{head}(l)\}) \uplus \{\text{head}(l)\} \uplus \text{qsort}(\{x \mid x \in l \wedge \neg(x < \text{head}(l))\}) & \text{otherwise}
+    \end{array} \right.
 \end{array}
 $$
 
@@ -443,7 +443,7 @@ concatMap (\x1 -> concatMap (\x2 -> ... map (\xn -> e) ... ) e2) e1
 
 ### Algebraic Datatype
 
-In OOP languages, like Java and C#, we use classes and interfaces to define (abstraction of) data types, making using of the OOP concepts that we have learned.
+In OOP languages, like Java and C#, we use classes and interfaces to define (abstraction of) data types, making use of the OOP concepts that we have learned.
 This style of defining data types using abstraction and encapsulation is also known as the abstract datatype.
 
 Like many other languages, Haskell supports user defined data type. It takes a different approach, Algebraic Datatype.
@@ -504,12 +504,12 @@ We can represent the math expression `(1+2) * 3` as
 Next let's implement an evaluation function based the specification:
 
 $$
-eval(e) = \left [ \begin{array}{cl}
-                eval(e_1) + eval(e_2) & if\ e = e_1+e_2 \\
-                eval(e_1) - eval(e_2) & if\ e = e_1-e_2 \\
-                eval(e_1) * eval(e_2) & if\ e = e_1*e_2 \\
-                eval(e_1) / eval(e_2) & if\ e = e_1/e_2 \\
-                c & if\ e = c
+\text{eval}(e) = \left[ \begin{array}{cl}
+                \text{eval}(e_1) + \text{eval}(e_2) & \text{if } e = e_1+e_2 \\
+                \text{eval}(e_1) - \text{eval}(e_2) & \text{if } e = e_1-e_2 \\
+                \text{eval}(e_1) * \text{eval}(e_2) & \text{if } e = e_1*e_2 \\
+                \text{eval}(e_1) / \text{eval}(e_2) & \text{if } e = e_1/e_2 \\
+                c & \text{if } e = c
                 \end{array}
         \right.
 $$
@@ -561,10 +561,10 @@ data MyList = Nil | Cons Int MyList
 Next we implement the `map` function based on the following specification
 
 $$
-map(f, l) = \left [ \begin{array}{ll}
-            Nil & if\ l = Nil\\
-            Cons(f(hd), map(f, tl)) & if\ l = Cons(hd, tl)
-            \end{array} \right .
+\text{map}(f, l) = \left[ \begin{array}{ll}
+            \text{Nil} & \text{if } l = \text{Nil} \\
+            \text{Cons}(f(\text{hd}), \text{map}(f, tl)) & \text{if } l = \text{Cons}(hd, tl)
+            \end{array} \right.
 $$
 
 Then we could implement the map function
