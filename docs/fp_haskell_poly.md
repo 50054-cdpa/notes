@@ -279,14 +279,14 @@ Finally, we can test the code,
 
 ```hs
 myTeam = Team [ Person "kenny" [Email "kenny_lu@sutd.edu.sg"], 
-    Person "simon" [Email "simon_perrault@sutd.edu.sg"]]
+    Person "yunjeong" [Email "yunjeong_lee@sutd.edu.sg"]]
 
 toJS myTeam 
 ```
 yields
 
 ```javascript
-'team':{ 'members':['person':{ 'name':'kenny',  'contacts':['email': 'kenny_lu@sutd.edu.sg'] },'person':{ 'name':'simon',  'contacts':['email': 'simon_perrault@sutd.edu.sg'] }] }
+'team':{ 'members':['person':{ 'name':'kenny',  'contacts':['email': 'kenny_lu@sutd.edu.sg'] },'person':{ 'name':'yunjeong',  'contacts':['email': 'yunjeong_lee@sutd.edu.sg'] }] }
 ```
 
 
