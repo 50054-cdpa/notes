@@ -84,11 +84,11 @@ In Haskell, the symbols enclosed in a pair of parenthesis are user-defined infix
 
 ## Generics
 
-Generics is also known as type variables. It enables a language to support parametric polymoprhism. 
+Generics are also known as type variables. It enables a language to support parametric polymoprhism. 
 
 ### Polymorphic functions
 
-Recall that the `reverse` function introduced in the last lesson
+Recall the `reverse` function introduced in the last lesson:
 
 ```hs
 reverse :: [Int] -> [Int] 
@@ -97,7 +97,7 @@ reverse l = case l of
     hd:tl -> reverse tl ++ [hd]
 ```
 
-We argue that the same implementation should work for all lists regardless of their elements' type. Thus, we would replace `Int` by a type variable `a`.
+We argue that the same implementation should work for all lists regardless of their elements' type. Thus, we can replace `Int` by a type variable `a`.
 
 ```hs
 reverse :: [a] -> [a] 
@@ -110,7 +110,7 @@ reverse l = case l of
 ### Polymorphic Algebraic Datatype
 
 
-Recall that the following Algebraic Datatype from the last lesson. 
+Recall the following Algebraic Datatype from the last lesson:
 
 ```hs
 data MyList = Nil | Cons Int MyList
@@ -119,7 +119,7 @@ mapML f Nil          = Nil
 mapML f (Cons hd tl) = Cons (f hd) (mapML f tl)
 ```
 
-Same observation applies. `MyList` could have a generic element type `a` instead of `Int` and `mapML` should remains unchanged.
+Same observation applies. `MyList` could have a generic element type `a` instead of `Int`, and `mapML` should remain unchanged:
 
 
 ```hs
@@ -127,7 +127,7 @@ data MyList a = Nil | Cons a MyList
 -- mapML definition remains unchanged
 ```
 
-After the update,  `MyList` does represent a type, but a type constructor. This is because 
+After the update,  `MyList` does not represent a type, but a type constructor. This is because 
 `MyList` itself is not a type, but `MyList Int`, `MyList String` or `MyList a` are types. 
 
 
@@ -149,7 +149,7 @@ toJS False = "false"
 ```
 > `show` is a prelude function that converts values to string.
 
-However the above is rejected by ghc. 
+However the above is rejected by `ghc`.
 
 ```hs
  Multiple declarations of ‘toJS’
@@ -170,7 +170,7 @@ boolToJS True = "true"
 boolToJS False = "false" 
 ```
 
-This becomes hard to manage as we consider complex datatype.
+This becomes hard to manage as we consider complex datatypes.
 
 ```hs
 data Contact = Email String | Phone String 
@@ -180,8 +180,8 @@ contactToJS (Email e) = "{'email': " ++ strToJS e ++"}"
 contactToJS (Phone ph) = "{'Phone': " ++ strToJS ph ++"}"
 ```
 
-For now, let's bear with this cumbersomeness and continue to extend our `toJS` funcitons to handle
-the follwing data types
+For now, let's bear with this cumbersomeness and continue to extend our `toJS` functions to handle
+the follwing data types:
 
 ```hs 
 data Team   =  Team [Person]
@@ -225,9 +225,9 @@ contactsToJS l = listToJS contactToJS l
 The issue is partially resolved, because `listToJS` expects a function argument of type `a -> String` although 
 by specification, we want to restrict it to be one of the `toJS` functions we defined earlier, but we can't enforce it.
 
-At this stage with have many different versions of `toJS` with different implementations and different shapes of type signature. It is a not a good approach to manage software.
+At this stage with have many different versions of `toJS` with different implementations and different shapes of type signature. This is a not a good approach to manage software.
 
-One solution to address these issues is to use *type class*.
+One solution to address these issues is to use *type classes*.
 
 ```hs
 {-# LANGUAGE FlexibleInstances #-}
@@ -237,10 +237,10 @@ class JS a where
 ```
 
 In the above, we define a type class `JS` via the `class ... where` keywords. 
-If this is the first time you encounter Haskell type class, you could treat it as the Haskell way of definining an interface in Java.  In the above definition, we define an type class `JS a` which says whatever type `a` could be in `JS a` shoud have an obligational implementation of `toJS :: a -> String`.  
-> The GHC pragma `{-# LANGUAGE FlexibleInstances #-}` indicates that we need to enable the flexible-insances extension to support `JS String` (which is `JS [Char]`). Without this pragma, we can't define complex type expression type class instances that involving a type constructor being applied to non type variables.
+If this is the first time you encounter Haskell type class, you can treat it as the Haskell way of defining an interface in Java.  In the above definition, we define an type class `JS a` which says whatever type `a` that could be in `JS a` should have an obligatory implementation of `toJS :: a -> String`.  
+> The GHC pragma `{-# LANGUAGE FlexibleInstances #-}` indicates that we need to enable the flexible-instances extension to support `JS String` (which is `JS [Char]`). Without this pragma, we can't define complex type expression type class instances that involving a type constructor being applied to non type variables.
 
-Using `instance ... where` keywords, we define some type class instances (concrete implementation) of `JS a` as follows
+Using `instance ... where` keywords, we define some type class instances (concrete implementation) of `JS a` as follows:
 
 ```hs
 instance JS Int where 
@@ -265,14 +265,14 @@ instance JS Team where
     toJS (Team members) = "{'team':{ 'members' : " ++  toJS members ++  "}}"
 
 instance JS b => JS [b] where 
-    toJS as = 
+    toJS l = 
         let xs = map toJS l 
         in "[" ++ interleave "," xs ++ "]" 
 ```
-In each instance, we "specialize" the type parameter `a` in `JS a` with another more concreate type. In the body of the instance, we provide the concrete implementation of the `toJS` function with the specific type. 
+In each instance, we "specialize" the type parameter `a` in `JS a` with another more concrete type. In the body of the instance, we provide the concrete implementation of the `toJS` function with the specific type. 
 
 * One alarming thing is that the `JS [b]` instance is overlapping with `JS String`, because in Haskell `String` is a type alias of `[Char]`. Hence we argue that `JS [Char]` is overlapping with `JS [b]`. Hence we need to add an instance pragma `{-# OVERLAPS #-}` to tell the ghc compiler to try apply `JS [Char]` whenever possible, otherwise, try `JS [b]`. 
-* Another "magical" thing of Haskell type class is that the use of the `toJS` function is overloaded based on the type context which can be automatically resolved by the compiler. For example, in the body of the `JS Team` instance, the use `toJS members` is resolved to the isntance `JS [Person]` which will be given by the instances `JS [b]` and `JS Person`. 
+* Another "magical" thing of Haskell type class is that the use of the `toJS` function is overloaded based on the type context which can be automatically resolved by the compiler. For example, in the body of the `JS Team` instance, the use `toJS members` is resolved to the instance `JS [Person]` which will be given by the instances `JS [b]` and `JS Person`. 
 * Thirdly, the `JS [b]` instance, relies on a context, namely `JS b =>`. The context `JS b` introduces an "type level assumption" under which the use of `toJS` in `map toJS l` must be well-defined given `l` has type `[b]` and `JS b` has been assumed existing. 
 
 Finally, we can test the code, 
