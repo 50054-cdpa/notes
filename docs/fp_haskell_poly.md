@@ -80,7 +80,7 @@ In Haskell, the symbols enclosed in a pair of parenthesis are user-defined infix
 ```
 
 > Note we have to put extra parathenses, since function applications are left associated, without the paranthesis 
-`g . f 2` will be parsed as `((g .) f) 2` by Haskell which is ill-typed.
+`g . f 2` will be parsed as `g . (f 2)` by Haskell which is ill-typed.
 
 ## Generics
 
@@ -110,6 +110,7 @@ reverse l = case l of
 ### Polymorphic Algebraic Datatype
 
 
+
 Recall the following Algebraic Datatype from the last lesson:
 
 ```hs
@@ -121,9 +122,8 @@ mapML f (Cons hd tl) = Cons (f hd) (mapML f tl)
 
 Same observation applies. `MyList` could have a generic element type `a` instead of `Int`, and `mapML` should remain unchanged:
 
-
 ```hs
-data MyList a = Nil | Cons a MyList
+data MyList a = Nil | Cons a (MyList a)
 -- mapML definition remains unchanged
 ```
 
@@ -155,7 +155,7 @@ However the above is rejected by `ghc`.
  Multiple declarations of ‘toJS’
 ```
 
-We could give different names to the different versions of `toJS` but this s
+We could give different names to the different versions of `toJS`.
 
 
 ```hs
@@ -225,7 +225,7 @@ contactsToJS l = listToJS contactToJS l
 The issue is partially resolved, because `listToJS` expects a function argument of type `a -> String` although 
 by specification, we want to restrict it to be one of the `toJS` functions we defined earlier, but we can't enforce it.
 
-At this stage with have many different versions of `toJS` with different implementations and different shapes of type signature. This is a not a good approach to manage software.
+At this stage we have many different versions of `toJS` with different implementations and different shapes of type signature. It is a not a good approach to manage software.
 
 One solution to address these issues is to use *type classes*.
 
@@ -237,8 +237,10 @@ class JS a where
 ```
 
 In the above, we define a type class `JS` via the `class ... where` keywords. 
+
 If this is the first time you encounter Haskell type class, you can treat it as the Haskell way of defining an interface in Java.  In the above definition, we define an type class `JS a` which says whatever type `a` that could be in `JS a` should have an obligatory implementation of `toJS :: a -> String`.  
 > The GHC pragma `{-# LANGUAGE FlexibleInstances #-}` indicates that we need to enable the flexible-instances extension to support `JS String` (which is `JS [Char]`). Without this pragma, we can't define complex type expression type class instances that involving a type constructor being applied to non type variables.
+
 
 Using `instance ... where` keywords, we define some type class instances (concrete implementation) of `JS a` as follows:
 
