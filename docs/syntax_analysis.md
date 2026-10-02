@@ -907,10 +907,64 @@ $$
 | E' |  | E'::= +EE', E'::= epsilon |
 
 As shown from the above, at a glance, we argue that one of the 
-cell contains two production rules. We might argue that the grammar contains a first-follow conflict. 
-However, this grammar is LL(1), because when we are checking for 
-first-follow conflicts, with `E'::= epsilon` rule, we need to look up what is the $Follow$ set of `E'`. In this case, it is `+`, and there is only one production rule in the grammar starting with `+`, which is 
-`E' ::= +EE'`. Hence there is no conflict in this grammar. 
+cell contains two production rules. We might argue that the grammar contains a first-follow conflict. Thus this grammar is not LL(1).
+However, the top-down parsing algorithm for this grammar is *confluent*, i.e. even if we pick a different production, we will parse the input, though we might have different parse trees.
+
+For examples, given the input word `1 + 1 + 1`, if we always favor `E'::= +EE'`, we have the following parse tree.
+
+
+<div class="mermaid">
+graph
+  E1["E"]-->i1("1")
+  E1-->E1'["E'"]
+  E1'-->p1["+"]
+  E1'-->E2["E"]
+  E1'-->E5'["E'"]
+  E2-->i2["1"]
+  E2-->E2'["E'"]
+  E2'-->p2["+"]
+  E2'-->E3["E"]
+  E2'-->E4'["E'"]
+  E3-->i3["1"]
+  E3-->E3'["E'"]
+  E3'-->eps1["&epsilon;"]
+  E4'-->eps2["&epsilon;"]
+  E5'-->eps3["&epsilon;"]
+</div>
+
+On the other hand, if we always favor `E'::= epsilon`, whose subsequent step must be `E' ::= +EE'`, then we have
+
+
+<div class="mermaid">
+graph
+  E1["E"]-->i1("1")
+  E1-->E1'["E'"]
+  E1'-->p1["+"]
+  E1'-->E2["E"]
+  E1'-->E3'["E'"]
+  E2-->i2["1"]
+  E2-->E2'["E'"]
+  E2'-->eps1["&epsilon;"]
+  E3'-->p2["+"]
+  E3'-->E3["E"]
+  E3'-->E4'["E'"]
+  E3-->i3["1"]
+  E3-->E5'["E'"] 
+  E4'-->eps2["&epsilon;"]
+  E5'-->eps3["&epsilon;"]
+</div>
+
+This is because when we are checking for first-follow conflicts, with `E'::= epsilon` rule, we need to look up what is the $Follow$ set of `E'`. In this case, it is `+`, and there is only one production rule in the grammar starting with `+`, which is `E' ::= +EE'`. Hence there is no backtracking required in this grammar. To emphasize this, we often augment the epsilon production rule with the set of possible "progressive" production rules that can be applied after.
+
+
+
+| | i | + |
+|---|---|---|
+| E | E::= iE' | |
+| E' |  | E'::= +EE', E'::= epsilon (E'::= +EE') |
+
+
+
 
 #### A short summary so far for top-down recursive parsing
 
