@@ -40,7 +40,7 @@ In the above,  the `Eq` type class is a super class of the `Ord` type class, bec
 
 We also say `Ord` is a derived type class of `Eq`.
 
-In addition, we find some default implementations of the member functions of `Ord` in the type class body. Minimally, we only need provide the implementation for either `compare` or `(<=)` in an instance of the `Ord` type class.
+In addition, we find some default implementations of the member functions of `Ord` in the type class body. Minimally, we only need to provide the implementation for either `compare` or `(<=)` in an instance of the `Ord` type class.
 
 Let's consider some instances
 
@@ -156,7 +156,7 @@ instance Applicative Maybe where
     (<*>) (Just f) (Just x) = Just (f x)
 ```
 
-In the above Applicative instance, the `<*>` function takes a optional operation and optional value as inputs, tries to apply the operation to the value when both of them are present, otherwise, signal an error by returning `Nothing`. This allows us to focus on the high-level function-value-input-output relation and abstract away the details of handling potential absence of function or value.
+In the above Applicative instance, the `<*>` function takes an optional operation and optional value as inputs, tries to apply the operation to the value when both of them are present, otherwise, signal an error by returning `Nothing`. This allows us to focus on the high-level function-value-input-output relation and abstract away the details of handling potential absence of function or value.
 
 
 ### Applicative Laws
@@ -198,7 +198,7 @@ The Composition Law says that the above equation remains valid when $u$, $v$ and
 
 ## Monad
 
-Monad is one of the essential coding/design pattern for many functional programming languages. It enables us to develop high-level resusable code and decouple code dependencies and generate codes by (semi-) automatic code-synthesis. FYI, Monad is a derived type class of Applicative thus Functor.
+Monad is one of the essential coding/design pattern for many functional programming languages. It enables us to develop high-level reusable code and decouple code dependencies and generate codes by (semi-) automatic code-synthesis. FYI, Monad is a derived type class of Applicative thus Functor.
 
 Let's consider a motivating example.  Recall that in the earlier lesson, we came across the following example.
 
@@ -246,7 +246,7 @@ Let's consider the type class definition of `Monad m`.
 class Applicative m => Monad m where 
     (>>=) :: m a -> (a -> m b) -> m b
     -- optional
-    return :: a -> a
+    return :: a -> m a
     return = pure
     (>>) :: m a -> m b -> m b
     (>>) m k = m >>= \_ -> k 
@@ -364,8 +364,8 @@ class Monad m => MonadError e m | m -> e where
     catchError :: m a -> (e -> m a) -> m a
 ```
 
-In the above, we define a derived type class of `Monad`, called `MonadError e m` where `m` is the Monadic functor and `e` is the error type. The additional declaration `| m -> e` denotes a *functional depenedency* between the instances of `m` and `e`. (You can think of it in terms of database FDs.)
-It says that whenever we fix a concrete instance of `m`, we can uniquely identify the corresponding instance of `e`.  The member function `throwErrow` takes an error message and injects into the Monad result. Function `catchError` runs an monad computation `m a`. In case of error, it applies the 2nd argument, a function of type `e -> m a` to handle it. You can think of  `catchError` is the `try ... catch` equivalent in `MonadError`. 
+In the above, we define a derived type class of `Monad`, called `MonadError e m` where `m` is the Monadic functor and `e` is the error type. The additional declaration `| m -> e` denotes a *functional dependency* between the instances of `m` and `e`. (You can think of it in terms of database FDs.)
+It says that whenever we fix a concrete instance of `m`, we can uniquely identify the corresponding instance of `e`.  The member function `throwError` takes an error message and injects into the Monad result. Function `catchError` runs an monad computation `m a`. In case of error, it applies the 2nd argument, a function of type `e -> m a` to handle it. You can think of  `catchError` is the `try ... catch` equivalent in `MonadError`. 
 
 
 
@@ -380,7 +380,7 @@ instance MonadError () Maybe where
         Just v  -> Just v
 ```
 
-Next, we adjust the `eval` function to takes in a `MonadError` context instead of a `Monad` context. In addition, we make the error signal more explicit by calling the `throwError` function from the `MonadError` type class.
+Next, we adjust the `eval` function to take in a `MonadError` context instead of a `Monad` context. In addition, we make the error signal more explicit by calling the `throwError` function from the `MonadError` type class.
 
 ```hs
 eval :: MathExp -> Maybe Int 
@@ -565,7 +565,7 @@ instance Monad (Reader r) where
         in run rb r)
 ```
 
-* `fmap` function takes a function `f` and a reader `ra` and returns a reader whose computation function takes an input referenced object `r` and runs `ra` with r to obtain `a`, then applly `f` to `a`.
+* `fmap` function takes a function `f` and a reader `ra` and returns a reader whose computation function takes an input referenced object `r` and runs `ra` with r to obtain `a`, then apply `f` to `a`.
 * `pure` function takes a value of type `a` and wraps it into a reader object whose computation function is returning the input value ignoring the referenced object `r`. 
 * The app function (`<*>`) takes a reader `rf` that produces function(s), and a reader that produces value `a`. It returns a reader whose computation function takes a referenced object `r` and run `rf` with `ra` with it to produce the function `f` and the value `a`. Finally it applies `f` to `a`.
 * The bind function (`>>=`) takes a reader `ra` and a function `g`, it returns a reader whose computation function takes a referenced object `r` and run `ra` with `r` to obtained `a`, next it applies `g` to `a` to generate the reader `rb`, finally, it runs `rb` with `r`.
