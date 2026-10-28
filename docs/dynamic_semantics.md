@@ -746,7 +746,7 @@ $$
 \end{array}
 $$
 
-The rules ${\tt (pIfn0)}$ and ${\tt (pIfnNot0)}$ deal with the conditional jump instruction. We first look up the conditional operand's value in the memory environment. If it is 0, we ignore the jump and move on to the next instruction, otherwiwse, we perform a jump but changing the program context to the target label instruction.
+The rules ${\tt (pIfn0)}$ and ${\tt (pIfnNot0)}$ deal with the conditional jump instruction. We first look up the conditional operand's value in the memory environment. If it is not 0, we ignore the jump and move on to the next instruction, otherwiwse, we perform a jump but changing the program context to the target label instruction.
 
 $$
 {\tt (pGoto)} ~~ P \vdash (L, l:goto\ l') \longrightarrow (L, P(l'))
