@@ -14,4 +14,4 @@
 | 11 |  **Guest Lecture**  | [Code Generation: Stack Machine](./code_generation_wasm.md) | [Cohort Problem 9: Name Analysis](https://github.com/50054-cdpa/cohort_probs_haskell/tree/main/name_analysis)  | Project Lab 2 10%,  Homework 5 5%  |  
 | 12 |  [Liveness Analysis](./liveness_analysis.md)  | [Code Generation: Register Allocation](./code_generation_wasm.md)  | [Cohort Problem 10: Sign Analysis](https://github.com/50054-cdpa/cohort_probs_haskell/tree/main/sign_analysis)  |  |
 | 13 | [Information Flow Analysis](./advanced_static_analysis.md) | [Memory Management](./memory_management.md) |  | Project Lab 3 15% |  |
-| 14 | |  |  |Final Exam (16 Dec Wed 1:00PM-3:00PM) 30%|
+| 14 | |  |  |Final Exam (17 Dec Thu 1:00PM-3:00PM) 30%|
