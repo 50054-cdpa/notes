@@ -349,7 +349,7 @@ $$
                 \Gamma \vdash t_2 : \sigma \ \ \ 
                 \Gamma \vdash t_3 : \sigma 
                 \\ \hline
-                \Gamma \vdash if\ t_1\ then t_2\ else t_3 : \sigma
+                \Gamma \vdash if\ t_1\ then\ t_2\ else\ t_3 : \sigma
                \end{array} \\ \\ 
 \end{array}
 $$
