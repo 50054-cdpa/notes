@@ -33,9 +33,8 @@ nav:
     - "Static Semantics":                      "static_semantics.md"
   - W10:
     - "Static Semantics for Lambda Calculus":  "static_semantics_2.md"
-    - "Name Analysis":                         "name_analysis.md"
   - W11:
-    - "Code Generation":                       "code_generation_wasm.md"
+    - "Name Analysis":                         "name_analysis.md"
   - W12:
     - "Code Generation":                       "code_generation_wasm.md"
     - "Liveness Analysis":                     "liveness_analysis.md"

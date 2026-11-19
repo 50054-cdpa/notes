@@ -10,8 +10,8 @@
 | 7 |  |  |  | Homework 4 5% | 
 | 8 | [1. Semantic Analysis](./semantic_analysis.md) <br/> [2. Dynamic Semantics](./dynamic_semantics.md) | **Mid-term exam (during class hours)** |  [2. Dynamic Semantics](./dynamic_semantics.md)  | Mid-term 10%  |
 | 9 | Monday is a public holiday | [Cohort Problem 7](https://github.com/50054-cdpa/cohort_probs_haskell/tree/main/dynamic_semantics) | [Static Semantics for SIMP](./static_semantics.md)  | Project Lab 1 10% |
-| 10 | [Static Semantics for Lambda Calculus](./static_semantics_2.md)  | [Cohort Problem 8](https://github.com/50054-cdpa/cohort_probs_haskell/tree/main/static_semantics), [Homework 5](https://github.com/50054-cdpa/homework_haskell/tree/main/semantic_analysis) | [Name Analysis, SSA](./name_analysis.md) |  |  | | 
-| 11 |  **Guest Lecture**  | [Code Generation: Stack Machine](./code_generation_wasm.md) | [Cohort Problem 9: Name Analysis](https://github.com/50054-cdpa/cohort_probs_haskell/tree/main/name_analysis)  | Project Lab 2 10%,  Homework 5 5%  |  
-| 12 | [Code Generation: Register Allocation](./code_generation_wasm.md)  | [Lattice, Sign Analysis](./sign_analysis_lattice.md) <br/>  [Liveness Analysis](./liveness_analysis.md)  |  [Cohort Problem 10: Sign Analysis](https://github.com/50054-cdpa/cohort_probs_haskell/tree/main/sign_analysis)  |  |
-| 13 | [Information Flow Analysis](./advanced_static_analysis.md) | [Memory Management](./memory_management.md) |  | Project Lab 3 15% |  |
+| 10 | [Static Semantics for Lambda Calculus](./static_semantics_2.md) |  | [Cohort Problem 8](https://github.com/50054-cdpa/cohort_probs_haskell/tree/main/static_semantics), [Homework 5](https://github.com/50054-cdpa/homework_haskell/tree/main/semantic_analysis) | |  |  | | 
+| 11 |  **Guest Lecture**  | [Name Analysis, SSA](./name_analysis.md)  | [Cohort Problem 9: Name Analysis](https://github.com/50054-cdpa/cohort_probs_haskell/tree/main/name_analysis)  | Project Lab 2 10%,  Homework 5 5%  |  
+| 12 | [Code Generation: Stack Machine](./code_generation_wasm.md) | [Code Generation: Register Allocation](./code_generation_wasm.md) | [Lattice, Sign Analysis](./sign_analysis_lattice.md) <br/>  [Liveness Analysis](./liveness_analysis.md)  |  |  |
+| 13 | [Cohort Problem 10: Sign Analysis](https://github.com/50054-cdpa/cohort_probs_haskell/tree/main/sign_analysis) | [Information Flow Analysis](./advanced_static_analysis.md) | [Memory Management](./memory_management.md) | Project Lab 3 15% |  |
 | 14 | |  |  |Final Exam (17 Dec Thu 1:00PM-3:00PM) 30%|
